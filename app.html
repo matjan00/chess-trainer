@@ -190,6 +190,17 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .checklist ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
 .mode-col { display: grid; gap: 14px; }
 
+/* today's training */
+.today-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.today-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 10px; }
+.task { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.task .tick { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--accent-ink); }
+.task.done .tick { background: var(--good); border-color: var(--good); }
+.task .nm { font-weight: 600; font-size: 14px; }
+.task .ct { grid-column: 2; font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.task .btn { grid-row: 1 / span 2; grid-column: 3; padding: 6px 10px; font-size: 13px; }
+.task.done .btn { opacity: .7; }
+
 /* sync chip */
 .sync { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
 .sync i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); }
@@ -236,7 +247,8 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .quiz-opts button:disabled { cursor: default; }
 @media (max-width: 520px) {
   .brand .who { display: none; }
-  nav { margin-left: 0; width: 100%; flex-wrap: nowrap; overflow-x: auto; }
+  nav { margin-left: 0; width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
   nav button { padding: 7px 10px; flex: 1 0 auto; }
   .top .wrap { gap: 8px; }
   .sync { position: absolute; right: 16px; top: 16px; }
@@ -268,7 +280,11 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 <main class="wrap">
   <!-- REPORT -->
   <section class="view" id="view-report">
-    <div class="eyebrow" id="rep-range"></div>
+    <div class="card today" id="today">
+      <div class="today-head"><h3>Today's training</h3><span class="small muted" id="today-streak"></span></div>
+      <div class="today-list" id="today-list"></div>
+    </div>
+    <div class="eyebrow" id="rep-range" style="margin-top:22px"></div>
     <h2 style="margin:6px 0 16px">Where your rapid games are won and lost</h2>
     <div class="stats card" id="rep-stats"></div>
     <div class="card notes" id="coach-notes">
@@ -683,6 +699,7 @@ function show(v, tabOverride) {
   if (v === 'tactics' && !$('#tac-home').hidden) renderTacticsHome();
   if (v === 'middle' && !$('#mg-home').hidden) renderMiddleHome();
   if (v === 'endgame') renderEndgameHome();
+  if (v === 'report') renderToday();
   requestAnimationFrame(() => {
     boards().forEach(cg => visibleBoard(cg) && cg.redrawAll());
     if (v === 'games' && cur) goto(ply);                                   // restore the viewer's arrows
@@ -1783,7 +1800,35 @@ document.querySelector('#view-endgame .mode-grid').onclick = e => {
   else { show('tactics'); startPuzzles(EG_THEME); }
 };
 
+/* ---------- today's training (on the Report tab) ---------- */
+function renderToday() {
+  const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
+  const due = COURSES.flatMap(dueLines).length;
+  const reviewedToday = today('lines').length;
+  const tactics = today('puz').length + today('pun').length + today('solved').length;
+  const checks = today('chk').length;
+  const played = today('cv').length + today('eg').length + today('eo').length + today('tq').length;
+  const tasks = [
+    { nm: 'Opening reviews', ct: due ? `${due} line${due > 1 ? 's' : ''} due` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && reviewedToday > 0 || !due && Object.keys(progress.lines).length > 0,
+      go: () => { show('openings'); if (due) startReview(COURSES.flatMap(dueLines)); } },
+    { nm: '10 tactics', ct: `${Math.min(tactics, 10)}/10 puzzles, punish or mistake positions`, done: tactics >= 10, go: () => { show('tactics'); tacShow('home'); startPuzzles(null); } },
+    { nm: '5 blunder checks', ct: `${Math.min(checks, 5)}/5 · the habit that saves games`, done: checks >= 5, go: () => { show('tactics'); tacShow('home'); startCheck(); } },
+    { nm: 'Play one position out', ct: played ? `${played} done today` : 'Convert a win, an ending, or a technique position', done: played > 0,
+      go: () => { show('middle'); $('#mg-home').hidden = false; $('#mg-player').hidden = true; startConvert(); } },
+  ];
+  $('#today-list').innerHTML = tasks.map((t, i) => `<div class="task${t.done ? ' done' : ''}"><span class="tick">${t.done ? '✓' : ''}</span><span class="nm">${t.nm}</span><button class="btn" data-task="${i}">${t.done ? 'More' : 'Start'}</button><span class="ct">${esc(t.ct)}</span></div>`).join('');
+  $('#today-list').onclick = e => { const b = e.target.closest('[data-task]'); if (b) tasks[+b.dataset.task].go(); };
+  // streak: consecutive days (ending today or yesterday) with any training recorded
+  const days = new Set(KINDS.flatMap(k => Object.values(progress[k]).map(v => v.t)).filter(t => t > 1e12).map(t => new Date(t).toDateString()));
+  let streak = 0; const d = new Date();
+  if (!days.has(d.toDateString())) d.setDate(d.getDate() - 1);
+  while (days.has(d.toDateString())) { streak++; d.setDate(d.getDate() - 1); }
+  const doneCount = tasks.filter(t => t.done).length;
+  $('#today-streak').textContent = `${doneCount}/4 done today${streak ? ` · ${streak}-day streak` : ''}`;
+}
+
 onProgressChanged = () => {
+  if (!$('#view-report').hidden) renderToday();
   if (!$('#view-endgame').hidden) renderEndgameHome();
   if (!$('#mg-home').hidden && !$('#view-middle').hidden) renderMiddleHome();
   if (!$('#op-home').hidden) renderOpeningsHome();
