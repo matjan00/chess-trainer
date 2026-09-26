@@ -289,7 +289,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
     <div class="stats card" id="rep-stats"></div>
     <div class="card notes" id="coach-notes">
       <h3>Coach's notes</h3>
-      <!--NOTES-->
+      <div id="coach-body"></div>
     </div>
     <div class="grid2">
       <div class="card"><h3>Rating</h3><p class="sub">Your rapid rating after each game in this period.</p><div id="rep-rating"></div></div>
@@ -1800,6 +1800,44 @@ document.querySelector('#view-endgame .mode-grid').onclick = e => {
   else { show('tactics'); startPuzzles(EG_THEME); }
 };
 
+/* ---------- coach's notes: worked out from the analysed games, so they stay current after updates ---------- */
+function renderCoachNotes() {
+  const n = GAMES.length, first = GAMES[0], last = GAMES[n - 1];
+  const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+  // 1. winning positions that slipped
+  const winning = GAMES.filter(g => Math.max(...g.myWin) >= 85);
+  const wW = winning.filter(g => g.result === 'win').length, wL = winning.filter(g => g.result === 'loss').length, wD = winning.length - wW - wL;
+  const slipMoves = winning.filter(g => g.result !== 'win').map(g => { const k = g.myWin.findIndex(x => x >= 85); const i = g.plies.findIndex((p, j) => j >= k && isMine(g, j) && p.lab === 'blunder'); return i >= 0 ? Math.floor(i / 2) + 1 : null; }).filter(Boolean).sort((a, b) => a - b);
+  const slipAt = slipMoves.length ? slipMoves[slipMoves.length >> 1] : null;
+  // 2. clock use
+  const finals = GAMES.map(g => { for (let i = g.plies.length - 1; i >= 0; i--) if (isMine(g, i) && g.plies[i].clk != null) return g.plies[i].clk; return null; }).filter(x => x != null);
+  const avgLeft = finals.length ? finals.reduce((a, b) => a + b, 0) / finals.length : 0;
+  const times = GAMES.flatMap(g => g.plies.filter((p, i) => isMine(g, i) && p.t != null).map(p => p.t)).sort((a, b) => a - b);
+  const medianT = times.length ? times[times.length >> 1] : 0;
+  const lostOnTime = GAMES.filter(g => g.result === 'loss' && g.how === 'timeout').length;
+  // 3. simple tactics
+  const simple = (myWhy['hung piece'] || 0) + (myWhy['fork'] || 0) + (myWhy['lost material'] || 0);
+  // 4. opponents' blunders not punished
+  let oppBl = 0, notPunished = 0;
+  for (const g of GAMES) g.plies.forEach((p, i) => { if (!isMine(g, i) && p.lab === 'blunder' && i + 1 < g.plies.length) { oppBl++; if (g.plies[i + 1].loss >= 10) notPunished++; } });
+  // 5. openings
+  const courseStat = id => { const c = COURSES.find(x => x.id === id); if (!c || !c.games.length) return null; const gs = c.games.map(x => x.g);
+    const sc = pct(gs.reduce((s, g) => s + (g.result === 'win' ? 1 : g.result === 'draw' ? .5 : 0), 0), gs.length);
+    const w10 = gs.reduce((s, g) => s + g.myWin[Math.min(20, g.myWin.length - 1)], 0) / gs.length; return { n: gs.length, sc, w10 }; };
+  const jb = courseStat('jobava'), ck = courseStat('caro');
+  // 6. endgames
+  const eg = GAMES.filter(g => g.plies.some(p => p.ph === 'endgame'));
+  const egBl = eg.filter(g => g.plies.some((p, i) => isMine(g, i) && p.ph === 'endgame' && p.lab === 'blunder')).length;
+  const items = [];
+  if (winning.length) items.push(`<strong>You let winning games slip away.</strong> You reached a clearly winning position in ${winning.length} games but won only ${wW} of them. That's ${wL} losses and ${wD} draws from positions you should have won.${slipAt ? ` It usually goes wrong around move ${slipAt}.` : ''} When you're winning, slow down, look for your opponent's threats first, and trade pieces to simplify. Practise with Middlegame → Convert the win.`);
+  if (finals.length) items.push(`<strong>${avgLeft > 240 ? 'You play too fast.' : 'Watch your clock.'}</strong> You finish your games with ${Math.floor(avgLeft / 60)}:${String(Math.round(avgLeft % 60)).padStart(2, '0')} left on average${lostOnTime ? ` and lost ${lostOnTime} on time` : ', and you never lost on time'}. Half your moves take under ${Math.max(1, Math.round(medianT))} seconds. ${avgLeft > 240 ? 'That spare time should go to a quick check before each move: which pieces are undefended? What checks and captures does my opponent have?' : ''}`);
+  if (simple) items.push(`<strong>Most blunders are simple tactics.</strong> ${simple} of your mistakes were leaving a piece undefended, walking into a fork, or losing material in a trade. These are exactly what the quick check catches. Tactics → Blunder check and Fix my mistakes train it with your own positions.`);
+  if (oppBl) items.push(`<strong>You miss your opponents' blunders too.</strong> Your opponents blundered ${oppBl} times, and ${notPunished} times (${pct(notPunished, oppBl)}%) you didn't take advantage. Always ask: "What did that last move leave hanging?" Tactics → Punish the blunder uses exactly those positions.`);
+  if (jb) items.push(`<strong>Your White opening ${jb.w10 >= 52 ? 'works, but the plan after it matters most' : 'needs work'}.</strong> With the Jobava London you average a ${Math.round(jb.w10)}% winning chance after 10 moves, and you score ${jb.sc}% in those ${jb.n} games.${ck ? ` Your Caro-Kann as Black scores ${ck.sc}% over ${ck.n} games.` : ''} The Openings courses cover both, including the plans that follow.`);
+  if (eg.length) items.push(`<strong>Endgames matter more than you might think.</strong> ${eg.length} of your ${n} games reached an endgame, and you blundered in ${egBl} of them. The essential endings in the Endgames tab pay off quickly.`);
+  $('#coach-body').innerHTML = `<p class="sub" style="margin:4px 0 0">What Stockfish found across your ${n} rapid games from ${fmtDate(first.end)} to ${fmtDate(last.end)}. Most important first.</p><ol>${items.map(t => `<li>${t}</li>`).join('')}</ol>`;
+}
+
 /* ---------- today's training (on the Report tab) ---------- */
 function renderToday() {
   const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
@@ -1838,7 +1876,7 @@ onProgressChanged = () => {
 };
 
 /* ---------- boot ---------- */
-renderReport(); setupFilters(); renderList(); renderOpeningsHome(); sync.start();
+renderReport(); renderCoachNotes(); setupFilters(); renderList(); renderOpeningsHome(); sync.start();
 const startView = location.hash.slice(1) || store.get('view', 'report');
 show(views.includes(startView) ? startView : 'report');
 if (location.hostname === 'localhost') window.__ct = { tp, progress, mg };   // local testing only
