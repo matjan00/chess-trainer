@@ -1228,6 +1228,17 @@ function advance() {
     op.wrong = 0; boardSet();
   }
 }
+// every course move by position (piece placement, side, castling, en passant), so transpositions are recognised
+const posKey = fen => fen.split(' ').slice(0, 4).join(' ');
+function coursePosMoves(c) {
+  if (c._pos) return c._pos;
+  c._pos = new Map();
+  for (const l of c.lines) {
+    const b = new Chess();
+    for (const m of l.moves) { const k = posKey(b.fen()); if (!c._pos.has(k)) c._pos.set(k, new Set()); c._pos.get(k).add(m.san); b.move(m.san, { sloppy: true }); }
+  }
+  return c._pos;
+}
 function onOpMove(orig, dest) {
   if (op.mode === 'ideas') return onIdeaMove(orig, dest);
   const test = new Chess(op.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
@@ -1235,6 +1246,10 @@ function onOpMove(orig, dest) {
   if (mv && mv.san === want.san) {
     feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>`, 'right');
     const q = applyMove(want); if (q) askQuiz(q); else advance();
+  } else if (mv && coursePosMoves(op.c).get(posKey(op.chess.fen()))?.has(mv.san)) {
+    // the same position comes up in another line of this course, where this move is the recommendation
+    boardSet({ drawable: { autoShapes: hintShape(true) } });
+    feedback(`<span class="big" style="font-size:18px">${esc(mv.san)} is also a course move</span><div class="small">Another line of this course plays it here. This line continues with the arrow move instead.</div>`);
   } else {
     op.wrong++; op.errors++;
     boardSet();
