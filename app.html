@@ -1717,7 +1717,7 @@ function levelUI() {
   $('#mg-level').onclick = e => { const b = e.target.closest('[data-lv]'); if (!b) return; mg.level = b.dataset.lv; store.set('mglevel', mg.level); levelUI(); };
 }
 function loadPlay(cfg) {
-  mg.gen++;
+  mg.gen++; mg.base = null;
   mg.kind = 'play'; mg.cfg = cfg;
   Object.assign(mg, { item: cfg, chess: new Chess(cfg.fen), busy: false, done: false, hist: [], myMoves: 0 });
   mg.side = (mg.chess.turn() === 'w') !== !!cfg.engineFirst ? 'white' : 'black';
@@ -1734,6 +1734,10 @@ function loadPlay(cfg) {
     if (gen !== mg.gen || mg.hist.length) return;
     if (!ok) return mgFeedback(`<span class="big">The engine couldn't start in this browser.</span><div class="small">Try reloading the page.</div>`, 'wrong');
     if (cfg.engineFirst) engineReply(null);
+    else if (cfg.goal === 'win') {
+      // rate the start with the same engine, so the failure line matches what it sees (not the deeper analysis)
+      engine.go(mg.chess.fen(), { movetime: 700, skill: 20 }).then(r => { if (gen === mg.gen && !mg.hist.length && r) mg.base = scoreWin(r.score); }).catch(() => {});
+    }
     else mgFeedback(`<span class="muted">${esc(cfg.intro)} Your move.</span>`);
   });
 }
@@ -1778,7 +1782,8 @@ async function engineReply(mv) {
     const queens = mg.chess.board().flat().filter(p => p && p.type === 'q' && p.color === mg.side[0]).length;
     if (cfg.goal === 'win' && !cfg.mate && myCp >= 600 && mg.myMoves >= (cfg.promote ? 1 : 4) && (!cfg.promote || queens > mg.queens0))
       return playEnd(true, cfg.promote ? 'Promoted, and the win is certain. Well done!' : `You're ${scoreText({ cp: myCp })} up. The engine resigns: converted!`);
-    if (cfg.goal === 'win' && myWin < (cfg.failBelow ?? (cfg.mate || cfg.promote ? 90 : 62))) return playEnd(false, `The win slipped away after ${mv.san}.`);
+    const line = Math.min(cfg.failBelow ?? (cfg.mate || cfg.promote ? 90 : 62), mg.base != null ? mg.base - 20 : 100);
+    if (cfg.goal === 'win' && myWin < line) return playEnd(false, `The win slipped away after ${mv.san}.`);
     if (cfg.goal === 'draw' && myWin < 25) return playEnd(false, `After ${mv.san} the position is lost.`);
     if (cfg.goal === 'draw' && mg.myMoves >= (cfg.hold || 20)) return playEnd(true, `You held it for ${mg.myMoves} moves. That's a draw.`);
   }
