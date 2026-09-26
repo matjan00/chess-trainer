@@ -190,6 +190,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .checklist ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
 .mode-col { display: grid; gap: 14px; }
 
+.trend { margin-top: 14px; }
+.spark { width: 100%; height: 60px; display: block; margin-top: 6px; }
+
 /* today's training */
 .today-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
 .today-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 10px; }
@@ -429,6 +432,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
         </div>
         <div class="score-strip"><span><b id="t-rating">1600</b>puzzle rating</span><span><b id="t-today">0</b>puzzles today</span><span><b id="t-acc">–</b>right first try</span></div>
       </div>
+      <div class="trend" id="t-trend" hidden></div>
       <div class="mode-grid">
         <button class="card mode-card primary-mode" data-mode="mixed"><span class="eyebrow">Recommended</span><h3>Mixed training</h3><p>Puzzles at your level, weighted towards the themes you miss most in your games.</p></button>
         <button class="card mode-card" data-mode="punish"><span class="eyebrow">From your games</span><h3>Punish the blunder</h3><p id="m-punish"></p></button>
@@ -586,7 +590,7 @@ const store = {
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 16, 35];   // days until the next review, by box
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'cv', 'tq', 'eg', 'eo'];
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo'];
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -1287,6 +1291,15 @@ function renderTacticsHome() {
   const res = [...Object.values(progress.puz), ...Object.values(progress.pun), ...Object.values(progress.chk)];
   const score = kind => { const v = Object.values(progress[kind]); return v.length ? ` Your score: ${v.filter(r => r.ok).length}/${v.length} right.` : ''; };
   $('#t-rating').textContent = Math.round(tacRating());
+  const hist = Object.entries(progress.trh).sort(([a], [b]) => a.localeCompare(b)).slice(-60);
+  $('#t-trend').hidden = hist.length < 2;
+  if (hist.length >= 2) {
+    const rs = hist.map(([, v]) => v.r), lo = Math.min(...rs) - 10, hi = Math.max(...rs) + 10, W = 600, H = 60;
+    const pts = rs.map((r, i) => `${(i / (rs.length - 1) * W).toFixed(1)},${(H - (r - lo) / (hi - lo) * H).toFixed(1)}`).join(' ');
+    const diff = rs[rs.length - 1] - rs[0];
+    $('#t-trend').innerHTML = `<div class="small muted">Puzzle rating over your last ${hist.length} training days: <strong style="color:var(${diff >= 0 ? '--good' : '--loss'})">${diff >= 0 ? '+' : ''}${diff}</strong></div>
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="spark"><polyline points="${pts}" fill="none" stroke="${cssVar('--accent')}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+  }
   $('#t-today').textContent = res.filter(r => r.t >= startOfDay()).length;
   $('#t-acc').textContent = res.length ? Math.round(res.filter(r => r.ok).length / res.length * 100) + '%' : '–';
   const missed = PUNISH.filter(d => d.missed).length;
@@ -1390,7 +1403,9 @@ function ratePuzzle(ok) {
   const cur = progress.tr.me || { r: 1600, n: 0 };
   const exp = 1 / (1 + Math.pow(10, (tp.item.rating - cur.r) / 400));
   const k = cur.n < 30 ? 32 : 20;
-  record('tr', 'me', { r: cur.r + k * ((ok ? 1 : 0) - exp), n: cur.n + 1 });
+  const r = cur.r + k * ((ok ? 1 : 0) - exp), d = new Date();
+  record('tr', 'me', { r, n: cur.n + 1 });
+  record('trh', `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, { r: Math.round(r) });   // one rating per day for the trend line
   if (!progress.puz[tp.item.id]) record('puz', tp.item.id, { ok: ok ? 1 : 0 });
   scoreResult(ok);
 }
