@@ -27,4 +27,4 @@ Personal chess training app for Janczu00, published at https://claude.ai/artifac
 | `data/essentials.json` | Essential endgame lessons |
 | `analyze.py`, `build*.py` | Game analysis and exercise builders |
 | `update.py` / `update.bat` | Pull new games and rebuild everything |
-| `notes.html` | Coach's notes on the Report page (hand-written) |
+| Coach's notes | Worked out by the page from `data/analysis.json` (no manual editing needed) |
