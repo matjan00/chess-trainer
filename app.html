@@ -715,7 +715,7 @@ function show(v, tabOverride) {
 $('#nav').onclick = e => {
   const b = e.target.closest('button'); if (!b) return;
   // endgame exercises borrow the middlegame board; the Middlegame tab should open its own page, not that board
-  if (b.dataset.view === 'middle' && mg.cfg?.from === 'endgame') { $('#mg-player').hidden = true; $('#mg-home').hidden = false; mg.cfg = null; mg.gen++; }
+  if (b.dataset.view === 'middle' && mg.cfg?.from && mg.cfg.from !== 'middle') { $('#mg-player').hidden = true; $('#mg-home').hidden = false; mg.cfg = null; mg.gen++; }
   show(b.dataset.view);
 };
 
@@ -1279,12 +1279,22 @@ function finishLine() {
   const nextBtn = op.queue.length ? `<button class="btn primary" id="op-next">Next line (${op.queue.length} left)</button>` : '';
   const learnNext = op.mode === 'learn' ? op.c.lines.find(l => !progress.lines[lineKey(op.c, l)]) : null;
   feedback(`<span class="big">${msg}</span><div class="small">${op.errors && op.mode === 'review' ? 'It comes back at the end of this session and again tomorrow.' : `Next review ${fmtIn(due)}.`}</div>
-    <div class="controls" style="margin-top:10px">${nextBtn}${learnNext ? `<button class="btn primary" id="op-learnnext">Learn next: ${esc(learnNext.title)}</button>` : ''}<button class="btn" id="op-tocourse">Back to course</button></div>`, 'right');
+    <div class="controls" style="margin-top:10px">${nextBtn}${learnNext ? `<button class="btn primary" id="op-learnnext">Learn next: ${esc(learnNext.title)}</button>` : ''}<button class="btn" id="op-spar">Play on against Stockfish</button><button class="btn" id="op-tocourse">Back to course</button></div>`, 'right');
+  $('#op-spar').onclick = () => playOnFromLine(op.c, op.l);
   $('#op-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
   $('#op-learnnext')?.addEventListener('click', () => startLearn(op.c, learnNext));
   $('#op-tocourse').onclick = () => openCourse(op.c);
 }
 
+function playOnFromLine(c, l) {
+  const chess = new Chess(); for (const m of l.moves) chess.move(m.san, { sloppy: true });
+  const engineFirst = (chess.turn() === 'w') !== (c.side === 'white');
+  show('middle', 'openings'); mgShowPlayer();
+  loadPlay({ id: `${c.id}/${l.id}`, fen: chess.fen(), store: null, goal: 'spar', engineFirst, from: 'openings',
+    mode: `${c.title} · Play on`, title: `Play the middlegame: ${l.title}`,
+    sub: `The position at the end of this course line. The plan: ${l.moves[l.moves.length - 1].c || 'develop, castle, and look for your pawn break.'}`,
+    intro: 'Free practice against Stockfish: no pass or fail. Stop whenever you like.', onNext: () => { show('openings'); openCourse(c); } });
+}
 function startIdeas(c) { op.mode = 'ideas'; op.c = c; op.l = null; op.ideaIdx = 0; loadIdea(); }
 function loadIdea() {
   op.gen++;
@@ -1645,7 +1655,7 @@ function renderMiddleHome() {
 }
 document.querySelector('.mode-col').onclick = e => { const b = e.target.closest('[data-mg]'); if (!b) return; b.dataset.mg === 'convert' ? startConvert() : startTech(null); };
 $('#mg-kinds').onclick = e => { const b = e.target.closest('[data-kind]'); if (b) startTech(b.dataset.kind); };
-$('#mg-back').onclick = () => { if (mg.cfg?.from === 'endgame') { $('#mg-home').hidden = false; $('#mg-player').hidden = true; return show('endgame'); } $('#mg-home').hidden = false; $('#mg-player').hidden = true; renderMiddleHome(); window.scrollTo({ top: 0 }); };
+$('#mg-back').onclick = () => { const from = mg.cfg?.from; if (from && from !== 'middle') { $('#mg-home').hidden = false; $('#mg-player').hidden = true; mg.cfg = null; mg.gen++; return show(from); } $('#mg-home').hidden = false; $('#mg-player').hidden = true; renderMiddleHome(); window.scrollTo({ top: 0 }); };
 function mgShowPlayer() { $('#mg-home').hidden = true; $('#mg-player').hidden = false; window.scrollTo({ top: 0 }); requestAnimationFrame(() => mgCg?.redrawAll()); }
 function mgFeedback(html, cls = '') { const f = $('#mg-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
 function mgBoard(extra = {}) {
@@ -1715,7 +1725,7 @@ function loadPlay(cfg) {
 function playEnd(ok, msg) {
   mg.done = true; mg.busy = false; mgBoard();
   const cfg = mg.cfg;
-  record(cfg.store, cfg.id, { ok: ok ? 1 : (progress[cfg.store][cfg.id]?.ok || 0) });
+  if (cfg.store) record(cfg.store, cfg.id, { ok: ok ? 1 : (progress[cfg.store][cfg.id]?.ok || 0) });
   let worst = null;
   if (!ok && mg.hist.length > 1) { let prev = null; for (const h of mg.hist) { const drop = (prev ?? h.myWin) - h.myWin; if (!worst || drop > worst.drop) worst = { ...h, drop }; prev = h.myWin; } }
   const advice = cfg.tip || (cfg.goal === 'win' ? 'Restart and try a calmer plan: check threats, then trade pieces.' : 'Restart and keep your king in front of the pawns.');
@@ -1732,7 +1742,7 @@ async function onMgMove(orig, dest) {
   mg.busy = true; mgBoard({ lastMove: [orig, dest] }); mgMoves();
   const cfg = mg.cfg;
   if (mg.chess.in_checkmate()) return playEnd(true, 'Checkmate! Well done.');
-  if (drawOnBoard()) return cfg.goal === 'draw' ? playEnd(true, 'Draw! You held it.')
+  if (drawOnBoard()) return cfg.goal !== 'win' ? playEnd(true, cfg.goal === 'spar' ? 'The game ended in a draw.' : 'Draw! You held it.')
     : playEnd(false, mg.chess.in_stalemate() ? 'Stalemate! The win slipped away. With a big advantage, always check that your opponent still has a legal move.' : 'The game ended in a draw.');
   if (cfg.maxMoves && mg.myMoves >= cfg.maxMoves) return playEnd(false, `Too slow: no mate within ${cfg.maxMoves} moves.`);
   engineReply(mv);
@@ -1749,7 +1759,7 @@ async function engineReply(mv) {
   const myCp = r.score.mate !== undefined ? (r.score.mate < 0 ? 10000 : -10000) : -r.score.cp;
   if (mv) mg.hist.push({ san: mv.san, myWin });
   mgEvalBar(myWin);
-  if (mv) {
+  if (mv && cfg.goal !== 'spar') {
     const queens = mg.chess.board().flat().filter(p => p && p.type === 'q' && p.color === mg.side[0]).length;
     if (cfg.goal === 'win' && !cfg.mate && myCp >= 600 && mg.myMoves >= (cfg.promote ? 1 : 4) && (!cfg.promote || queens > mg.queens0))
       return playEnd(true, cfg.promote ? 'Promoted, and the win is certain. Well done!' : `You're ${scoreText({ cp: myCp })} up. The engine resigns: converted!`);
@@ -1761,9 +1771,9 @@ async function engineReply(mv) {
   if (!reply) { mg.busy = false; return mgFeedback('<span class="big">The engine got out of step.</span><div class="small">Press Restart to try again.</div>', 'wrong'); }
   mg.busy = false; mgBoard({ lastMove: [reply.from, reply.to] }); mgMoves();
   if (mg.chess.in_checkmate()) return playEnd(false, 'You got checkmated.');
-  if (drawOnBoard()) return cfg.goal === 'draw' ? playEnd(true, 'Draw! You held it.') : playEnd(false, 'The game ended in a draw.');
+  if (drawOnBoard()) return cfg.goal !== 'win' ? playEnd(true, cfg.goal === 'spar' ? 'The game ended in a draw.' : 'Draw! You held it.') : playEnd(false, 'The game ended in a draw.');
   const adv = r.score.mate !== undefined ? scoreText({ mate: -r.score.mate }) : scoreText({ cp: myCp });
-  const goalText = cfg.goal === 'draw' ? `Hold on: ${Math.max(0, (cfg.hold || 20) - mg.myMoves)} more moves.` : cfg.mate ? `Mate needed${cfg.maxMoves ? ` within ${cfg.maxMoves - mg.myMoves} moves` : ''}.` : `Evaluation: ${adv}.`;
+  const goalText = cfg.goal === 'spar' ? `Evaluation: ${adv}.` : cfg.goal === 'draw' ? `Hold on: ${Math.max(0, (cfg.hold || 20) - mg.myMoves)} more moves.` : cfg.mate ? `Mate needed${cfg.maxMoves ? ` within ${cfg.maxMoves - mg.myMoves} moves` : ''}.` : `Evaluation: ${adv}.`;
   mgFeedback(`<span class="muted">Opponent played <strong>${esc(reply.san)}</strong>. ${goalText} What does ${esc(reply.san)} threaten?</span>`);
 }
 async function mgHint() {
@@ -1948,5 +1958,5 @@ onProgressChanged = () => {
 renderReport(); renderCoachNotes(); setupFilters(); renderList(); renderOpeningsHome(); sync.start();
 const startView = location.hash.slice(1) || store.get('view', 'report');
 show(views.includes(startView) ? startView : 'report');
-if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get game() { return gameCg; }, get explore() { return explore; } };   // local testing only
+if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get game() { return gameCg; }, get explore() { return explore; }, playOn: (c, l) => { const C = COURSES.find(x => x.id === c); playOnFromLine(C, C.lines.find(x => x.id === l)); } };   // local testing only
 </script>
