@@ -35,7 +35,23 @@ why: You play 1.d4, Nc3 and Bf4 in almost every White game, and the engine says 
 
 ## LINE kid | Black plays ...Nf6 and ...g6
 > Against the King's Indian set-up the engine likes a big centre with e4. You get the space; Black gets no easy targets.
-1. d4 Nf6 2. Nc3 g6 3. Bf4 {Your usual move. 3.e4 at once is even stronger and usually transposes.} Bg7 4. e4 {Take the whole centre when Black allows it.} d6 5. Qd2 {Plan: O-O-O, then Bh6 to trade Black's best bishop, and a pawn storm with f3, g4 and h4-h5.} O-O 6. O-O-O c6 7. Bh6 {Trade the Black king's defender.} b5 8. Bxg7 Kxg7 9. f3 {? What does f3 do? | *It keeps Black's pieces out of e4 and g4 and prepares g4 and h4-h5 | It defends against ...Qa5 | It prepares Bf1-d3 || With kings on opposite sides, both sides race with pawns. f3 makes your centre rock solid, then g4 and h4-h5 go for Black's king.}
+1. d4 Nf6 2. Nc3 g6 3. Bf4 {Your usual move. 3.e4 at once is even stronger and usually transposes.} Bg7 4. e4 {? Why 4.e4 and not the quiet 4.e3? | *e4 grabs the centre for free, because Black has no pawn on d5 to stop it | e4 attacks the g7 bishop | 4.e3 loses a pawn || In two of your games you played 4.e3 and lost both. Black's set-up has no pawn on d5, so take the whole centre while you can.} d6 5. Qd2 {Plan: O-O-O, then Bh6 to trade Black's best bishop, and a pawn storm with f3, g4 and h4-h5.} O-O 6. O-O-O c6 7. Bh6 {Trade the Black king's defender.} b5 8. Bxg7 Kxg7 9. f3 {? What does f3 do? | *It keeps Black's pieces out of e4 and g4 and prepares g4 and h4-h5 | It defends against ...Qa5 | It prepares Bf1-d3 || With kings on opposite sides, both sides race with pawns. f3 makes your centre rock solid, then g4 and h4-h5 go for Black's king.}
+
+## LINE e6first | Black plays 2...e6 before ...Nf6
+> Your most common gap: seven of your games went 1.d4 d5 2.Nc3 e6. Play Bf4 and e3 as usual. If Black puts the knight on c6, your Nb5 idea gets even stronger. (1.d4 e6 2.Nc3 d5 reaches the same position.)
+1. d4 d5 2. Nc3 e6 3. Bf4 {Same set-up as always. If Black plays ...Nf6 next, you are back in lines you already know.} Nc6 {Two of your opponents chose this. The knight blocks Black's c-pawn, so ...c5 and ...c6 are off the table.} 4. e3 Nf6 5. Nb5 {? Why is Nb5 so strong here? | *It threatens Nxc7+, and Black can't kick the knight with ...c6 because the c6 knight is in the way | It attacks the d5 pawn | It prepares c4 || With a knight on c6, Black has no ...c6 to chase your knight. In both games you played Bd3 and Bg3 instead, Black traded off your good bishop and you lost.} Bd6 6. Nxd6+ {Take the bishop. Now you have two bishops against bishop and knight.} cxd6 7. Nf3 O-O 8. Be2 Re8 9. O-O e5 10. Bg5 {Pin the f6 knight. Plan: c3 and h3, then pressure on the pinned knight and the d5 pawn. Two bishops love open lines, so trade pawns in the centre when you can.}
+
+## LINE nf6e6 | 1...Nf6 and 2...e6
+> Three of your games went 1.d4 Nf6 2.Nc3 e6. Black hasn't played ...d5 yet, so the engine says: take the centre with 3.e4. (If Black plays 2...d5 instead, play 3.Bf4 and you are back in your usual lines.)
+1. d4 Nf6 2. Nc3 e6 3. e4 {Grab the centre while you can. 3.Bf4 is playable, but Black equalises easily with ...Bb4 or ...c5, as in your games.} d5 4. e5 {Gain space and kick the knight.} Nfd7 5. f4 {Build a big pawn chain. The f4 pawn supports e5.} c5 {Black attacks the base of your chain, the d4 pawn.} 6. Nf3 Nc6 7. Be3 {Defend d4 with every piece you can: knight, bishop, then queen.} cxd4 8. Nxd4 Bc5 9. Qd2 O-O 10. O-O-O a6 {Plan: h4 and h5, then a pawn storm against Black's king. Your e5 pawn keeps Black's knights away from f6, the square that defends the king.}
+
+## LINE a6bf5 | ...a6 and then ...Bf5
+> Three opponents played 3...a6 and then ...Bf5. You lost both games where you played Nf3 and let Black keep that bishop. Offer the trade with Bd3 at once.
+1. d4 d5 2. Nc3 Nf6 3. Bf4 a6 4. e3 Bf5 5. Bd3 {? Why Bd3 straight away? | *It offers a bishop trade, and the f5 bishop is Black's best piece | It stops ...Ne4 forever | It prepares queenside castling || Black's f5 bishop is their most active minor piece, so trade it off. In your two losses Black kept it and it bothered you all game. In your win you played 5.Bd3.} Bxd3 6. Qxd3 {Your queen is now active and watches e4.} e6 7. Nf3 c5 8. dxc5 {Same idea as in the ...a6 line: take when Black's bishop must spend a move to recapture.} Bxc5 9. O-O Nc6 10. e4 {Open the centre while you are ahead in development. Plan: Rad1, then e5 or exd5, with pressure down the d-file.}
+
+## LINE e6b6 | Black plays ...e6 and ...b6
+> Several of your games started 1.d4 e6 or 1.d4 b6. Against the ...b6 and ...Bb7 set-up, take the centre with e4 at once. The engine rates this clearly better than Bf4. (1.d4 b6 2.Nc3 Bb7 3.e4 e6 reaches the same position.)
+1. d4 e6 2. Nc3 b6 3. e4 {Black hasn't played ...d5, so take the whole centre. In one of your games 3.Bf4 Bb4 left you with doubled c-pawns after ...Bxc3+, and you lost.} Bb7 {Attacking your e4 pawn.} 4. Bd3 {Defend e4 with a piece.} Nf6 5. Nge2 {The knight goes to e2 so your f-pawn stays free. If Black plays ...Bb4 and ...Bxc3, you retake with the knight and keep your pawns healthy.} d6 6. O-O Be7 7. d5 {Shut the b7 bishop out. Now it bites on your pawn.} exd5 8. exd5 O-O 9. Nd4 {Plan: Nf5 or Nc6 jumps, Qf3 and Bf4. Black's b7 bishop is blocked by your d5 pawn, and your knights have great squares.}
 
 ## LINE englund | The Englund Gambit 1...e5
 > Three of your White games started 1.d4 e5. The gambit has one famous trap. Learn it once and you'll win many easy games.
@@ -82,7 +98,7 @@ why: You played the Caro-Kann in 47 games and score 54% with it. Most of your op
 
 ## LINE advbd3 | Advance with 4.Bd3
 > Two of your opponents played 4.Bd3, offering to trade bishops. Take it: White's attacking bishop disappears and the queen is pulled out.
-1. e4 c6 2. d4 d5 3. e5 Bf5 4. Bd3 Bxd3 5. Qxd3 e6 6. Nf3 c5 {Hit the base of the chain first.} 7. c3 Nc6 8. O-O a6 {A useful quiet move: it prepares ...c4 and ...b5, and keeps White's pieces out of b5. Next: ...Nge7-f5 and ...Qb6.}
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. Bd3 Bxd3 {? White offers a bishop trade. Why take at once instead of playing 4...e6? | *After 4...e6 5.Bxf5 exf5 you get doubled f-pawns and a weak e6 square | Your bishop is attacked by a pawn | Taking wins a pawn || In two of your games you played 4...e6 and White took on f5, doubling your pawns. Trade on d3 first, then play ...e6.} 5. Qxd3 e6 6. Nf3 c5 {Hit the base of the chain first.} 7. c3 Nc6 8. O-O a6 {A useful quiet move: it prepares ...c4 and ...b5, and keeps White's pieces out of b5. Next: ...Nge7-f5 and ...Qb6.}
 
 ## LINE advbg4 | 2.Nf3 d5 3.e5 Bg4
 > After 2.Nf3 and 3.e5 you can pin the knight with ...Bg4.
@@ -99,6 +115,14 @@ why: You played the Caro-Kann in 47 games and score 54% with it. Most of your op
 ## LINE bc4 | 2.Bc4 lines
 > Three of your opponents played 2.Bc4. Just take the centre with ...d5.
 1. e4 c6 2. Bc4 d5 3. exd5 cxd5 4. Bb3 Nf6 5. d4 Nc6 6. Nf3 Bg4 {Pin, and pressure d4.} 7. O-O e6 8. c3 Bd6 {Comfortable. You have the Caro-Kann structure with your bishop outside the pawns.}
+
+## LINE exchnf3b | Exchange with 4.Nf3
+> Five of your opponents played 4.Nf3 in the Exchange line, more than any other move. Pin the knight with ...Bg4, then bring your other knight to f5 to press on d4.
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. Nf3 Nc6 {Develop and add pressure on d4.} 5. Bb5 {Pinning the knight. Against other moves (c3, Be2, c4) the recipe is the same: ...Bg4 and ...e6.} Bg4 {The bishop comes out before ...e6, just like in the main Exchange line.} 6. h3 Bxf3 7. Qxf3 e6 8. O-O a6 {Ask the bishop a question.} 9. Bxc6+ bxc6 {Take towards the centre. The c6 pawn guards d5 and the b-file opens for your rook.} 10. Nc3 Ne7 {? Where is this knight heading? | *To f5, where it attacks the d4 pawn | To g6, to defend the king | To c8 and then b6 || From f5 the knight hits d4. Plan: ...Nf5, ...Bd6, ...O-O and ...Rb8 against b2. Later ...c5 frees your position.}
+
+## LINE bb5check | 2.Nf3 with 4.Bb5+
+> Three opponents played 4.Bb5+ after 2.Nf3 d5 3.exd5 cxd5, and you scored only half a point. Block with the bishop and trade it. The position becomes simple and equal, and White's early check achieves nothing.
+1. e4 c6 2. Nf3 d5 3. exd5 cxd5 4. Bb5+ Bd7 {The simplest block. After 4...Nc6 White can pin your knight and later double your pawns with Bxc6+.} 5. Bxd7+ Nxd7 {Take with the knight. It goes to f6 next, and your queen stays free.} 6. d4 Ngf6 7. O-O e6 8. Nc3 Bd6 9. Re1 O-O 10. Bg5 Rc8 {Your rook takes the half-open c-file. Plan: ...a6, ...b5 and ...Qb6, or ...Nb6 heading for c4. Your d5 pawn is safe and White has no targets.}
 
 ## IDEAS plans | Caro-Kann plans
 > Typical moments from your Caro-Kann games. Find the plan move.
@@ -121,7 +145,7 @@ why: Against everything except 1.e4 you set up with ...Nf6, ...g6 and ...Bg7. It
 
 ## LINE classical | Classical: 4.e4 with c4
 > The main line. Your key break is ...e5, and later ...f5 to attack on the kingside while White attacks on the queenside.
-1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 {The key break. Strike at the centre.} 7. O-O Nc6 8. d5 Ne7 {Now the pawn chains are locked. White plays on the queenside with c5, you play on the kingside with ...f5.} 9. Ne1 Nd7 {Make room for the f-pawn.} 10. Nd3 f5 {? What is the plan after ...f5? | *...f4, ...g5-g4 and a pawn storm against White's king | Trade queens and play an endgame | Play ...c5 and attack the queenside || When the centre is locked, attack where your pawns point. Your pawns point at the kingside.}
+1. d4 Nf6 {Always start with 1...Nf6. In three games you played 1...d5 instead and lost all three. That leads to positions this course doesn't cover.} 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 {The key break. Strike at the centre.} 7. O-O Nc6 8. d5 Ne7 {Now the pawn chains are locked. White plays on the queenside with c5, you play on the kingside with ...f5.} 9. Ne1 Nd7 {Make room for the f-pawn.} 10. Nd3 f5 {? What is the plan after ...f5? | *...f4, ...g5-g4 and a pawn storm against White's king | Trade queens and play an endgame | Play ...c5 and attack the queenside || When the centre is locked, attack where your pawns point. Your pawns point at the kingside.}
 
 ## LINE london | Against the London (2.Bf4)
 > Against the London, don't wait. Hit back with ...c5 and ...Qb6 on the b2 pawn.
@@ -133,7 +157,11 @@ why: Against everything except 1.e4 you set up with ...Nf6, ...g6 and ...Bg7. It
 
 ## LINE fian | Against Nf3 and g3
 > White fianchettoes too. Keep it simple: castle, then ...d6, ...Nc6 and ...e5.
-1. Nf3 Nf6 2. g3 g6 3. Bg2 Bg7 4. O-O O-O 5. d4 d6 6. c4 Nc6 7. Nc3 a6 {? Why ...a6 here? | *Prepares ...Rb8 and ...b5, attacking White's c4 pawn | Stops Nb5 forever | Prepares ...Qa7 || This is the Panno plan: ...a6, ...Rb8, ...b5 hits c4 and opens lines on the queenside.} 8. d5 Na5 9. Nd2 c5 {Pressure on c4 and space on the queenside.}
+1. Nf3 Nf6 {Answer 1.Nf3 with 1...Nf6 too. In three games you played 1...c6 here and lost all three. Keep one set-up against everything except 1.e4.} 2. g3 g6 3. Bg2 Bg7 4. O-O O-O 5. d4 d6 6. c4 Nc6 7. Nc3 a6 {? Why ...a6 here? | *Prepares ...Rb8 and ...b5, attacking White's c4 pawn | Stops Nb5 forever | Prepares ...Qa7 || This is the Panno plan: ...a6, ...Rb8, ...b5 hits c4 and opens lines on the queenside.} 8. d5 Na5 9. Nd2 c5 {Pressure on c4 and space on the queenside.}
+
+## LINE english | Against 1.c4
+> Three of your games started 1.c4, and all three opponents soon played d4 and e4. Answer with your usual ...Nf6, ...g6 and ...Bg7, and hit back with ...c5.
+1. c4 Nf6 2. Nc3 g6 3. d4 Bg7 4. e4 d6 5. Be2 O-O 6. Bf3 {Seen in one of your games. The bishop looks active, but it no longer helps defend d4.} c5 {Strike at d4 at once. Here the engine prefers this to ...e5.} 7. d5 e6 {Challenge White's d5 pawn before White gets settled.} 8. Nge2 exd5 9. exd5 a6 {Prepare ...b5 to attack White's c4 pawn.} 10. O-O Nbd7 {Plan: ...Re8 on the open e-file, then ...Rb8 and ...b5 to break open the queenside. Your g7 bishop is strong on the long diagonal.}
 
 ## IDEAS plans | King's Indian plans
 > Know your pawn breaks. These are the moments that decide KID games.
@@ -156,7 +184,7 @@ why: You play 1.e4 in about 40% of your White games: 3.Bb5 against 1...e5 and an
 
 ## LINE ruymain | Ruy Lopez: main line
 > The Spanish. Pressure on the knight that defends e5, then a slow build-up with c3, d4 and a knight manoeuvre to g3.
-1. e4 e5 2. Nf3 Nc6 3. Bb5 {Attack the defender of e5.} a6 4. Ba4 {Keep the pin-like pressure. 4.Bxc6 is fine too, but the main line keeps more tension.} Nf6 5. O-O {? Is the e4 pawn hanging after 5.O-O? | *Not really: if 5...Nxe4, 6.Re1 or 6.d4 wins it back with a strong position | Yes, White just loses a pawn | Yes, so 5.d3 is forced || Castling first is the main line. After ...Nxe4, the e-file opens against Black's king and White regains the pawn.} Be7 6. Re1 b5 7. Bb3 d6 8. c3 {Prepares d4 and gives the bishop a retreat to c2.} O-O 9. h3 {Stops ...Bg4 pinning your knight. Plan: d4, Nbd2-f1-g3, and a kingside attack.}
+1. e4 e5 2. Nf3 Nc6 3. Bb5 {Attack the defender of e5. In four games you played 3.Bc4 here instead. That is a different opening, the Italian. Stick with 3.Bb5 so the plans below are the ones you actually get.} a6 4. Ba4 {Keep the pin-like pressure. 4.Bxc6 is fine too, but the main line keeps more tension.} Nf6 5. O-O {? Is the e4 pawn hanging after 5.O-O? | *Not really: if 5...Nxe4, 6.Re1 or 6.d4 wins it back with a strong position | Yes, White just loses a pawn | Yes, so 5.d3 is forced || Castling first is the main line. After ...Nxe4, the e-file opens against Black's king and White regains the pawn.} Be7 6. Re1 b5 7. Bb3 d6 8. c3 {Prepares d4 and gives the bishop a retreat to c2.} O-O 9. h3 {Stops ...Bg4 pinning your knight. Plan: d4, Nbd2-f1-g3, and a kingside attack.}
 
 ## LINE ruybc5 | Ruy Lopez: 3...Bc5
 > A classical reply you've met. Use c3 and d4 to hit the bishop, then grab the e5 pawn.
@@ -164,11 +192,11 @@ why: You play 1.e4 in about 40% of your White games: 3.Bb5 against 1...e5 and an
 
 ## LINE rossolimo | Sicilian: the Rossolimo 3.Bb5
 > Against 1...c5 2...Nc6, put the bishop on b5 instead of c4. It develops quickly and often doubles Black's pawns.
-1. e4 c5 2. Nf3 Nc6 3. Bb5 {The Rossolimo. You avoid the huge Open Sicilian theory.} g6 4. Bxc6 {Give up the bishop to double Black's pawns.} dxc6 5. d3 Bg7 6. h3 Nf6 7. Nc3 O-O 8. Be3 b6 9. Qd2 {? What is White's plan here? | *Bh6 to trade Black's strong bishop, and later f4 or a queenside squeeze against the doubled pawns | Castle queenside and push g4 at once | Play d4 immediately || Trading the dark-squared bishops leaves Black's king and doubled c-pawns weak.}
+1. e4 c5 2. Nf3 Nc6 3. Bb5 {The Rossolimo. You avoid the huge Open Sicilian theory. In three games you played 3.Bc4 here and lost two. Against the Sicilian a bishop on c4 runs into ...e6. On b5 it pins the c6 knight and can double Black's pawns.} g6 4. Bxc6 {Give up the bishop to double Black's pawns.} dxc6 5. d3 Bg7 6. h3 Nf6 7. Nc3 O-O 8. Be3 b6 9. Qd2 {? What is White's plan here? | *Bh6 to trade Black's strong bishop, and later f4 or a queenside squeeze against the doubled pawns | Castle queenside and push g4 at once | Play d4 immediately || Trading the dark-squared bishops leaves Black's king and doubled c-pawns weak.}
 
 ## LINE french | French: the Exchange with Nf3
 > You like 3.exd5 against the French. Fine: the position is symmetrical, so develop fast and watch for a classic sacrifice on h7.
-1. e4 e6 2. d4 d5 3. exd5 exd5 4. Bd3 {Develop, aiming at h7.} Bd6 5. Nf3 Ne7 6. O-O O-O 7. Re1 {Take the open e-file first.} Bg4 {A natural move, but a mistake.} 8. Bxh7+ {? Why does the sacrifice on h7 work here? | *After Kxh7 Ng5+ your queen on d1 attacks the loose bishop on g4, so you win the piece back plus a pawn | It leads to a forced mate | It opens the h-file for your rook || The "Greek gift": Bxh7+ Kxh7 Ng5+ uncovers your queen against g4. Always check what your pieces attack after a knight moves away.} Kxh7 9. Ng5+ Kg8 10. Qxg4 {White is a clean pawn up and Black's king has lost its shelter.}
+1. e4 e6 2. d4 {Take the centre first. In three games you played 2.Nf3 here and lost two. 2.d4 is the main move and leads to the simple position below.} d5 3. exd5 exd5 4. Bd3 {Develop, aiming at h7.} Bd6 5. Nf3 Ne7 6. O-O O-O 7. Re1 {Take the open e-file first.} Bg4 {A natural move, but a mistake.} 8. Bxh7+ {? Why does the sacrifice on h7 work here? | *After Kxh7 Ng5+ your queen on d1 attacks the loose bishop on g4, so you win the piece back plus a pawn | It leads to a forced mate | It opens the h-file for your rook || The "Greek gift": Bxh7+ Kxh7 Ng5+ uncovers your queen against g4. Always check what your pieces attack after a knight moves away.} Kxh7 9. Ng5+ Kg8 10. Qxg4 {White is a clean pawn up and Black's king has lost its shelter.}
 
 ## LINE caro | Caro-Kann: your 2.Nf3 line
 > You face the Caro-Kann yourself as Black, and as White you like 2.Nf3 and exd5. Here is the version that keeps an edge, with the trick you know from the Black side.
@@ -181,6 +209,10 @@ why: You play 1.e4 in about 40% of your White games: 3.Bb5 against 1...e5 and an
 ## LINE pirc | Pirc and Modern: the 150 Attack
 > Against ...d6 and ...g6, set up Be3, Qd2 and O-O-O, then Bh6 and h4-h5. It's simple and dangerous.
 1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 {Aim for Qd2 and Bh6.} Bg7 5. Qd2 O-O 6. O-O-O {? What's the next step of the plan? | *Bh6 to trade Black's g7 bishop, then h4-h5 | Retreat Be3 to e2 | Play for d5 and a queenside attack || The "150 Attack": trade the king's bishop, then open the h-file.} c6 7. Bh6 {Trade the key defender.}
+
+## LINE philidor | Philidor: 2...d6
+> Three opponents answered 2.Nf3 with 2...d6. Punish the passive move with 3.d4: take space, develop fast and castle long.
+1. e4 e5 2. Nf3 d6 3. d4 {? Why 3.d4 and not 3.Bc4 or 3.Nc3, as in your games? | *...d6 is passive, so hit the centre at once while Black is cramped | 3.d4 wins a pawn by force | 3.Bc4 loses a piece || The engine rates 3.d4 clearly best. In your games you played 3.Bc4 or 3.Nc3 and gave Black time to get comfortable.} exd4 4. Nxd4 {Your knight is strong in the centre and you have more space.} Nf6 5. Nc3 Be7 6. Bf4 O-O 7. Qd2 {Plan: castle queenside, then a kingside pawn storm.} Nc6 8. O-O-O Nxd4 9. Qxd4 Be6 10. f3 {Protect e4. Next come g4 and h4-h5 against Black's king, while your own king is safe on the other side.}
 
 # COURSE italian | Italian Game | white | suggested
 sub: 1.e4 e5 2.Nf3 Nc6 3.Bc4: a simple, classical way to play 1.e4
