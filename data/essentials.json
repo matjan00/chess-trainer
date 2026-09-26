@@ -83,7 +83,8 @@
   "goal": "win",
   "promote": true,
   "lesson": "An extra pawn far from the kings works as a decoy. Push it; the enemy king has to chase it, and your king eats the pawns on the other side.",
-  "tip": "Push the a-pawn to drag Black's king away, then go for the kingside."
+  "tip": "Push the a-pawn to drag Black's king away, then go for the kingside.",
+  "failBelow": 70
  },
  {
   "id": "lucena",
@@ -92,7 +93,8 @@
   "goal": "win",
   "promote": true,
   "lesson": "The most important rook ending. Push the enemy king away with a check (Rd1+), put your rook on the 4th rank (Rd4), walk your king out, and when the checks come, block them with your rook. That is \"building a bridge\".",
-  "tip": "Rd1+ first, then Rd4, then walk the king out towards your rook."
+  "tip": "Rd1+ first, then Rd4, then walk the king out towards your rook.",
+  "failBelow": 75
  },
  {
   "id": "philidor",
