@@ -118,7 +118,9 @@
   "fen": "7k/ppp5/8/PPP5/8/8/8/7K w - - 0 1",
   "goal": "win",
   "lesson": "Three pawns against three, face to face, and both kings are far away. Push the middle pawn with b6. If Black takes with the a-pawn, play c6; if Black takes with the c-pawn, play a6. One of your pawns breaks through, and Black's king is too far away to catch it.",
-  "tip": "Start with b6, then push the pawn on the other side of the capture."
+  "tip": "Start with b6, then push the pawn on the other side of the capture.",
+  "promote": true,
+  "failBelow": 75
  },
  {
   "id": "qvp",
@@ -128,7 +130,8 @@
   "mate": true,
   "maxMoves": 25,
   "lesson": "A queen beats a centre or knight pawn on the 7th, even with its king next to it. Check and attack the pawn until Black's king has to step in front of it on d1. While the king blocks its own pawn, you get a free move to bring your king closer. Repeat until your king arrives, then win the pawn and mate.",
-  "tip": "Force the king onto d1, then use the free move for your king."
+  "tip": "Force the king onto d1, then use the free move for your king.",
+  "failBelow": 80
  },
  {
   "id": "protpass",
@@ -136,7 +139,9 @@
   "fen": "8/pp3kpp/8/2pP4/2P5/8/PP3KPP/8 w - - 0 1",
   "goal": "win",
   "lesson": "Your d5 pawn is passed and protected by the c4 pawn, so Black's king can never take it. Black's king has to stay near it to stop it running. That leaves your king free to walk in and eat pawns on the kingside. You don't need to push the d-pawn yet; it already ties Black down.",
-  "tip": "Your king does the work while the d-pawn keeps Black's king busy."
+  "tip": "Your king does the work while the d-pawn keeps Black's king busy.",
+  "promote": true,
+  "failBelow": 62
  },
  {
   "id": "cutoff",
@@ -144,7 +149,9 @@
   "fen": "r7/8/6k1/8/3P4/3K4/8/4R3 w - - 0 1",
   "goal": "win",
   "lesson": "Your rook on the e-file keeps Black's king away from your pawn. This is called cutting the king off, and with the king this far away you win. Keep the rook on its file, walk your king up in front of the pawn, and push the pawn behind it. When Black's rook checks, step towards it to run out of checks.",
-  "tip": "Never let Black's king cross your rook's file; king first, then pawn."
+  "tip": "Never let Black's king cross your rook's file; king first, then pawn.",
+  "promote": true,
+  "failBelow": 62
  },
  {
   "id": "longside",

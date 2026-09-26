@@ -1778,7 +1778,7 @@ async function engineReply(mv) {
     const queens = mg.chess.board().flat().filter(p => p && p.type === 'q' && p.color === mg.side[0]).length;
     if (cfg.goal === 'win' && !cfg.mate && myCp >= 600 && mg.myMoves >= (cfg.promote ? 1 : 4) && (!cfg.promote || queens > mg.queens0))
       return playEnd(true, cfg.promote ? 'Promoted, and the win is certain. Well done!' : `You're ${scoreText({ cp: myCp })} up. The engine resigns: converted!`);
-    if (cfg.goal === 'win' && myWin < (cfg.mate || cfg.promote ? 90 : 62)) return playEnd(false, `The win slipped away after ${mv.san}.`);
+    if (cfg.goal === 'win' && myWin < (cfg.failBelow ?? (cfg.mate || cfg.promote ? 90 : 62))) return playEnd(false, `The win slipped away after ${mv.san}.`);
     if (cfg.goal === 'draw' && myWin < 25) return playEnd(false, `After ${mv.san} the position is lost.`);
     if (cfg.goal === 'draw' && mg.myMoves >= (cfg.hold || 20)) return playEnd(true, `You held it for ${mg.myMoves} moves. That's a draw.`);
   }
