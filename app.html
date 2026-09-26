@@ -343,6 +343,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
             <button class="btn" id="b-end" aria-label="Last move">⏭</button>
             <button class="btn primary" id="b-nextmistake">Next mistake of mine</button>
             <button class="btn" id="b-flip">Flip board</button>
+            <button class="btn" id="b-explore">Try your own move</button>
           </div>
           <div class="small muted">Arrows: green = engine's best move, red = the move played when it was a mistake. Keyboard ← → also works.</div>
         </div>
@@ -706,7 +707,7 @@ function show(v, tabOverride) {
   if (v === 'report') renderToday();
   requestAnimationFrame(() => {
     boards().forEach(cg => visibleBoard(cg) && cg.redrawAll());
-    if (v === 'games' && cur) goto(ply);                                   // restore the viewer's arrows
+    if (v === 'games' && cur && !explore) goto(ply);                       // restore the viewer's arrows
     if (v === 'tactics' && tp.kind === 'check' && !tp.done && tp.item && !$('#tac-player').hidden)
       tacCg?.setAutoShapes([{ orig: tp.item.mv[0], dest: tp.item.mv[1], brush: 'blue' }]);
   });
@@ -858,7 +859,8 @@ function openGame(g) {
     <h3>${esc(openingName(g.opening))}</h3>
     <div><span class="pill ${g.result}">${g.result === 'win' ? 'You won' : g.result === 'loss' ? 'You lost' : 'Draw'}</span> <span class="small muted">by ${esc(g.how)} · accuracy ${g.acc?.toFixed(0)} · ${g.nb} blunder${g.nb === 1 ? '' : 's'}, ${g.nm} mistake${g.nm === 1 ? '' : 's'}</span></div>
     <a href="${esc(g.url)}" target="_blank" rel="noopener">Open on chess.com ↗</a>`;
-  if (!gameCg) gameCg = Chessground($('#board'), { viewOnly: true, coordinates: true, animation: { duration: 150 }, drawable: { enabled: false } });
+  // not viewOnly: chessground only attaches its mouse handling at creation; moves stay off until analysis mode
+  if (!gameCg) gameCg = Chessground($('#board'), { movable: { color: undefined, free: false }, draggable: { enabled: true }, coordinates: true, animation: { duration: 150 }, drawable: { enabled: false } });
   renderMoveList(); drawEvalGraph(); goto(0);
   window.scrollTo({ top: 0 });
 }
@@ -891,6 +893,7 @@ function drawEvalGraph() {
 }
 function goto(k) {
   const g = cur; if (!g) return;
+  if (explore) endExplore();
   ply = Math.max(0, Math.min(g.plies.length, k));
   const orient = flipped ? (g.color === 'white' ? 'black' : 'white') : g.color;
   const shapes = [];
@@ -940,6 +943,57 @@ function renderComment() {
     ${p.refute ? `<div class="line">After ${esc(p.san)}: ${esc(p.refute)}</div>` : ''}
     ${why ? `<div style="margin-top:6px">${why}</div>` : ''}`;
 }
+/* explore: play your own moves from any point of the game and ask Stockfish */
+let explore = null;   // { chess, line: [san], base: ply it started from, gen }
+let exploreGen = 0;
+function exploreLineText() {
+  let no = Math.floor(explore.base / 2) + 1, white = explore.base % 2 === 0;
+  return explore.line.map((san, i) => { const t = (white ? `${no}.` : i === 0 ? `${no}...` : '') + san; if (!white) no++; white = !white; return t; }).join(' ');
+}
+function exploreComment(html) {
+  const moveNo = `${Math.floor(explore.base / 2) + 1}${explore.base % 2 === 0 ? '.' : '...'}`;
+  $('#comment').className = 'comment';
+  $('#comment').innerHTML = `<div class="head">Your own analysis from move ${moveNo}</div>${explore.line.length ? `<div class="line">${esc(exploreLineText())}</div>` : ''}<div class="small" style="margin-top:4px">${html}</div>`;
+}
+function exploreBoard(extra = {}) {
+  const c = explore.chess, turn = c.turn() === 'w' ? 'white' : 'black';
+  gameCg.set({ fen: c.fen(), turnColor: turn, check: c.in_check(),
+    movable: { free: false, color: turn, dests: toDests(c), showDests: true, events: { after: onExploreMove } }, drawable: { autoShapes: [] }, ...extra });
+}
+function startExplore() {
+  if (!cur) return;
+  explore = { chess: new Chess(cur._fens[ply]), line: [], base: ply, gen: ++exploreGen };
+  $('#b-explore').textContent = 'Back to the game';
+  exploreBoard();
+  exploreComment('Make any move on the board, for either side. Stockfish tells you what it thinks and shows its best reply with a blue arrow.');
+}
+function endExplore() {
+  explore = null; exploreGen++;
+  $('#b-explore').textContent = 'Try your own move';
+  gameCg.set({ movable: { color: undefined, dests: new Map() } });
+}
+async function onExploreMove(orig, dest) {
+  if (!explore) return;
+  const mv = explore.chess.move({ from: orig, to: dest, promotion: 'q' });
+  if (!mv) return exploreBoard();
+  explore.line.push(mv.san);
+  const g = explore.gen = ++exploreGen;
+  exploreBoard({ lastMove: [orig, dest] });
+  if (explore.chess.in_checkmate()) return exploreComment('Checkmate.');
+  if (explore.chess.in_draw() || explore.chess.in_stalemate()) return exploreComment('That is a draw.');
+  exploreComment('Stockfish is thinking…');
+  const r = await engine.go(explore.chess.fen(), { movetime: 1000, skill: 20 }).catch(() => null);
+  if (!explore || g !== explore.gen) return;
+  if (!r) return exploreComment('The engine could not start. Try reloading the page.');
+  const whiteToMove = explore.chess.turn() === 'w', s = r.score;
+  const e = s.mate !== undefined ? { m: whiteToMove ? s.mate : -s.mate } : { cp: whiteToMove ? s.cp : -s.cp };
+  const best = new Chess(explore.chess.fen()).move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
+  gameCg.set({ drawable: { autoShapes: best ? [{ orig: best.from, dest: best.to, brush: 'blue' }] : [] } });
+  $('#evalbar span').style.height = winPctWhite(e, 0) + '%';
+  exploreComment(`Evaluation: <strong>${evalText(e)}</strong> for White.${best ? ` Best reply: <strong>${esc(best.san)}</strong> (blue arrow).` : ''} Keep playing moves, or go back to the game.`);
+}
+$('#b-explore').onclick = () => { if (explore) { endExplore(); goto(ply); } else startExplore(); };
+
 $('#b-start').onclick = () => goto(0);
 $('#b-prev').onclick = () => goto(ply - 1);
 $('#b-next').onclick = () => goto(ply + 1);
@@ -1894,5 +1948,5 @@ onProgressChanged = () => {
 renderReport(); renderCoachNotes(); setupFilters(); renderList(); renderOpeningsHome(); sync.start();
 const startView = location.hash.slice(1) || store.get('view', 'report');
 show(views.includes(startView) ? startView : 'report');
-if (location.hostname === 'localhost') window.__ct = { tp, progress, mg };   // local testing only
+if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get game() { return gameCg; }, get explore() { return explore; } };   // local testing only
 </script>
