@@ -1,0 +1,10 @@
+# Stockfish binary (100 MB) - re-download from github.com/official-stockfish/Stockfish/releases
+engine/
+# build output - recreated by build.py
+dist/
+# logs and temporary files
+data/*.log
+data/*.backup.json
+data/test.json
+__pycache__/
+*.pyc
