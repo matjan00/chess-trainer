@@ -204,6 +204,19 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .task .btn { grid-row: 1 / span 2; grid-column: 3; padding: 6px 10px; font-size: 13px; }
 .task.done .btn { opacity: .7; }
 
+/* your games in an opening */
+.og-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.og-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--surface-2); border: 1px solid var(--line); }
+.og-dot.book, .og-mv.book { background: color-mix(in srgb, var(--good) 18%, transparent); border-color: color-mix(in srgb, var(--good) 45%, transparent); }
+.og-dot.dev, .og-mv.dev { background: color-mix(in srgb, var(--mistake) 22%, transparent); border-color: var(--mistake); }
+.og-dot.mis, .og-mv.mis { background: color-mix(in srgb, var(--blunder) 16%, transparent); border-color: var(--blunder); }
+.og-moves { display: flex; flex-wrap: wrap; gap: 6px; font: 13px var(--mono); }
+.og-mv { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
+.og-mv.theirs { color: var(--ink-2); }
+.og-mis { margin-top: 14px; display: grid; gap: 8px; }
+.og-mis div { border-left: 3px solid var(--blunder); padding: 6px 10px; background: var(--bg); border-radius: 0 6px 6px 0; font-size: 14px; }
+.yg-row .ok { color: var(--good); font-weight: 700; }
+
 /* sync chip */
 .sync { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
 .sync i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); }
@@ -391,8 +404,22 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
         <div class="card">
           <h3>In your games</h3>
           <p class="sub" id="oc-games-sub"></p>
+          <button class="btn primary" id="oc-fixgames" style="margin-bottom:12px" hidden></button>
           <div id="oc-games"></div>
         </div>
+      </div>
+    </div>
+
+    <div id="op-game" hidden>
+      <div style="margin-bottom:12px"><button class="btn" data-back="course">← Back to course</button></div>
+      <div class="card og-card">
+        <div class="eyebrow" id="og-eyebrow"></div>
+        <h2 id="og-title" style="margin:6px 0 8px"></h2>
+        <p id="og-summary" style="margin:0 0 14px;max-width:75ch"></p>
+        <div class="og-legend small muted"><span><i class="og-dot book"></i>course move</span><span><i class="og-dot dev"></i>left the course</span><span><i class="og-dot mis"></i>your mistake</span></div>
+        <div class="og-moves" id="og-moves"></div>
+        <div id="og-mistakes"></div>
+        <div class="controls" style="margin-top:14px"><button class="btn primary" id="og-train">Train this game</button><button class="btn" id="og-full">Open the full game</button></div>
       </div>
     </div>
 
@@ -592,7 +619,7 @@ const store = {
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 16, 35];   // days until the next review, by box
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo'];
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og'];
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -1114,29 +1141,42 @@ function lineState(c, l) {
 const dueLines = c => c.lines.filter(l => lineState(c, l).s === 'due').map(l => ({ c, l }));
 const sanLine = (moves, n = moves.length) => moves.slice(0, n).map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.` : '') + m.san).join(' ');
 
-// which of my games went into each course, and where they left it
+// every course move by position (piece placement, side, castling, en passant), so transpositions are recognised
+const posKey = fen => fen.split(' ').slice(0, 4).join(' ');
+function coursePosMoves(c) {
+  if (c._pos) return c._pos;
+  c._pos = new Map();
+  for (const l of c.lines) {
+    const b = new Chess();
+    for (const m of l.moves) { const k = posKey(b.fen()); if (!c._pos.has(k)) c._pos.set(k, new Set()); c._pos.get(k).add(m.san); b.move(m.san, { sloppy: true }); }
+  }
+  return c._pos;
+}
+
+// which of my games went into each course, and where they left it (by position, so move-order transpositions count)
 for (const c of COURSES) {
-  const next = new Map();
-  for (const l of c.lines) l.moves.forEach((m, i) => {
-    const k = l.moves.slice(0, i).map(x => x.san).join(' ');
-    if (!next.has(k)) next.set(k, new Set());
-    next.get(k).add(m.san);
-  });
+  const pos = coursePosMoves(c);
   c.games = [];
   for (const g of GAMES) {
     if (g.color !== c.side) continue;
-    let k = 0;
-    while (k < g.plies.length && next.get(g.plies.slice(0, k).map(p => p.san).join(' '))?.has(g.plies[k].san)) k++;
+    let k = 0; const b = new Chess();
+    while (k < g.plies.length && pos.get(posKey(b.fen()))?.has(g.plies[k].san)) { b.move(g.plies[k].san, { sloppy: true }); k++; }
     if (k < 2) continue;
-    const key = g.plies.slice(0, k).map(p => p.san).join(' ');
-    const bookMoves = [...(next.get(key) || [])];
+    const bookMoves = [...(pos.get(posKey(b.fen())) || [])];
     const moveNo = `${Math.floor(k / 2) + 1}${k % 2 === 0 ? '.' : '...'}`;
     let dev, mine = false;
     if (!bookMoves.length) dev = `Followed the course all the way (${Math.ceil(k / 2)} moves)`;
     else if (k >= g.plies.length) dev = 'Game ended inside the course';
     else if (isMine(g, k)) { mine = true; dev = `You left the course at ${moveNo} ${g.plies[k].san}; the course plays ${bookMoves.join(' or ')}`; }
     else dev = `Opponent left the course at ${moveNo} ${g.plies[k].san}`;
-    c.games.push({ g, k, dev, mine });
+    // the first moment to train: where you left the course, or else your first engine-flagged mistake in the opening
+    let target = null;
+    if (mine) target = { ply: k, want: bookMoves, why: 'course' };
+    else for (let i = k; i < Math.min(g.plies.length, 30); i++) {
+      const p = g.plies[i];
+      if (isMine(g, i) && ['blunder', 'mistake', 'inaccuracy'].includes(p.lab) && p.best) { target = { ply: i, want: [p.best], why: 'engine' }; break; }
+    }
+    c.games.push({ g, k, dev, mine, target, id: `${c.id}/${g.url.split('/').pop()}` });
   }
   c.games.reverse();
 }
@@ -1162,7 +1202,7 @@ function renderOpeningsHome() {
 document.querySelectorAll('#op-yours, #op-suggested').forEach(el => el.onclick = e => { const b = e.target.closest('[data-course]'); if (b) openCourse(COURSES.find(c => c.id === b.dataset.course)); });
 
 let curCourse = null;
-function opShow(which, keepScroll = false) { for (const w of ['home', 'course', 'player']) $('#op-' + w).hidden = w !== which; if (!keepScroll) window.scrollTo({ top: 0 }); if (which === 'player') requestAnimationFrame(() => openCg?.redrawAll()); }
+function opShow(which, keepScroll = false) { for (const w of ['home', 'course', 'game', 'player']) $('#op-' + w).hidden = w !== which; if (!keepScroll) window.scrollTo({ top: 0 }); if (which === 'player') requestAnimationFrame(() => openCg?.redrawAll()); }
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => {
   if (b.dataset.back === 'home') { renderOpeningsHome(); opShow('home'); } else if (curCourse) openCourse(curCourse); else opShow('home');
 });
@@ -1179,9 +1219,13 @@ function openCourse(c, keepScroll = false) {
   $('#oc-lines').innerHTML = c.lines.map(l => { const st = lineState(c, l); return `<button class="line-row" data-line="${l.id}"><span class="t">${esc(l.title)}</span><span class="status ${st.s}">${st.label}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span></button>`; }).join('');
   $('#oc-lines').onclick = e => { const b = e.target.closest('[data-line]'); if (b) startLearn(c, c.lines.find(l => l.id === b.dataset.line)); };
   const mineDev = c.games.filter(x => x.mine).length;
-  $('#oc-games-sub').textContent = c.games.length ? `${c.games.length} of your rapid games reached this course. In ${mineDev} of them you were the one who left it. Click a game to see that exact moment.` : 'None of your analysed games reached these lines yet. That is what the suggested courses are for.';
-  $('#oc-games').innerHTML = c.games.slice(0, 40).map(({ g, dev, mine }) => `<div class="yg-row" data-url="${esc(g.url)}"><span class="pill ${g.result}">${g.result === 'win' ? 'W' : g.result === 'loss' ? 'L' : 'D'}</span><span>${esc(g.opp)} <span class="muted num">(${g.oppRating})</span></span><span class="small muted num">${fmtDate(g.end)}</span><span class="d" style="${mine ? 'color:var(--mistake)' : ''}">${esc(dev)}</span></div>`).join('');
-  $('#oc-games').onclick = e => { const r = e.target.closest('[data-url]'); if (!r) return; const x = c.games.find(y => y.g.url === r.dataset.url); show('games'); openGame(x.g); goto(Math.min(x.k + 1, x.g.plies.length)); };
+  $('#oc-games-sub').textContent = c.games.length ? `${c.games.length} of your rapid games reached this course. In ${mineDev} of them you were the one who left it. Click a game to see where it went off track, or train them all.` : 'None of your analysed games reached these lines yet. That is what the suggested courses are for.';
+  $('#oc-games').innerHTML = c.games.slice(0, 40).map(({ g, dev, mine, id, target }) => `<div class="yg-row" data-url="${esc(g.url)}"><span class="pill ${g.result}">${g.result === 'win' ? 'W' : g.result === 'loss' ? 'L' : 'D'}</span><span>${esc(g.opp)} <span class="muted num">(${g.oppRating})</span>${progress.og[id]?.ok ? ' <span class="ok" title="Trained">✓</span>' : ''}</span><span class="small muted num">${fmtDate(g.end)}</span><span class="d" style="${mine ? 'color:var(--mistake)' : ''}">${esc(dev)}${target && !mine ? ' · then a mistake to fix' : ''}</span></div>`).join('');
+  $('#oc-games').onclick = e => { const r = e.target.closest('[data-url]'); if (!r) return; openGameReview(c, c.games.find(y => y.g.url === r.dataset.url)); };
+  const toFix = c.games.filter(x => x.target), open = toFix.filter(x => !progress.og[x.id]?.ok);
+  $('#oc-fixgames').hidden = !toFix.length;
+  $('#oc-fixgames').textContent = open.length ? `Fix my mistakes in these games (${open.length} to go)` : `Practise my games again (${toFix.length})`;
+  $('#oc-fixgames').onclick = () => startGameDrills(c, open.length ? open : toFix);
   opShow('course', keepScroll);
 }
 
@@ -1199,7 +1243,7 @@ function boardSet(extra = {}) {
 }
 function feedback(html, cls = '') { const f = $('#op-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
 function addNote(m, i) {
-  if (!m.c || op.mode !== 'learn') return;
+  if (!m.c || (op.mode !== 'learn' && op.mode !== 'game')) return;
   $('#op-notes').prepend(el('div', { class: 'note' }, `<b>${i % 2 === 0 ? `${i / 2 + 1}.` : `${Math.floor(i / 2) + 1}...`}${esc(m.san)}</b>${esc(m.c)}`));
 }
 function startLearn(c, l) { op.mode = 'learn'; op.queue = []; loadLine(c, l); }
@@ -1207,9 +1251,9 @@ function startReview(items) { op.mode = 'review'; op.queue = items.slice(); if (
 function loadLine(c, l) {
   op.gen++;
   Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null });
-  $('#op-mode').textContent = `${c.title} · ${op.mode === 'learn' ? 'Learn' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
+  $('#op-mode').textContent = `${c.title} · ${op.mode === 'learn' ? 'Learn' : op.mode === 'game' ? 'Train your game' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
   $('#op-title').textContent = l.title;
-  $('#op-intro').textContent = op.mode === 'learn' ? l.intro : 'Play the course moves from memory. Notes come back if you go wrong.';
+  $('#op-intro').textContent = op.mode === 'review' ? 'Play the course moves from memory. Notes come back if you go wrong.' : l.intro;
   $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
   for (const b of ['op-hint', 'op-showmove', 'op-restart']) $('#' + b).hidden = false;
   feedback(`<span class="muted">${c.side === 'white' ? 'You have White.' : 'You have Black; White moves first.'} Make the course moves on the board.</span>`);
@@ -1229,31 +1273,23 @@ function advance() {
   progressBar();
   if (op.ply >= op.l.moves.length) return finishLine();
   const m = op.l.moves[op.ply];
-  const theirs = (op.ply % 2 === 0) !== (op.c.side === 'white');
+  const theirs = (op.ply % 2 === 0) !== (op.c.side === 'white') || !!m.auto;
   if (theirs) {
     op.busy = true; boardSet();
     const g = op.gen;
     setTimeout(() => { if (g !== op.gen) return; op.busy = false; const q = applyMove(m); if (q) askQuiz(q); else advance(); }, 450);
   } else {
     op.wrong = 0; boardSet();
+    if (op.mode === 'game' && op.ply === op.l.moves.length - 1)   // the moment the game went wrong
+      feedback(`<span class="big">Key moment: your move ${esc(op.l.moveNo)}</span><div class="small">In the game you played <strong>${esc(op.l.playedSan)}</strong> here. ${op.l.game.target.why === 'course' ? 'What does the course play?' : 'Find a better move.'}</div>`);
   }
-}
-// every course move by position (piece placement, side, castling, en passant), so transpositions are recognised
-const posKey = fen => fen.split(' ').slice(0, 4).join(' ');
-function coursePosMoves(c) {
-  if (c._pos) return c._pos;
-  c._pos = new Map();
-  for (const l of c.lines) {
-    const b = new Chess();
-    for (const m of l.moves) { const k = posKey(b.fen()); if (!c._pos.has(k)) c._pos.set(k, new Set()); c._pos.get(k).add(m.san); b.move(m.san, { sloppy: true }); }
-  }
-  return c._pos;
 }
 function onOpMove(orig, dest) {
   if (op.mode === 'ideas') return onIdeaMove(orig, dest);
   const test = new Chess(op.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
-  const want = op.l.moves[op.ply];
-  if (mv && mv.san === want.san) {
+  let want = op.l.moves[op.ply];
+  if (mv && (mv.san === want.san || want.alt?.includes(mv.san))) {
+    if (mv.san !== want.san) want = { ...want, san: mv.san };
     feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>`, 'right');
     const q = applyMove(want); if (q) askQuiz(q); else advance();
   } else if (mv && coursePosMoves(op.c).get(posKey(op.chess.fen()))?.has(mv.san)) {
@@ -1295,6 +1331,7 @@ function askQuiz(q) {
   };
 }
 function finishLine() {
+  if (op.mode === 'game') return finishGameDrill();
   const k = lineKey(op.c, op.l), p = progress.lines[k];
   let box, msg, due;
   if (op.mode === 'learn') { box = Math.max(1, p?.box || 0); msg = 'Line learned.'; due = Date.now() + INTERVALS[box] * DAY; }
@@ -1309,6 +1346,79 @@ function finishLine() {
   $('#op-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
   $('#op-learnnext')?.addEventListener('click', () => startLearn(op.c, learnNext));
   $('#op-tocourse').onclick = () => openCourse(op.c);
+}
+
+/* your games in this opening: review, then replay the game and fix the moment it went wrong */
+const moveLabel = i => `${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'}`;
+function openingMistakes(x) {
+  const g = x.g;
+  return g.plies.map((p, i) => ({ p, i })).filter(({ p, i }) => i < 30 && isMine(g, i) && ['blunder', 'mistake', 'inaccuracy'].includes(p.lab));
+}
+function openGameReview(c, x) {
+  const g = x.g, t = x.target;
+  $('#og-eyebrow').textContent = `${c.title} · your game · ${fmtDate(g.end)}`;
+  $('#og-title').textContent = `vs ${g.opp} (${g.oppRating}) · ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'draw'}`;
+  const bookN = Math.ceil(x.k / 2);
+  let sum = `You followed the course for ${bookN} move${bookN === 1 ? '' : 's'}. `;
+  if (x.mine) sum += `At ${moveLabel(x.k)} you played <strong>${esc(g.plies[x.k].san)}</strong>; the course plays <strong>${esc(t.want.join(' or '))}</strong>.`;
+  else if (x.k < g.plies.length && !x.dev.startsWith('Followed')) sum += `Then your opponent left the course with ${moveLabel(x.k)} ${esc(g.plies[x.k].san)}, a move the course doesn't cover yet.`;
+  else sum += 'The game stayed inside the course.';
+  if (t && t.why === 'engine') sum += ` Your first slip after that: <strong>${moveLabel(t.ply)} ${esc(g.plies[t.ply].san)}</strong>, where ${esc(t.want[0])} was better.`;
+  if (!t) sum += ' You made no clear mistakes in the opening of this game. Well played.';
+  $('#og-summary').innerHTML = sum;
+  const mis = new Set(openingMistakes(x).map(m => m.i));
+  const last = Math.min(g.plies.length, Math.max(x.k + 2, (t?.ply ?? 0) + 2, 16), 30);
+  $('#og-moves').innerHTML = g.plies.slice(0, last).map((p, i) => {
+    const cls = i < x.k ? 'book' : i === x.k ? 'dev' : mis.has(i) ? 'mis' : '';
+    return `<span class="og-mv ${cls}${isMine(g, i) ? '' : ' theirs'}" title="${isMine(g, i) ? 'your move' : "opponent's move"}">${moveLabel(i)} ${esc(p.san)}</span>`;
+  }).join('');
+  const ms = openingMistakes(x);
+  $('#og-mistakes').innerHTML = ms.length ? `<div class="eyebrow" style="margin-top:16px">Your mistakes in the first 15 moves</div><div class="og-mis">${ms.map(({ p, i }) =>
+    `<div><strong>${moveLabel(i)} ${esc(p.san)}</strong> (${p.lab}): better was <strong>${esc(p.best)}</strong>. <span class="muted">You lost ${Math.round(p.loss)}% winning chance.</span></div>`).join('')}</div>` : '';
+  $('#og-train').hidden = !t;
+  $('#og-train').textContent = progress.og[x.id]?.ok ? 'Train this game again' : 'Train this game';
+  $('#og-train').onclick = () => startGameDrills(c, [x]);
+  $('#og-full').onclick = () => { show('games'); openGame(g); goto(Math.min((t?.ply ?? x.k) + 1, g.plies.length)); };
+  opShow('game');
+}
+// the course's own comments, looked up by the moves leading to them
+function courseComments(c) {
+  if (c._comments) return c._comments;
+  c._comments = new Map();
+  for (const l of c.lines) { const b = new Chess(); for (const m of l.moves) { b.move(m.san, { sloppy: true }); if (m.c) c._comments.set(posKey(b.fen()), m.c); } }
+  return c._comments;
+}
+function gameDrillLine(c, x) {
+  const g = x.g, t = x.target, com = courseComments(c), b = new Chess();
+  const moves = g.plies.slice(0, t.ply).map((p, i) => ({
+    san: p.san,
+    c: (b.move(p.san, { sloppy: true }), i < x.k ? com.get(posKey(b.fen())) : undefined),
+    auto: i >= x.k,      // outside the course: replayed for you, so you only have to find the key move
+  }));
+  const played = g.plies[t.ply];
+  moves.push({ san: t.want[0], alt: t.want, c: t.why === 'course'
+    ? `The course move. In the game you played ${played.san} here and left the course.`
+    : `The engine's choice. In the game you played ${played.san} (${played.lab}) and lost ${Math.round(played.loss)}% winning chance.${played.pv ? ' Best line: ' + played.pv : ''}` });
+  return { id: x.id, title: `Your game vs ${g.opp}`, game: x, playedSan: played.san, moveNo: moveLabel(t.ply),
+    intro: t.why === 'course' ? `Replay your game. Play the course moves; at ${moveLabel(t.ply)} you went your own way. Find the course move this time.`
+      : `Replay your game. The moves after your opponent left the course are played for you. At ${moveLabel(t.ply)} you made a mistake: find the better move.`,
+    moves };
+}
+function startGameDrills(c, xs) {
+  op.mode = 'game';
+  op.queue = xs.slice(1).map(x => ({ c, l: gameDrillLine(c, x) }));
+  loadLine(c, gameDrillLine(c, xs[0]));
+}
+
+function finishGameDrill() {
+  const x = op.l.game, ok = op.errors === 0;
+  record('og', x.id, { ok: ok ? 1 : (progress.og[x.id]?.ok || 0) });
+  if (!ok) op.queue.push({ c: op.c, l: op.l });   // try it once more at the end
+  feedback(`<span class="big">${ok ? 'Fixed! That is how the game should have gone.' : `Done, with ${op.errors} slip${op.errors > 1 ? 's' : ''}. It comes back at the end.`}</span>
+    <div class="controls" style="margin-top:10px">${op.queue.length ? `<button class="btn primary" id="og-next">Next game (${op.queue.length} left)</button>` : ''}<button class="btn" id="og-spar">Play on against Stockfish</button><button class="btn" id="og-tocourse">Back to course</button></div>`, 'right');
+  $('#og-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
+  $('#og-spar').onclick = () => playOnFromLine(op.c, op.l);
+  $('#og-tocourse').onclick = () => openCourse(op.c);
 }
 
 function playOnFromLine(c, l) {
