@@ -8,7 +8,8 @@ import chess, chess.engine
 
 ROOT = Path(__file__).parent
 DATA, DIST = ROOT / "data", ROOT / "dist"
-ENGINE = next((ROOT / "engine").rglob("stockfish*.exe"))
+from engine_path import find_engine
+ENGINE = find_engine(ROOT)
 
 
 def win_pct(score, pov):

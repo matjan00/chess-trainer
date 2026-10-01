@@ -9,7 +9,8 @@ import chess, chess.engine
 
 ROOT = Path(__file__).parent
 DATA = ROOT / "data"
-ENGINE = next((ROOT / "engine").rglob("stockfish*.exe"))
+from engine_path import find_engine
+ENGINE = find_engine(ROOT)
 VAL = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9, chess.KING: 0}
 
 

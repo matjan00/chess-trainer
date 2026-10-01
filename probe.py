@@ -5,7 +5,8 @@ import sys, io
 from pathlib import Path
 import chess, chess.engine, chess.pgn
 
-ENGINE = next((Path(__file__).parent / "engine").rglob("stockfish*.exe"))
+from engine_path import find_engine
+ENGINE = find_engine(Path(__file__).parent)
 eng = chess.engine.SimpleEngine.popen_uci(str(ENGINE))
 eng.configure({"Threads": 6, "Hash": 256})
 for arg in sys.argv[1:]:

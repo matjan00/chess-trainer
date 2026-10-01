@@ -7,7 +7,7 @@ Double-click update.bat (or run: python update.py). Settings live in config.json
   timeClass  "rapid" (chess.com) / perfType for Lichess
 Afterwards, ask Claude to "publish my chess trainer" to update the web page.
 """
-import datetime as dt, json, subprocess, sys
+import datetime as dt, json, os, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -89,7 +89,7 @@ def main():
     if not new and (DATA / "analysis.json").exists():
         print("Nothing new to analyse.")
         return
-    run("analyze.py", "--depth", "14", "--workers", "7")   # only analyses games it hasn't seen
+    run("analyze.py", "--depth", "14", "--workers", str(max(1, (os.cpu_count() or 2) - 1)))   # only analyses games it hasn't seen
     run("build.py")                                         # mistakes drills + page
     run("build_tactics.py")
     run("build_middlegame.py")

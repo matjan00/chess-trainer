@@ -9,7 +9,8 @@ from pathlib import Path
 import chess, chess.engine
 
 ROOT = Path(__file__).parent
-ENGINE = next((ROOT / "engine").rglob("stockfish*.exe"))
+from engine_path import find_engine
+ENGINE = find_engine(ROOT)
 
 
 def tokenize(text):

@@ -8,7 +8,8 @@ from pathlib import Path
 import chess, chess.engine, chess.pgn
 
 ROOT = Path(__file__).parent
-ENGINE = next((ROOT / "engine").rglob("stockfish*.exe"))
+from engine_path import find_engine
+ENGINE = find_engine(ROOT)
 GAMES = ROOT / "data" / "games.json"
 OUT = ROOT / "data" / "analysis.json"
 PIECE_VALUE = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}

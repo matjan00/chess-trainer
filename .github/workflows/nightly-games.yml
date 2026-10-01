@@ -1,0 +1,54 @@
+# Every night: pull new rapid games from chess.com, analyse them with Stockfish, rebuild the exercises and
+# publish the app. If there are no new games nothing changes and nothing is published.
+# Runs on GitHub's computers (free for public repositories); no laptop needed. Can also be started by hand
+# from the Actions tab ("Run workflow").
+name: Nightly games update
+
+on:
+  schedule:
+    - cron: "0 2 * * *"      # 02:00 UTC = 04:00 in Warsaw (summer time), 03:00 in winter
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-games
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install python-chess
+        run: pip install chess==1.11.2
+
+      - name: Download Stockfish 19 (Linux)
+        run: |
+          mkdir -p engine
+          curl -sL https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz | tar -xz -C engine
+          find engine -type f -name 'stockfish*' -exec chmod +x {} \;
+          find engine -type f -name 'stockfish*' | head -3
+
+      - name: Pull new games, analyse, rebuild
+        run: python update.py
+
+      - name: Publish if anything changed
+        run: |
+          git config user.name "chess-trainer-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A data docs
+          if git diff --cached --quiet; then
+            echo "No new games - nothing to publish."
+          else
+            git commit -m "Nightly update: new games analysed"
+            git pull --rebase
+            git push
+          fi
