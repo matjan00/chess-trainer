@@ -106,10 +106,15 @@ DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "p
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
 
 MANIFEST = {
-    "name": "Chess Trainer", "short_name": "Chess", "start_url": "./", "scope": "./", "display": "standalone",
+    # "id" gives the app a fixed identity, so Chrome installs it as a proper app (not a shortcut)
+    "id": "/chess-trainer/app", "name": "Chess Trainer", "short_name": "Chess",
+    "start_url": "./?source=app", "scope": "./", "display": "standalone", "display_override": ["standalone"],
     "orientation": "any", "background_color": "#e9eeec", "theme_color": "#16201d",
-    "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-              {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}],
+    "description": "Personal chess trainer: openings, tactics, middlegame and endgames from your own games.",
+    "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+              {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+              {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+              {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}],
 }
 
 SW = """// Offline support: every app file is saved on the device when the app is installed or updated, and served

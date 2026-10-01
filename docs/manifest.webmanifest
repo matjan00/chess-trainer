@@ -1,24 +1,41 @@
 {
+ "id": "/chess-trainer/app",
  "name": "Chess Trainer",
  "short_name": "Chess",
- "start_url": "./",
+ "start_url": "./?source=app",
  "scope": "./",
  "display": "standalone",
+ "display_override": [
+  "standalone"
+ ],
  "orientation": "any",
  "background_color": "#e9eeec",
  "theme_color": "#16201d",
+ "description": "Personal chess trainer: openings, tactics, middlegame and endgames from your own games.",
  "icons": [
   {
    "src": "icon-192.png",
    "sizes": "192x192",
    "type": "image/png",
-   "purpose": "any maskable"
+   "purpose": "any"
   },
   {
    "src": "icon-512.png",
    "sizes": "512x512",
    "type": "image/png",
-   "purpose": "any maskable"
+   "purpose": "any"
+  },
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
   }
  ]
 }
