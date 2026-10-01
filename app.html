@@ -698,7 +698,9 @@ const sync = {
     } catch { this.status('local', 'Saved on this device'); }
   },
   async startSupabase() {
-    this.sb = window.supabase.createClient(SB.url, SB.key);
+    // its own login storage: all apps on matjan00.github.io share one browser storage, and the fitness app uses the same
+    // Supabase project, so without this the two apps would share (and sign each other out of) one login
+    this.sb = window.supabase.createClient(SB.url, SB.key, { auth: { storageKey: 'chess-trainer-auth', persistSession: true, autoRefreshToken: true } });
     $('#sync').onclick = openAccount; $('#sync').title = 'Sync and account';
     let session = null;
     try { session = (await this.sb.auth.getSession()).data.session; } catch { /* offline: try again later */ }

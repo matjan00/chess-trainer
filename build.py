@@ -133,6 +133,11 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.pathname.endsWith('/version.json')) return;
+  // the install file always comes fresh from the website when online, so Chrome sees the current app identity
+  if (url.pathname.endsWith('/manifest.webmanifest')) {
+    e.respondWith(fetch(req, { cache: 'no-store' }).catch(() => caches.match(req, { ignoreSearch: true })));
+    return;
+  }
   if (url.origin === location.origin) {
     e.respondWith(caches.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req)));
     return;
