@@ -95,7 +95,7 @@ def main():
     run("build_middlegame.py")
     run("build_endgame.py")
     run("build.py", "--skip-drills")                        # copy the fresh data files into dist/
-    print("\nDone. Ask Claude to \"publish my chess trainer\" to update the web page.")
+    print("\nDone. Double-click publish.bat to put the new version online (the phone app updates itself).")
 
 
 if __name__ == "__main__":
