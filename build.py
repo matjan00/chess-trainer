@@ -155,8 +155,20 @@ self.addEventListener('fetch', e => {
 """
 
 BOOT = """<script>
-// installed app: offline support + "new version" notice
+// installed app: offline support + "new version" notice + an "Install app" button when Chrome allows installing
 (() => {
+  let deferred = null;
+  window.__installable = false;
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferred = e; window.__installable = true;
+    if (matchMedia('(display-mode: standalone)').matches || document.getElementById('install-bar')) return;
+    const bar = document.createElement('div');
+    bar.id = 'install-bar'; bar.className = 'card update-bar';
+    bar.innerHTML = '<span><strong>Install Chess Trainer</strong> <span class="small muted">Opens from your home screen, full screen, and works offline.</span></span><button class="btn primary">Install app</button>';
+    bar.querySelector('button').onclick = async () => { deferred.prompt(); const r = await deferred.userChoice; if (r.outcome === 'accepted') bar.remove(); };
+    document.querySelector('main').prepend(bar);
+  });
+  addEventListener('appinstalled', () => document.getElementById('install-bar')?.remove());
   if ('serviceWorker' in navigator) {
     const hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.register('sw.js').catch(() => {});
