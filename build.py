@@ -2,7 +2,7 @@
 
 Usage:  python build.py [--skip-drills]
 """
-import argparse, json, math, shutil, threading
+import argparse, hashlib, json, math, shutil, threading
 from pathlib import Path
 import chess, chess.engine
 
@@ -92,6 +92,126 @@ def main():
         if (DATA / f).exists(): shutil.copy(DATA / f, DIST / f)
     shutil.copy(ROOT / "vendor" / "sf" / "stockfish.wasm", DIST / "stockfish.wasm")
     print("built", DIST / "index.html")
+    build_app(html)
+
+
+# ---------------------------------------------------------------------------------------------------
+# The installable phone/laptop app (GitHub Pages, served from docs/). Same page as the Claude version,
+# but it carries every library and the engine itself, so it also works offline, and it syncs progress
+# through the Supabase table chess_progress instead of Claude's database.
+APP = ROOT / "docs"
+SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}
+DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json",
+              "convert.json", "technique.json", "endgames.json", "essentials.json"]
+VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
+
+MANIFEST = {
+    "name": "Chess Trainer", "short_name": "Chess", "start_url": "./", "scope": "./", "display": "standalone",
+    "orientation": "any", "background_color": "#e9eeec", "theme_color": "#16201d",
+    "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+              {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}],
+}
+
+SW = """// Offline support: every app file is saved on the device when the app is installed or updated, and served
+// from there (so it opens with no signal). A new version gets a new cache. Sign-in and sync calls to
+// Supabase always go to the network. version.json is never cached, so the app can tell when an update exists.
+const VERSION = 'chess-v__V__';
+const CORE = __CORE__;
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION && k !== 'chess-fonts').map(k => caches.delete(k)))).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.pathname.endsWith('/version.json')) return;
+  if (url.origin === location.origin) {
+    e.respondWith(caches.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req)));
+    return;
+  }
+  if (url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com')) {
+    e.respondWith(caches.open('chess-fonts').then(async c => {
+      const hit = await c.match(req);
+      if (hit) return hit;
+      const res = await fetch(req);
+      if (res.ok || res.type === 'opaque') c.put(req, res.clone());
+      return res;
+    }));
+  }
+});
+"""
+
+BOOT = """<script>
+// installed app: offline support + "new version" notice
+(() => {
+  if ('serviceWorker' in navigator) {
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+  }
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(({ v }) => {
+    if (v <= window.CHESS_APP_VERSION) return;
+    const bar = document.createElement('div');
+    bar.className = 'card update-bar';
+    bar.innerHTML = '<span><strong>A new version is ready.</strong> <span class="small muted">Update to get the latest courses and fixes.</span></span><button class="btn primary">Update</button>';
+    bar.querySelector('button').onclick = async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.update()));
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(k => k !== 'chess-fonts').map(k => caches.delete(k)));
+      } catch (e) { /* reload anyway */ }
+      location.reload();
+    };
+    document.querySelector('main').prepend(bar);
+  }).catch(() => { /* offline */ });
+})();
+</script>"""
+
+
+def build_app(html):
+    (APP / "vendor").mkdir(parents=True, exist_ok=True)
+    cdn_chess = '<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>'
+    cdn_cg = "from 'https://cdn.jsdelivr.net/npm/chessground@9.2.1/dist/chessground.min.js'"
+    assert cdn_chess in html and cdn_cg in html, "library tags changed: update build_app"
+    page = html.replace(cdn_chess, '<script src="vendor/chess.min.js"></script>\n<script src="vendor/supabase.js"></script>')
+    page = page.replace(cdn_cg, "from './vendor/chessground.min.js'")
+    title_end = page.index("</title>") + len("</title>")
+    title, body = page[:title_end], page[title_end:]
+
+    for f in VENDOR:
+        shutil.copy(ROOT / "vendor" / "pwa" / f, APP / "vendor" / f)
+    for f in ("icon-180.png", "icon-192.png", "icon-512.png"):
+        shutil.copy(ROOT / "vendor" / "pwa" / "icons" / f, APP / f)
+    for f in DATA_FILES:
+        shutil.copy(DIST / f, APP / f)
+    (APP / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=1), encoding="utf-8")
+
+    # the version only goes up when something the phone downloads has changed
+    h = hashlib.sha256(page.encode("utf-8"))
+    for f in sorted(DATA_FILES + [f"vendor/{v}" for v in VENDOR] + ["icon-192.png", "icon-512.png", "manifest.webmanifest"]):
+        h.update((APP / f).read_bytes())
+    digest = h.hexdigest()[:16]
+    vfile = APP / "version.json"
+    old = json.loads(vfile.read_text(encoding="utf-8")) if vfile.exists() else {"v": 0, "h": ""}
+    v = old["v"] + 1 if old.get("h") != digest else old["v"]
+    vfile.write_text(json.dumps({"v": v, "h": digest}), encoding="utf-8")
+
+    head = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+            '<meta name="theme-color" content="#16201d">\n<link rel="manifest" href="manifest.webmanifest">\n'
+            '<link rel="icon" href="icon-192.png">\n<link rel="apple-touch-icon" href="icon-180.png">\n'
+            + title + '\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>\n'
+            f'<script>window.CHESS_SUPABASE = {json.dumps(SUPABASE)}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = {v};</script>\n'
+            '</head>\n<body>\n')
+    (APP / "index.html").write_text(head + body + "\n" + BOOT + "\n</body>\n</html>\n", encoding="utf-8")
+    core = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"] + DATA_FILES + [f"vendor/{x}" for x in VENDOR]
+    (APP / "sw.js").write_text(SW.replace("__V__", str(v)).replace("__CORE__", json.dumps(core)), encoding="utf-8")
+    print(f"built app version {v}{' (unchanged)' if v == old['v'] else ''} in", APP)
 
 
 if __name__ == "__main__":

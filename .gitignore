@@ -8,3 +8,6 @@ data/*.backup.json
 data/test.json
 __pycache__/
 *.pyc
+
+# personal progress export (imported into the app once)
+progress-from-claude.json

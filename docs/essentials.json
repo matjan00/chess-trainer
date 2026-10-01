@@ -1,0 +1,185 @@
+[
+ {
+  "id": "qmate",
+  "name": "Queen checkmate",
+  "fen": "8/8/8/4k3/8/8/8/4K2Q w - - 0 1",
+  "goal": "win",
+  "mate": true,
+  "maxMoves": 30,
+  "lesson": "Use the queen to shrink the king's box, staying a knight's move away from it, then bring your own king up. Mate happens on the edge. Watch out for stalemate: leave the king a square until you give mate.",
+  "tip": "A knight's move away from the enemy king shrinks its box without stalemate."
+ },
+ {
+  "id": "rmate",
+  "name": "Rook checkmate",
+  "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1",
+  "goal": "win",
+  "mate": true,
+  "maxMoves": 40,
+  "lesson": "The rook cuts the king off along a rank or file. Walk your king up until it faces the enemy king, then check with the rook to push it back one line. Repeat until the edge.",
+  "tip": "Bring your king to face the enemy king, then check with the rook."
+ },
+ {
+  "id": "rrmate",
+  "name": "Two-rook ladder",
+  "fen": "8/8/8/4k3/8/8/8/R3K2R w - - 0 1",
+  "goal": "win",
+  "mate": true,
+  "maxMoves": 15,
+  "lesson": "The rooks take turns: one guards a line, the other checks on the next line, walking the king to the edge like a ladder. If the king comes close to a rook, move that rook far away along its line.",
+  "tip": "Keep the rooks far from the enemy king."
+ },
+ {
+  "id": "kpfront",
+  "name": "King in front of the pawn",
+  "fen": "4k3/8/4K3/4P3/8/8/8/8 w - - 0 1",
+  "goal": "win",
+  "promote": true,
+  "lesson": "With your king on the sixth rank in front of the pawn, you always win. Use your king to push the enemy king aside, then walk the pawn home. Don't push the pawn too early.",
+  "tip": "King first, pawn second."
+ },
+ {
+  "id": "oppwin",
+  "name": "The opposition: win",
+  "fen": "8/8/8/4k3/8/4K3/4P3/8 b - - 0 1",
+  "goal": "win",
+  "promote": true,
+  "engineFirst": true,
+  "lesson": "Kings facing each other with one square between them: whoever does NOT have to move \"has the opposition\". Black must move first here, so you can take the opposition and escort the pawn. Your pawn on e2 also gives you spare waiting moves.",
+  "tip": "Keep your king in front of the pawn and face the enemy king whenever you can."
+ },
+ {
+  "id": "oppdraw",
+  "name": "The opposition: hold",
+  "fen": "8/8/8/4k3/8/4K3/4P3/8 w - - 0 1",
+  "goal": "draw",
+  "hold": 20,
+  "engineFirst": true,
+  "lesson": "The same position, but White moves first, so now you (Black) can hold. Stay in front of the pawn and step straight in front of White's king every time it moves up.",
+  "tip": "When White's king steps up, face it."
+ },
+ {
+  "id": "kpdef",
+  "name": "Get in front of the pawn",
+  "fen": "8/8/8/4k3/8/8/4P3/4K3 b - - 0 1",
+  "goal": "draw",
+  "hold": 20,
+  "lesson": "The defending king belongs directly in front of the pawn. From there you can always take the opposition, and the pawn never gets through.",
+  "tip": "Block the pawn's path with your king."
+ },
+ {
+  "id": "square",
+  "name": "The square rule",
+  "fen": "8/8/8/1P6/5k2/8/8/7K b - - 0 1",
+  "goal": "draw",
+  "hold": 8,
+  "lesson": "Draw a square from the pawn to its promotion rank. If your king can step inside that square, it catches the pawn. Here Black just makes it.",
+  "tip": "Move diagonally towards the promotion square."
+ },
+ {
+  "id": "outside",
+  "name": "The outside passed pawn",
+  "fen": "8/5kpp/8/8/8/P7/5KPP/8 w - - 0 1",
+  "goal": "win",
+  "promote": true,
+  "lesson": "An extra pawn far from the kings works as a decoy. Push it; the enemy king has to chase it, and your king eats the pawns on the other side.",
+  "tip": "Push the a-pawn to drag Black's king away, then go for the kingside.",
+  "failBelow": 70
+ },
+ {
+  "id": "lucena",
+  "name": "Lucena: build a bridge",
+  "fen": "1K6/1P1k4/8/8/8/8/r7/2R5 w - - 0 1",
+  "goal": "win",
+  "promote": true,
+  "lesson": "The most important rook ending. Push the enemy king away with a check (Rd1+), put your rook on the 4th rank (Rd4), walk your king out, and when the checks come, block them with your rook. That is \"building a bridge\".",
+  "tip": "Rd1+ first, then Rd4, then walk the king out towards your rook.",
+  "failBelow": 75
+ },
+ {
+  "id": "philidor",
+  "name": "Philidor: third-rank defence",
+  "fen": "4k3/8/r7/3KP3/8/8/8/7R b - - 0 1",
+  "goal": "draw",
+  "hold": 20,
+  "lesson": "The key rook-ending defence. Keep your rook on the 6th rank so White's king can't come forward. The moment the pawn advances to e6, swing your rook to the back and check from behind.",
+  "tip": "Rook stays on the 6th until the pawn goes to e6, then check from behind."
+ },
+ {
+  "id": "wrongb",
+  "name": "The wrong bishop",
+  "fen": "7k/8/5K2/7P/8/8/4B3/8 b - - 0 1",
+  "goal": "draw",
+  "hold": 15,
+  "lesson": "A rook pawn plus a bishop that can't control the promotion corner can't win if your king reaches that corner. Stay in the corner and don't leave it.",
+  "tip": "Shuffle between h8 and g8 or h7."
+ },
+ {
+  "id": "breakthru",
+  "name": "Pawn breakthrough",
+  "fen": "7k/ppp5/8/PPP5/8/8/8/7K w - - 0 1",
+  "goal": "win",
+  "lesson": "Three pawns against three, face to face, and both kings are far away. Push the middle pawn with b6. If Black takes with the a-pawn, play c6; if Black takes with the c-pawn, play a6. One of your pawns breaks through, and Black's king is too far away to catch it.",
+  "tip": "Start with b6, then push the pawn on the other side of the capture.",
+  "promote": true,
+  "failBelow": 75
+ },
+ {
+  "id": "qvp",
+  "name": "Queen against a pawn on the 7th",
+  "fen": "8/8/8/8/8/8/3pk3/K5Q1 w - - 0 1",
+  "goal": "win",
+  "mate": true,
+  "maxMoves": 25,
+  "lesson": "A queen beats a centre or knight pawn on the 7th, even with its king next to it. Check and attack the pawn until Black's king has to step in front of it on d1. While the king blocks its own pawn, you get a free move to bring your king closer. Repeat until your king arrives, then win the pawn and mate.",
+  "tip": "Force the king onto d1, then use the free move for your king.",
+  "failBelow": 80
+ },
+ {
+  "id": "protpass",
+  "name": "The protected passed pawn",
+  "fen": "8/pp3kpp/8/2pP4/2P5/8/PP3KPP/8 w - - 0 1",
+  "goal": "win",
+  "lesson": "Your d5 pawn is passed and protected by the c4 pawn, so Black's king can never take it. Black's king has to stay near it to stop it running. That leaves your king free to walk in and eat pawns on the kingside. You don't need to push the d-pawn yet; it already ties Black down.",
+  "tip": "Your king does the work while the d-pawn keeps Black's king busy.",
+  "promote": true,
+  "failBelow": 62
+ },
+ {
+  "id": "cutoff",
+  "name": "Rook ending: cut the king off",
+  "fen": "r7/8/6k1/8/3P4/3K4/8/4R3 w - - 0 1",
+  "goal": "win",
+  "lesson": "Your rook on the e-file keeps Black's king away from your pawn. This is called cutting the king off, and with the king this far away you win. Keep the rook on its file, walk your king up in front of the pawn, and push the pawn behind it. When Black's rook checks, step towards it to run out of checks.",
+  "tip": "Never let Black's king cross your rook's file; king first, then pawn.",
+  "promote": true,
+  "failBelow": 62
+ },
+ {
+  "id": "longside",
+  "name": "Rook ending: check from far away",
+  "fen": "5k2/7R/3K4/4P3/8/8/8/r7 b - - 0 1",
+  "goal": "draw",
+  "hold": 20,
+  "lesson": "White's king already stands on the 6th rank, so the Philidor defence is too late. Your king stays on the short side of the pawn, on f8 or g8. Your rook stays far away on the a-file and checks White's king from the side every time it comes forward. A rook needs distance to check well; checks from close by run out quickly.",
+  "tip": "Check from the a-file, far from White's king."
+ },
+ {
+  "id": "ocb",
+  "name": "Opposite-coloured bishops",
+  "fen": "8/5k2/3b4/8/4PP2/3BK3/8/8 b - - 0 1",
+  "goal": "draw",
+  "hold": 15,
+  "lesson": "White is two pawns up, but the bishops run on different colours, so you can hold. Put your king right in front of the pawns, on e6 or f6. Your bishop guards e5 and f4, the dark squares White's bishop can never help with. If the pawns can't move forward, they can't win.",
+  "tip": "King in front of the pawns, bishop watching e5."
+ },
+ {
+  "id": "rookpawn",
+  "name": "Rook pawn: run to the corner",
+  "fen": "8/3k4/1K6/8/P7/8/8/8 b - - 0 1",
+  "goal": "draw",
+  "hold": 15,
+  "lesson": "A lone rook pawn can't win if your king reaches the corner in front of it. Head for c8 and b8 right away. Once your king is near a8, White can never push it out, and the game ends in stalemate or a draw.",
+  "tip": "Play Kc8 now and stay near the a8 corner."
+ }
+]
