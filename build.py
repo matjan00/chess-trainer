@@ -214,7 +214,7 @@ def build_app(html):
     (APP / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=1), encoding="utf-8")
 
     # the version only goes up when something the phone downloads has changed
-    h = hashlib.sha256(page.encode("utf-8"))
+    h = hashlib.sha256((page + BOOT + SW + json.dumps(MANIFEST) + json.dumps(SUPABASE)).encode("utf-8"))   # everything that ends up on the phone
     for f in sorted(DATA_FILES + [f"vendor/{v}" for v in VENDOR] + ["icon-192.png", "icon-512.png", "manifest.webmanifest"]):
         h.update((APP / f).read_bytes())
     digest = h.hexdigest()[:16]
