@@ -6,7 +6,9 @@ name: Nightly games update
 
 on:
   schedule:
-    - cron: "0 2 * * *"      # 02:00 UTC = 04:00 in Warsaw (summer time), 03:00 in winter
+    # Odd minutes: GitHub delays jobs set for the start of an hour when it is busy.
+    - cron: "23 1 * * *"     # 03:23 in Warsaw (summer time), 02:23 in winter
+    - cron: "47 15 * * *"    # 17:47 in Warsaw (summer time), 16:47 in winter
   workflow_dispatch:
 
 permissions:
