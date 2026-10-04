@@ -10,7 +10,7 @@
   --surface-2: #dfe6e3;
   --ink: #16201d;
   --ink-2: #4a5a55;
-  --ink-3: #7b8b86;
+  --ink-3: #5f6f6a;
   --line: #cdd7d3;
   --accent: #2b55a8;
   --accent-ink: #ffffff;
@@ -31,7 +31,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #111715; --surface: #19211e; --surface-2: #222c28; --ink: #e4ebe8; --ink-2: #a9b8b3; --ink-3: #75857f;
+    --bg: #111715; --surface: #19211e; --surface-2: #222c28; --ink: #e4ebe8; --ink-2: #a9b8b3; --ink-3: #86958f;
     --line: #2c3833; --accent: #7fa3ec; --accent-ink: #0d1422; --blunder: #ef6a5f; --mistake: #f0a04a; --inacc: #dcc05a;
     --good: #5cc28a; --win: #5cc28a; --loss: #ef6a5f; --draw: #8a9a94; --eval-white: #d9dcd6; --eval-black: #0b0f0e;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
@@ -39,7 +39,7 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #111715; --surface: #19211e; --surface-2: #222c28; --ink: #e4ebe8; --ink-2: #a9b8b3; --ink-3: #75857f;
+  --bg: #111715; --surface: #19211e; --surface-2: #222c28; --ink: #e4ebe8; --ink-2: #a9b8b3; --ink-3: #86958f;
   --line: #2c3833; --accent: #7fa3ec; --accent-ink: #0d1422; --blunder: #ef6a5f; --mistake: #f0a04a; --inacc: #dcc05a;
   --good: #5cc28a; --win: #5cc28a; --loss: #ef6a5f; --draw: #8a9a94; --eval-white: #d9dcd6; --eval-black: #0b0f0e;
   --shadow: 0 1px 2px rgba(0,0,0,.4);
@@ -56,27 +56,65 @@ button { font: inherit; color: inherit; }
 .num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--ink-2); }
 .small { font-size: 13px; }
-.eyebrow { font: 600 12px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.eyebrow { font: 600 12px/1.25 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+kbd { font: 600 11px/1 var(--mono); padding: 2px 4px; margin-left: 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; color: var(--ink-3); background: var(--bg); vertical-align: 1px; }
+.btn.primary kbd { color: inherit; border-color: color-mix(in srgb, var(--accent-ink) 40%, transparent); background: transparent; }
+@media (hover: none) { kbd { display: none; } }
 
-/* top bar */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; align-items: center; gap: 20px; padding-block: 10px; flex-wrap: wrap; }
+/* top bar + navigation: bottom tab bar on phones and tablets, a side rail on wide screens */
+.top { background: var(--bg); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px; }
 .brand { display: flex; align-items: baseline; gap: 10px; }
 .brand h1 { font-size: 26px; font-weight: 700; }
 .brand .who { font: 500 13px var(--mono); color: var(--ink-3); }
-nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
-nav button { background: none; border: 0; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--ink-2); }
-nav button:hover { background: var(--surface-2); color: var(--ink); }
-.sm { display: none; }
-nav button[aria-current="page"] { background: var(--ink); color: var(--bg); }
+#nav { position: fixed; z-index: 30; display: flex; background: var(--surface); border-color: var(--line); border-style: solid; border-width: 0; }
+#nav button { background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 56px; min-width: 44px; font: 600 12px/1.1 var(--body); color: var(--ink-2); border-radius: 10px; }
+#nav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#nav button:hover { color: var(--ink); }
+#nav button[aria-current="page"] { color: var(--accent); }
+#nav button[aria-current="page"] svg { stroke-width: 2.2; }
+@media (max-width: 899px) {
+  #nav { left: 0; right: 0; bottom: 0; border-top-width: 1px; padding: 2px 4px env(safe-area-inset-bottom, 0px); box-shadow: 0 -2px 12px rgba(22, 32, 29, .06); }
+  #nav button { flex: 1; }
+  main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 900px) {
+  #nav { top: 0; bottom: 0; left: 0; width: 84px; flex-direction: column; gap: 6px; padding: 76px 8px 16px; border-right-width: 1px; }
+  #nav button { min-height: 64px; }
+  #nav button:hover { background: var(--surface-2); }
+  #nav button[aria-current="page"] { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  body { padding-left: 84px; }
+  .top { position: sticky; top: 0; z-index: 31; }
+}
 
 section.view { padding-top: 24px; }
+/* Train: one hub, three areas */
+.subswitch { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; margin-top: 18px; max-width: 520px; }
+.subswitch button { flex: 1; min-height: 44px; border: 0; border-radius: 7px; background: none; cursor: pointer; font: 600 15px var(--body); color: var(--ink-2); }
+.subswitch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.subswitch + section.view { padding-top: 18px; }
+/* one recommended action at the top of each area */
+.rec { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; flex-wrap: wrap; border-color: var(--accent); margin-top: 18px; }
+.rec h3 { font-size: 22px; }
+.rec p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 62ch; }
+.rec .btn { min-height: 44px; padding-inline: 18px; }
+details.more { margin-top: 22px; }
+details.more > summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 600 16px var(--body); color: var(--ink); }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .15s; margin-right: 2px; }
+details.more[open] > summary::before { transform: rotate(45deg); }
+details.more > summary .small { font-weight: 400; }
+details.more > .theme-grid { margin-top: 8px; }
+.gl { border: 0; background: none; padding: 0 2px; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+.backrow { margin-bottom: 12px; }
+.backrow .btn { min-height: 40px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
 
 /* report */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
 .stat { display: flex; flex-direction: column; gap: 6px; }
-.stat .v { font: 600 34px/1 var(--display); }
+.stat .v { font: 600 34px/1.1 var(--display); }
 .stat .s { font-size: 13px; color: var(--ink-2); }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px; margin-top: 16px; }
 .card h3 { margin-bottom: 4px; }
@@ -127,11 +165,26 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .viewer { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (max-width: 860px) { .viewer { grid-template-columns: minmax(0, 1fr); } }
 .board-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.board-shell { display: flex; gap: 8px; }
+.board-shell { display: flex; gap: 8px; min-width: 0; }
 .evalbar { width: 14px; border-radius: 3px; overflow: hidden; background: var(--eval-black); position: relative; flex: none; }
 .evalbar span { position: absolute; left: 0; right: 0; bottom: 0; background: var(--eval-white); transition: height .25s; }
 .evalbar.flip span { top: 0; bottom: auto; }
-.board { width: 100%; aspect-ratio: 1; max-width: 100%; }
+/* the board never grows taller than the screen leaves room for (header, back link, players, action bar) */
+.board { width: 100%; aspect-ratio: 1; max-width: min(100%, calc(100dvh - 210px)); margin-inline: auto; }
+.board-shell .board { flex: 1 1 0; min-width: 0; width: auto; margin: 0; }
+.board-shell { max-width: min(100%, calc(100dvh - 210px + 22px)); width: 100%; margin-inline: auto; }
+.btn kbd { margin-left: 6px; }
+/* exercise buttons: on phones they sit in a bar above the tab bar, in thumb reach */
+@media (max-width: 899px) {
+  .actionbar { position: fixed; z-index: 25; left: 0; right: 0; bottom: calc(60px + env(safe-area-inset-bottom, 0px)); margin: 0; padding: 8px 12px; background: color-mix(in srgb, var(--bg) 94%, transparent); border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: nowrap; }
+  .actionbar > .btn, .actionbar .verdict .btn { flex: 1 1 0; min-height: 46px; padding-inline: 6px; white-space: nowrap; }
+  .actionbar > .btn.narrow { flex: 0 0 48px; }
+  .actionbar:empty { display: none; }
+  .play { padding-bottom: 64px; }
+  .board { max-width: min(100%, calc(100dvh - 300px)); }
+  .board-shell { max-width: min(100%, calc(100dvh - 300px + 22px)); }
+  .controls .btn { min-height: 44px; }
+}
 .player { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; gap: 8px; }
 .player .clk { font: 500 13px var(--mono); color: var(--ink-2); }
 .controls { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -270,19 +323,33 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .quiz-opts button.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, transparent); }
 .quiz-opts button.wrong { border-color: var(--blunder); background: color-mix(in srgb, var(--blunder) 12%, transparent); }
 .quiz-opts button:disabled { cursor: default; }
+/* today */
+.day-sum { margin-top: 16px; }
+.day-sum ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.cheer { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--good) 14%, var(--surface)); }
+.cheer .medal { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--good); display: grid; place-items: center; animation: pop .6s cubic-bezier(.2, .9, .3, 1.4) both; }
+.cheer .medal svg { width: 22px; height: 22px; fill: none; stroke: var(--accent-ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw .45s .35s ease-out forwards; }
+.cheer strong { font: 600 20px/1.15 var(--display); display: block; }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.resume { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.goodnews { margin: 10px 0 0; padding-left: 22px; display: grid; gap: 8px; max-width: 75ch; }
+.notes h4 { font: 600 16px var(--body); margin: 18px 0 0; }
+/* glossary */
+.gloss-card { width: min(560px, 100%); max-height: min(80dvh, 720px); overflow-y: auto; }
+.gloss-card dl { margin: 10px 0 14px; display: grid; gap: 10px; }
+.gloss-card dt { font-weight: 700; }
+.gloss-card dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; }
+.gloss-card .hit { background: color-mix(in srgb, var(--accent) 12%, transparent); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
+.mg-check { margin: 0; }
+.mg-check summary { cursor: pointer; font-weight: 700; min-height: 32px; display: flex; align-items: center; }
+.mg-check ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; }
 @media (max-width: 520px) {
   .brand .who { display: none; }
-  nav { margin-left: 0; width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-  nav::-webkit-scrollbar { display: none; }
-  nav button { padding: 7px 10px; flex: 1 0 auto; }
-  .top .wrap { gap: 8px; }
-  .sync { position: absolute; right: 16px; top: 16px; }
-  .top { position: static; }
-  .lg { display: none; } .sm { display: inline; }
-  .seg button { min-height: 40px; }
+  .brand h1 { font-size: 22px; }
+  .seg button { min-height: 44px; }
   .movelist button { min-height: 36px; }
-  nav button { white-space: nowrap; }
-  .top .wrap { position: relative; }
+  .rec .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -290,23 +357,22 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 <header class="top">
   <div class="wrap">
     <div class="brand"><h1>Chess Trainer</h1><span class="who">Janczu00 · rapid</span></div>
-    <nav id="nav">
-      <button data-view="report" aria-current="page">Report</button>
-      <button data-view="games"><span class="lg">My games</span><span class="sm">Games</span></button>
-      <button data-view="openings">Openings</button>
-      <button data-view="tactics">Tactics</button>
-      <button data-view="middle"><span class="lg">Middlegame</span><span class="sm">Middle</span></button>
-      <button data-view="endgame"><span class="lg">Endgames</span><span class="sm">Endings</span></button>
-    </nav>
     <span class="sync" id="sync" title="Where your progress is saved"><i></i><span>Loading…</span></span>
   </div>
 </header>
+<nav id="nav" aria-label="Sections">
+  <button data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8.5 15l2.2 2.2 4.8-4.7"/></svg>Today</button>
+  <button data-tab="games"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M12 3.5v17M3.5 12h17"/><path d="M3.5 7.75h4.25V3.5M12 12h4.25v4.25H12zM16.25 3.5v4.25h4.25M3.5 16.25h4.25v4.25" fill="currentColor" stroke="none" opacity=".35"/></svg>Games</button>
+  <button data-tab="openings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5V20"/></svg>Openings</button>
+  <button data-tab="train"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".9" fill="currentColor"/></svg>Train</button>
+  <button data-tab="stats"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16.5V11M12 16.5V5.5M17 16.5v-8"/></svg>Stats</button>
+</nav>
 
 <main class="wrap">
   <!-- ACCOUNT (installed app only) -->
   <div class="overlay" id="account" hidden>
     <div class="card account-card" role="dialog" aria-labelledby="acc-h">
-      <h3 id="acc-h">Sync your progress</h3>
+      <h2 id="acc-h" style="font-size:22px">Sync your progress</h2>
       <div id="acc-out">
         <p class="small muted">Sign in with your fitness app login to sync between your phone and laptop. Without signing in, progress is saved only on this device.</p>
         <label class="small" for="acc-email">Email</label><input id="acc-email" type="email" autocomplete="username">
@@ -327,14 +393,33 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
     </div>
   </div>
 
-  <!-- REPORT -->
-  <section class="view" id="view-report">
+  <!-- GLOSSARY -->
+  <div class="overlay" id="glossary" hidden>
+    <div class="card gloss-card" role="dialog" aria-labelledby="gl-h">
+      <h2 id="gl-h" style="font-size:22px">Chess words used here</h2>
+      <dl id="gl-list"></dl>
+      <button class="btn" id="gl-close">Close</button>
+    </div>
+  </div>
+
+  <!-- TODAY -->
+  <section class="view" id="view-today">
+    <h2 id="today-title">Today</h2>
+    <p class="muted" id="today-lead" style="margin:6px 0 16px"></p>
     <div class="card today" id="today">
+      <div id="today-cheer"></div>
       <div class="today-head"><h3>Today's training</h3><span class="small muted" id="today-streak"></span></div>
       <div class="today-list" id="today-list"></div>
     </div>
-    <div class="eyebrow" id="rep-range" style="margin-top:22px"></div>
-    <h2 style="margin:6px 0 16px">Where your rapid games are won and lost</h2>
+    <div class="card resume" id="today-resume" hidden></div>
+    <div class="card day-sum" id="today-sum" hidden></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="view-report" hidden>
+    <h2>Stats</h2>
+    <p class="muted" style="margin:6px 0 4px">Where your rapid games are won and lost.</p>
+    <p class="small muted" id="rep-range" style="margin:0 0 16px"></p>
     <div class="stats card" id="rep-stats"></div>
     <div class="card notes" id="coach-notes">
       <h3>Coach's notes</h3>
@@ -342,11 +427,11 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
     </div>
     <div class="grid2">
       <div class="card"><h3>Rating</h3><p class="sub">Your rapid rating after each game in this period.</p><div id="rep-rating"></div></div>
-      <div class="card"><h3>Which part of the game costs you</h3><p class="sub">Mistakes per game, split by opening (first 12 moves), middlegame and endgame.</p><div id="rep-phase"></div></div>
+      <div class="card"><h3>Which part of the game costs you</h3><p class="sub"><button class="gl" data-term="mistake">Mistakes</button> per game, split by opening (first 12 moves), middlegame and endgame.</p><div id="rep-phase"></div></div>
       <div class="card"><h3>What kind of mistakes</h3><p class="sub">What the engine found behind your blunders and mistakes. One mistake can have several causes.</p><div id="rep-types"></div></div>
       <div class="card"><h3>The clock</h3><p class="sub">How often a move is a mistake or blunder, depending on how much time you had left.</p><div id="rep-clock"></div></div>
-      <div class="card"><h3>Winning positions</h3><p class="sub">What happened after you reached a clearly winning or clearly losing position (engine win chance above 85% or below 15%).</p><div id="rep-convert"></div></div>
-      <div class="card"><h3>Accuracy by game result</h3><p class="sub">Average move accuracy (Lichess formula, 0–100) in wins, draws and losses.</p><div id="rep-acc"></div></div>
+      <div class="card"><h3>Winning positions</h3><p class="sub">What happened after you reached a clearly winning or clearly losing position (<button class="gl" data-term="winchance">winning chance</button> above 85% or below 15%). The same count is used everywhere in the app..</p><div id="rep-convert"></div></div>
+      <div class="card"><h3>Accuracy by game result</h3><p class="sub">Average move <button class="gl" data-term="accuracy">accuracy</button> (Lichess formula, 0–100) in wins, draws and losses.</p><div id="rep-acc"></div></div>
     </div>
     <div class="card" style="margin-top:16px">
       <h3>Your openings</h3>
@@ -361,7 +446,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
   <!-- GAMES -->
   <section class="view" id="view-games" hidden>
     <div id="games-list-wrap">
-      <h2>My games</h2>
+      <h2>Games</h2>
       <div class="filters">
         <div class="seg" id="f-color"><button data-v="all" aria-pressed="true">All</button><button data-v="white">White</button><button data-v="black">Black</button></div>
         <div class="seg" id="f-result"><button data-v="all" aria-pressed="true">All</button><button data-v="win">Wins</button><button data-v="loss">Losses</button><button data-v="draw">Draws</button></div>
