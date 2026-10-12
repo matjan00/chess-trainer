@@ -9,13 +9,11 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 11;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 12;</script>
 </head>
 <body>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="vendor/fonts/fonts.css">
 <style>
 .cg-wrap {
   box-sizing: content-box;
@@ -2879,7 +2877,8 @@ if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get gam
   addEventListener('appinstalled', () => document.getElementById('install-bar')?.remove());
   if ('serviceWorker' in navigator) {
     const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready)
+      .then(reg => reg.active && reg.active.postMessage('warm')).catch(() => {});   // make sure the offline copy is complete
     let reloaded = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
   }
@@ -2889,13 +2888,12 @@ if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get gam
     bar.className = 'card update-bar';
     bar.innerHTML = '<span><strong>A new version is ready.</strong> <span class="small muted">Update to get the latest courses and fixes.</span></span><button class="btn primary">Update</button>';
     bar.querySelector('button').onclick = async () => {
-      try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.update()));
-        const keys = await caches.keys();
-        await Promise.all(keys.filter(k => k !== 'chess-fonts').map(k => caches.delete(k)));
-      } catch (e) { /* reload anyway */ }
-      location.reload();
+      // the new version saves itself completely, then takes over (the page reloads on controllerchange);
+      // the current offline copy is never deleted first, so the app keeps working offline throughout
+      bar.querySelector('button').disabled = true;
+      bar.querySelector('strong').textContent = 'Updating…';
+      try { const reg = await navigator.serviceWorker.getRegistration(); await reg?.update(); } catch (e) { /* offline */ }
+      setTimeout(() => location.reload(), 8000);   // fallback if no new version took over
     };
     document.querySelector('main').prepend(bar);
   }).catch(() => { /* offline */ });

@@ -105,6 +105,8 @@ SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publis
 DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json",
               "convert.json", "technique.json", "endgames.json", "essentials.json"]
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
+# fonts travel with the app (no Google Fonts request, so nothing waits for the internet on a plane)
+FONTS = sorted(f.name for f in (ROOT / "vendor" / "pwa" / "fonts").iterdir())
 
 MANIFEST = {
     # "id" gives the app a fixed identity, so Chrome installs it as a proper app (not a shortcut)
@@ -119,39 +121,44 @@ MANIFEST = {
 }
 
 SW = """// Offline support: every app file is saved on the device when the app is installed or updated, and served
-// from there (so it opens with no signal). A new version gets a new cache. Sign-in and sync calls to
+// from there (so it opens with no signal). A new version gets a new cache and only takes over once it is
+// completely saved. Anything missing is fetched and saved the next time there is a connection, and the app
+// asks for a check on every start ('warm'), so the offline copy repairs itself. Sign-in and sync calls to
 // Supabase always go to the network. version.json is never cached, so the app can tell when an update exists.
 const VERSION = 'chess-v__V__';
 const CORE = __CORE__;
+async function warm() {
+  const c = await caches.open(VERSION);
+  for (const u of CORE) {
+    if (await c.match(u, { ignoreSearch: true })) continue;
+    try { const res = await fetch(new Request(u, { cache: 'reload' })); if (res.ok) await c.put(u, res); } catch (e) { return; }   // offline: try next time
+  }
+}
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION && k !== 'chess-fonts').map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('chess-') && k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
+self.addEventListener('message', e => { if (e.data === 'warm') e.waitUntil(warm()); });
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.origin !== location.origin) return;            // Supabase sync and links: straight to the network
   if (url.pathname.endsWith('/version.json')) return;
   // the install file always comes fresh from the website when online, so Chrome sees the current app identity
   if (url.pathname.endsWith('/manifest.webmanifest')) {
     e.respondWith(fetch(req, { cache: 'no-store' }).catch(() => caches.match(req, { ignoreSearch: true })));
     return;
   }
-  if (url.origin === location.origin) {
-    e.respondWith(caches.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req)));
-    return;
-  }
-  if (url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com')) {
-    e.respondWith(caches.open('chess-fonts').then(async c => {
-      const hit = await c.match(req);
-      if (hit) return hit;
-      const res = await fetch(req);
-      if (res.ok || res.type === 'opaque') c.put(req, res.clone());
-      return res;
-    }));
-  }
+  e.respondWith(caches.open(VERSION).then(async c => {
+    const hit = await c.match(req, { ignoreSearch: true });
+    if (hit) return hit;
+    const res = await fetch(req);                            // not saved yet: fetch it and save it for next time
+    if (res.ok) c.put(req.mode === 'navigate' ? 'index.html' : req, res.clone());
+    return res;
+  }));
 });
 """
 
@@ -172,7 +179,8 @@ BOOT = """<script>
   addEventListener('appinstalled', () => document.getElementById('install-bar')?.remove());
   if ('serviceWorker' in navigator) {
     const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready)
+      .then(reg => reg.active && reg.active.postMessage('warm')).catch(() => {});   // make sure the offline copy is complete
     let reloaded = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
   }
@@ -182,13 +190,12 @@ BOOT = """<script>
     bar.className = 'card update-bar';
     bar.innerHTML = '<span><strong>A new version is ready.</strong> <span class="small muted">Update to get the latest courses and fixes.</span></span><button class="btn primary">Update</button>';
     bar.querySelector('button').onclick = async () => {
-      try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.update()));
-        const keys = await caches.keys();
-        await Promise.all(keys.filter(k => k !== 'chess-fonts').map(k => caches.delete(k)));
-      } catch (e) { /* reload anyway */ }
-      location.reload();
+      // the new version saves itself completely, then takes over (the page reloads on controllerchange);
+      // the current offline copy is never deleted first, so the app keeps working offline throughout
+      bar.querySelector('button').disabled = true;
+      bar.querySelector('strong').textContent = 'Updating…';
+      try { const reg = await navigator.serviceWorker.getRegistration(); await reg?.update(); } catch (e) { /* offline */ }
+      setTimeout(() => location.reload(), 8000);   // fallback if no new version took over
     };
     document.querySelector('main').prepend(bar);
   }).catch(() => { /* offline */ });
@@ -203,11 +210,22 @@ def build_app(html):
     assert cdn_chess in html and cdn_cg in html, "library tags changed: update build_app"
     page = html.replace(cdn_chess, '<script src="vendor/chess.min.js"></script>\n<script src="vendor/supabase.js"></script>')
     page = page.replace(cdn_cg, "from './vendor/chessground.min.js'")
+    google = ['<link rel="preconnect" href="https://fonts.googleapis.com">\n', '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n']
+    for g in google: page = page.replace(g, "")
+    gcss = page[page.index('<link rel="stylesheet" href="https://fonts.googleapis.com'):]
+    gcss = gcss[:gcss.index(">") + 1]
+    page = page.replace(gcss, '<link rel="stylesheet" href="vendor/fonts/fonts.css">')
+    assert "fonts.googleapis" not in page, "a Google Fonts link is left in the page" 
     title_end = page.index("</title>") + len("</title>")
     title, body = page[:title_end], page[title_end:]
 
     for f in VENDOR:
         shutil.copy(ROOT / "vendor" / "pwa" / f, APP / "vendor" / f)
+    (APP / "vendor" / "fonts").mkdir(exist_ok=True)
+    for f in FONTS:
+        data = (ROOT / "vendor" / "pwa" / "fonts" / f).read_bytes()
+        if f == "fonts.css": data = data.replace(b"url(fonts/", b"url(")   # css sits next to the font files
+        (APP / "vendor" / "fonts" / f).write_bytes(data)
     for f in ("icon-180.png", "icon-192.png", "icon-512.png"):
         shutil.copy(ROOT / "vendor" / "pwa" / "icons" / f, APP / f)
     for f in DATA_FILES:
@@ -216,7 +234,7 @@ def build_app(html):
 
     # the version only goes up when something the phone downloads has changed
     h = hashlib.sha256((page + BOOT + SW + json.dumps(MANIFEST) + json.dumps(SUPABASE)).encode("utf-8"))   # everything that ends up on the phone
-    for f in sorted(DATA_FILES + [f"vendor/{v}" for v in VENDOR] + ["icon-192.png", "icon-512.png", "manifest.webmanifest"]):
+    for f in sorted(DATA_FILES + [f"vendor/{v}" for v in VENDOR] + [f"vendor/fonts/{x}" for x in FONTS] + ["icon-192.png", "icon-512.png", "manifest.webmanifest"]):
         h.update((APP / f).read_bytes())
     digest = h.hexdigest()[:16]
     vfile = APP / "version.json"
@@ -232,7 +250,7 @@ def build_app(html):
             f'<script>window.CHESS_SUPABASE = {json.dumps(SUPABASE)}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = {v};</script>\n'
             '</head>\n<body>\n')
     (APP / "index.html").write_text(head + body + "\n" + BOOT + "\n</body>\n</html>\n", encoding="utf-8")
-    core = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"] + DATA_FILES + [f"vendor/{x}" for x in VENDOR]
+    core = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"] + DATA_FILES + [f"vendor/{x}" for x in VENDOR] + [f"vendor/fonts/{x}" for x in FONTS]
     (APP / "sw.js").write_text(SW.replace("__V__", str(v)).replace("__CORE__", json.dumps(core)), encoding="utf-8")
     print(f"built app version {v}{' (unchanged)' if v == old['v'] else ''} in", APP)
 
