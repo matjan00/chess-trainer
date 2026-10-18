@@ -19,7 +19,9 @@ LICHESS = "https://explorer.lichess.ovh/lichess?variant=standard&speeds=blitz,ra
 MASTERS = "https://explorer.lichess.ovh/masters?moves=0&topGames=15&fen="
 MASTERS_PGN = "https://explorer.lichess.ovh/masters/pgn/"
 MAX_PLY = 20            # how deep the statistics tree goes
-MAX_POS = 450           # positions fetched per course at most
+MAX_POS = 350           # positions visited per course at most
+BUDGET = 85 * 60        # stop asking Lichess after this many seconds; finish with what is saved
+START = time.time()
 MIN_GAMES = 40          # below this the statistics are too thin to use
 OPP_SHARE = 0.06        # opponent replies at least this common are followed
 
@@ -34,7 +36,7 @@ def get(url, tries=6):
                             "-H", f"Authorization: Bearer {TOKEN}", url], capture_output=True)
         body, _, code = r.stdout.decode("utf-8", "replace").rpartition("\n")
         if code == "200":
-            time.sleep(0.35)
+            time.sleep(1.0)            # about one question per second keeps Lichess from pausing us
             return body
         if code == "429":
             print("rate limited, waiting 60 s", flush=True); time.sleep(60); continue
@@ -49,7 +51,8 @@ def main():
         sys.exit("LICHESS_TOKEN is not set")
     courses = json.loads((DATA / "courses.json").read_text(encoding="utf-8"))
     old = json.loads((DATA / "explorer.json").read_text(encoding="utf-8")) if (DATA / "explorer.json").exists() else {}
-    stats = {}
+    stats = dict(old.get("stats", {}))      # reuse what earlier runs fetched: each run continues where the last stopped
+    out = dict(old.get("courses", {}))
     eng = chess.engine.SimpleEngine.popen_uci(str(find_engine(ROOT)))
     eng.configure({"Threads": max(1, (os.cpu_count() or 2)), "Hash": 256})
     evals = {}
@@ -65,6 +68,7 @@ def main():
     def explore(board):
         k = key(board)
         if k in stats: return stats[k]
+        if time.time() - START > BUDGET: return None      # out of time: use only what is saved
         body = get(LICHESS + urllib.parse.quote(board.fen()))
         if body is None: return None
         d = json.loads(body)
@@ -78,7 +82,6 @@ def main():
         stats[k] = {"n": n, "m": mv}
         return stats[k]
 
-    out = {}
     for c in courses:
         me = chess.WHITE if c["side"] == "white" else chess.BLACK
         course_moves = {}                                    # position -> course moves (by position, transpositions too)
@@ -103,6 +106,8 @@ def main():
             for san in nxt:
                 b2 = b.copy(); b2.push_san(san); q.append((b2, path + [san]))
         print(f'{c["id"]}: {fetched} positions', flush=True)
+        if time.time() - START > BUDGET and c["id"] in out:
+            print("  out of time: keeping the earlier results for this opening", flush=True); continue
 
         # traps and common mistakes at this level, in and around the course
         traps = []
@@ -175,11 +180,11 @@ def main():
             if len(cont) >= 2: ext[l["id"]] = cont
 
         # model games: strong players' wins for your side from the course's main position
-        models = []
+        models = (out.get(c["id"]) or {}).get("models", [])
         b = chess.Board()
         main = c["lines"][0]["moves"]
         for m in main[:min(8, len(main))]: b.push_san(m["san"])
-        body = get(MASTERS + urllib.parse.quote(b.fen()))
+        body = get(MASTERS + urllib.parse.quote(b.fen())) if not models and time.time() - START < BUDGET else None
         games = json.loads(body).get("topGames", []) if body else []
         want = "white" if me == chess.WHITE else "black"
         for gm in [g for g in games if g.get("winner") == want][:2]:
@@ -202,10 +207,15 @@ def main():
                            "result": "1-0" if gm["winner"] == "white" else "0-1", "moves": moves, "ok": ok})
         out[c["id"]] = {"traps": traps, "extra": extra, "ext": ext, "models": models}
         print(f'  traps {len(traps)}, extra lines {len(extra)}, longer lines {len(ext)}, model games {len(models)}', flush=True)
+        save(stats, out)                                   # after every opening, so nothing is lost
 
     eng.quit()
+    save(stats, out)
+    print(len(stats), "positions with statistics;", "stopped early (time budget), the next run continues" if time.time() - START > BUDGET else "complete")
+
+
+def save(stats, out):
     (DATA / "explorer.json").write_text(json.dumps({"stats": stats, "courses": out}, separators=(",", ":")), encoding="utf-8")
-    print(len(stats), "positions with statistics")
 
 
 if __name__ == "__main__":
