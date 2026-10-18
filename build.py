@@ -89,7 +89,7 @@ def main():
     # the page doesn't need the per-move FEN strings, the drills carry their own
     slim = [{**g, "plies": [{k: v for k, v in p.items() if k != "fen"} for p in g["plies"]]} for g in games]
     (DIST / "analysis.json").write_text(json.dumps(slim, separators=(",", ":")), encoding="utf-8")
-    for f in ("drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json"):
+    for f in ("drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json", "structures.json"):
         if (DATA / f).exists(): shutil.copy(DATA / f, DIST / f)
     shutil.copy(ROOT / "vendor" / "sf" / "stockfish.wasm", DIST / "stockfish.wasm")
     print("built", DIST / "index.html")
@@ -103,7 +103,7 @@ def main():
 APP = ROOT / "docs"
 SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}
 DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json",
-              "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json"]
+              "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json", "structures.json"]
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
 # fonts travel with the app (no Google Fonts request, so nothing waits for the internet on a plane)
 FONTS = sorted(f.name for f in (ROOT / "vendor" / "pwa" / "fonts").iterdir())

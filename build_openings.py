@@ -18,7 +18,7 @@ ENGINE = find_engine(ROOT)
 
 
 def pos_key(board):
-    return " ".join(board.fen().split()[:4])
+    return " ".join(board.fen().split()[:3]) + " -"   # same key as the app (no en-passant square)
 
 
 def main():

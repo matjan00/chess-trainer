@@ -1,0 +1,44 @@
+{
+ "jobava": [
+  {"title": "The f4 pawn and the e5 square", "path": "d4 d5 Nc3 Nf6 Bf4 e6 e3 Bd6 Nb5 Bxf4 exf4 O-O Nf3 a6 Nc3 c5",
+   "text": "After ...Bxf4 exf4 your pawn on f4 controls e5 for good. Black has also traded away the bishop that guards the dark squares.",
+   "points": ["Put a knight on e5: d4 and f4 protect it and Black can't kick it with a pawn.", "Attack with Qf3 or Qh5 and Rae1 once the knight sits on e5.", "Take on c5 when Black plays ...c5 and the recapture costs Black time."]},
+  {"title": "Opposite castling against the King's Indian", "path": "d4 Nf6 Nc3 g6 Bf4 Bg7 e4 d6 Qd2 O-O O-O-O c6",
+   "text": "You take the whole centre, castle long, and race your pawns at Black's king. Black races on the queenside with ...b5 and ...Qa5.",
+   "points": ["Trade Black's king bishop with Bh6: without it the dark squares round the king are weak.", "f3, g4, h4-h5: open the h-file for your rook.", "Count tempi. If Black's attack is faster, Kb1 and a calm defensive move first."]}
+ ],
+ "caro": [
+  {"title": "The Exchange structure", "path": "e4 c6 d4 d5 exd5 cxd5 Bd3 Nc6 c3 Nf6 Bf4 Bg4",
+   "text": "Symmetrical pawns on d4 and d5. White usually aims at your king with Bd3 and Qc2; you play on the queenside.",
+   "points": ["Develop the light-squared bishop (...Bg4 or ...Bf5) before ...e6 locks it in.", "The minority attack: ...a6, ...b5, ...b4 against White's c3 pawn creates a weakness.", "Keep a knight on f6 to defend h7 against Bd3 and Qc2 ideas."]},
+  {"title": "The Advance structure", "path": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5",
+   "text": "White's e5 pawn takes space. Your target is the base of White's chain, the d4 pawn.",
+   "points": ["Hit d4 with ...c5, ...Nc6 and ...Qb6: three attackers on one pawn.", "The knight belongs on f5 (via e7 or h6), where it also presses d4.", "Don't hurry with ...f6: it weakens e6 and your king. Use it only when d4 is well covered."]}
+ ],
+ "kid": [
+  {"title": "The locked centre", "path": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7",
+   "text": "After d5 the centre is closed. Each side attacks where its pawns point: White on the queenside, you on the kingside.",
+   "points": ["Move the f6 knight (to e8 or d7) to free the f-pawn, then ...f5.", "Follow up with ...f4, ...g5 and ...g4: a pawn storm at White's king.", "Don't defend passively on the queenside; the race is won by speed."]},
+  {"title": "Against the London", "path": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Be2 d6 O-O c5",
+   "text": "Once White's bishop leaves c1, the b2 pawn has no defender and d4 is the target.",
+   "points": ["...c5 and ...Qb6 hit b2 and d4 together.", "...Nc6 adds a third attacker on d4.", "Later the ...e5 break, prepared with ...Nbd7, opens the bishop on g7."]}
+ ],
+ "e4": [
+  {"title": "The Spanish build-up", "path": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 d6 c3 O-O h3",
+   "text": "A slow, strong set-up: c3 prepares d4, h3 stops the pin, and the b3 bishop aims at Black's king.",
+   "points": ["Play d4 when it is prepared; keep the e4 pawn defended.", "The knight walks Nbd2, Nf1, Ng3: from g3 it eyes f5.", "Keep the bishop: it is your best attacker. Retreat it to c2 if it is chased."]},
+  {"title": "The Rossolimo with doubled pawns", "path": "e4 c5 Nf3 Nc6 Bb5 g6 Bxc6 dxc6 d3 Bg7 h3 Nf6 Nc3 O-O Be3 b6 Qd2",
+   "text": "You gave the bishop to double Black's c-pawns. Black has the two bishops, so keep the position closed.",
+   "points": ["Trade the dark-squared bishops with Bh6; Black's king and pawns get weaker.", "Closed positions favour your knights; avoid opening lines for Black's bishops.", "The doubled c-pawns are a long-term target in the endgame."]}
+ ],
+ "italian": [
+  {"title": "The slow Italian", "path": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 d6 O-O a6 a4 O-O Re1 Ba7 h3 h6 Nbd2 Re8 Nf1",
+   "text": "No early fight: you prepare everything, then strike in the centre or on the kingside.",
+   "points": ["The knight travels Nbd2, Nf1, Ng3 and then to f5.", "a4 stops ...b5 from chasing your bishop.", "Break with d3-d4 only when your pieces are ready."]}
+ ],
+ "slav": [
+  {"title": "The Slav with ...Bf5 and ...e6", "path": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6 Bxc4 Bb4 O-O O-O",
+   "text": "Like the Caro-Kann: your light-squared bishop is outside the pawn chain, and your position is very solid.",
+   "points": ["Free your game with ...c5 or ...e5 once your pieces are out.", "If White chases the bishop with Nh4, retreat to g6 and recapture towards the centre.", "Watch e4: White wants to play it, so keep pressure on it with ...Bb4 and your knights."]}
+ ]
+}

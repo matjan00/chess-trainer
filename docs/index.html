@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 12;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 17;</script>
 </head>
 <body>
 
@@ -618,6 +618,34 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .sync.tappable { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
 .update-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; border-color: var(--accent); }
 
+/* opening hub */
+.oc-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 18px 0 14px; padding-bottom: 2px; }
+.oc-tabs::-webkit-scrollbar { display: none; }
+.oc-tabs button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 99px; padding: 8px 14px; min-height: 40px; font: 600 14px var(--body); cursor: pointer; white-space: nowrap; }
+.oc-tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.hub-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.hub-head p { margin: 4px 0 0; max-width: 70ch; }
+.hub-stats { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); }
+.hub-stats b { font: 600 22px var(--display); color: var(--ink); margin-right: 4px; font-variant-numeric: tabular-nums; }
+.hub-list { display: grid; gap: 8px; }
+.hub-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.hub-item .t { font-weight: 600; }
+.hub-item .d { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
+.hub-item .mv { font: 12px var(--mono); color: var(--ink-3); grid-column: 1 / -1; }
+.struct { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 640px) { .struct { grid-template-columns: minmax(0, 1fr); } }
+.mini-board { width: 100%; max-width: 240px; aspect-ratio: 1; }
+.struct ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; }
+.choice-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.choice-row button { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 10px; min-height: 36px; font: 13px var(--mono); cursor: pointer; color: var(--ink); }
+.choice-row button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.freq { font-size: 12px; color: var(--ink-3); }
+.bars-mini { display: grid; gap: 6px; }
+.bars-mini div { display: grid; grid-template-columns: 90px 1fr 46px; gap: 8px; align-items: center; font-size: 13px; }
+.bars-mini i { display: block; height: 10px; border-radius: 3px; background: var(--accent); }
+.timer { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.timer span { display: block; height: 100%; background: var(--mistake); width: 100%; transition: width .1s linear; }
+
 /* sync chip */
 .sync { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
 .sync i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); }
@@ -854,12 +882,17 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
           <button class="btn" id="oc-ideas" title="Positions from this opening: find the move that follows the typical plan">Quiz: typical plans</button>
         </div>
       </div>
-      <div class="course-body">
+      <div class="oc-tabs" id="oc-tabs" role="tablist" aria-label="Parts of this course">
+        <button data-sec="lines" role="tab">Lines</button><button data-sec="drill" role="tab">Drill</button><button data-sec="speed" role="tab">Speed</button><button data-sec="spar" role="tab">Spar</button><button data-sec="traps" role="tab">Traps</button><button data-sec="plans" role="tab">Plans</button><button data-sec="models" role="tab">Model games</button><button data-sec="games" role="tab">Your games</button><button data-sec="report" role="tab">Report</button><button data-sec="mine" role="tab">My moves</button>
+      </div>
+      <div class="oc-sec" id="oc-sec-lines">
         <div class="card">
           <h3>Lines</h3>
           <p class="sub">Play through each <button class="gl" data-term="line">line</button> once to learn it. Then it joins your reviews.</p>
           <div class="line-list" id="oc-lines"></div>
         </div>
+      </div>
+      <div class="oc-sec" id="oc-sec-games" hidden>
         <div class="card">
           <h3>In your games</h3>
           <p class="sub" id="oc-games-sub"></p>
@@ -867,6 +900,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
           <div id="oc-games"></div>
         </div>
       </div>
+      <div class="oc-sec" id="oc-sec-other" hidden></div>
     </div>
 
     <div id="op-game" hidden>
@@ -1073,6 +1107,12 @@ const [CONVERT, TECH, ENDGAMES] = await Promise.all([
   fetch('endgames.json').then(r => r.json()).catch(() => []),
 ]);
 const ESSENTIALS_DATA = await fetch('essentials.json').then(r => r.json()).catch(() => []);
+// opening hub data: drill cards (with engine alternatives), Lichess statistics at 1200-1600, pawn-structure lessons
+const [OPEN, XP, STRUCT] = await Promise.all([
+  fetch('openings.json').then(r => r.json()).catch(() => ({})),
+  fetch('explorer.json').then(r => r.json()).catch(() => ({ stats: {}, courses: {} })),
+  fetch('structures.json').then(r => r.json()).catch(() => ({})),
+]);
 GAMES.sort((a, b) => a.end - b.end);
 
 /* ---------- helpers ---------- */
@@ -1088,7 +1128,7 @@ const store = {
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 16, 35];   // days until the next review, by box
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og'];
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp'];
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -1775,7 +1815,40 @@ const dueLines = c => c.lines.filter(l => lineState(c, l).s === 'due').map(l => 
 const sanLine = (moves, n = moves.length) => moves.slice(0, n).map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.` : '') + m.san).join(' ');
 
 // every course move by position (piece placement, side, castling, en passant), so transpositions are recognised
-const posKey = fen => fen.split(' ').slice(0, 4).join(' ');
+// (the en-passant square is left out: chess.js and python-chess write it differently, and it almost never matters here)
+const posKey = fen => fen.split(' ').slice(0, 3).join(' ') + ' -';
+// data built by the Python scripts may carry an en-passant square: normalise those keys the same way
+for (const [k, v] of Object.entries(XP.stats || {})) { const n = posKey(k); if (n !== k) { XP.stats[n] = v; delete XP.stats[k]; } }
+for (const x of Object.values(XP.courses || {})) for (const t of x.traps || []) t.fen = posKey(t.fen);
+for (const x of Object.values(OPEN)) for (const cd of x.cards || []) cd.key = posKey(cd.key);
+// what players rated 1200-1600 play here (Lichess rapid + blitz), or null when the weekly statistics have no data
+const statsAt = fen => { const s = XP.stats?.[posKey(fen)]; return s && s.n >= 30 ? s : null; };
+const pct = x => `${Math.round(x * 100)}%`;
+const plyLabel = i => `${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'}`;
+for (const c of COURSES) {
+  const x = XP.courses?.[c.id] || {};
+  for (const l of c.lines) {
+    const e = x.ext?.[l.id];
+    if (e?.length) l.moves = l.moves.concat(e.map((m, i) => ({ san: m.san, ext: true,
+      c: i === 0 ? 'The course line ends here. The next moves show how games usually go on: the most popular replies at your level, and Stockfish\'s choices for you.'
+        : m.auto === 'popular' ? `The most common reply at your level (${pct(m.share)} of games).` : undefined })));
+  }
+  (x.extra || []).forEach((e, i) => c.lines.push({ id: `x${i}`, extra: true,
+    title: `Extra: ${plyLabel(e.path.length)} ${e.reply} (${pct(e.share)} at your level)`,
+    intro: `A reply the course didn't cover, played in ${pct(e.share)} of games at your level. Your moves are Stockfish's choices; your opponent's are the most popular replies.`,
+    moves: [...e.path.map(san => ({ san })), { san: e.reply, c: `Played in ${pct(e.share)} of games by players rated 1200-1600.` },
+      ...e.cont.map((m, j) => ({ san: m.san, c: m.auto === 'popular' ? `The most common reply here (${pct(m.share)}).` : j === 0 ? "Stockfish's choice: the best answer to this move." : undefined }))] }));
+  c.baseLines = c.lines.slice();
+}
+// your own lines (My moves → Add your own line) join the course like any other line
+function applyCustomLines() {
+  for (const c of COURSES) {
+    const mine = Object.entries(progress.cl).filter(([, v]) => v.course === c.id && !v.deleted).map(([id, v]) => ({ id: 'my-' + id, mine: true, title: v.title, intro: 'Your own line. Every one of your moves was checked by Stockfish when you made it.', moves: v.moves.map(san => ({ san })) }));
+    c.lines = c.baseLines.concat(mine);
+    c._pos = null; c._comments = null;
+  }
+}
+applyCustomLines();
 function coursePosMoves(c) {
   if (c._pos) return c._pos;
   c._pos = new Map();
@@ -1814,6 +1887,17 @@ for (const c of COURSES) {
   c.games.reverse();
 }
 
+function lineReach(c, l) {
+  const b = new Chess(); let p = 1, known = false;
+  for (let i = 0; i < l.moves.length; i++) {
+    if ((i % 2 === 0) !== (c.side === 'white')) {
+      const s = statsAt(b.fen()), m = s?.m.find(x => x[0] === l.moves[i].san);
+      if (s && m) { p *= m[1] / s.n; known = true; } else if (s) p *= 0.02;
+    }
+    if (!b.move(l.moves[i].san, { sloppy: true })) break;
+  }
+  return known ? p : null;
+}
 function renderOpeningsHome() {
   const card = c => {
     const known = c.lines.filter(l => progress.lines[lineKey(c, l)]).length;
@@ -1857,7 +1941,8 @@ function openCourse(c, keepScroll = false) {
   $('#oc-review').onclick = () => startReview(due.length ? due : c.lines.map(l => ({ c, l })));
   $('#oc-ideas').hidden = !c.ideas?.items?.length;
   $('#oc-ideas').onclick = () => startIdeas(c);
-  $('#oc-lines').innerHTML = c.lines.map(l => { const st = lineState(c, l); return `<button class="line-row" data-line="${l.id}"><span class="t">${esc(l.title)}</span><span class="status ${st.s}">${st.label}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span></button>`; }).join('');
+  $('#oc-lines').innerHTML = c.lines.map(l => { const st = lineState(c, l), r = lineReach(c, l); return `<button class="line-row" data-line="${l.id}"><span class="t">${l.mine ? 'Your line: ' : ''}${esc(l.title)}</span><span class="status ${st.s}">${st.label}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span>${r != null ? `<span class="freq">You meet this in about ${r < 0.01 ? 'under 1' : Math.round(r * 100)}% of games at your level</span>` : ''}</button>`; }).join('');
+  ocSection(c, store.get('ocsec.' + c.id, 'lines'));
   $('#oc-lines').onclick = e => { const b = e.target.closest('[data-line]'); if (b) startLearn(c, c.lines.find(l => l.id === b.dataset.line)); };
   const mineDev = c.games.filter(x => x.mine).length;
   $('#oc-games-sub').textContent = c.games.length ? `${c.games.length} of your rapid games reached this course. In ${mineDev} of them you were the one who left it. Click a game to see where it went off track, or train them all.` : 'None of your analysed games reached these lines yet. That is what the suggested courses are for.';
@@ -1876,9 +1961,9 @@ const op = { mode: null, queue: [], c: null, l: null, chess: null, ply: 0, wrong
 const lastMoveOf = chess => { const h = chess.history({ verbose: true }); const m = h[h.length - 1]; return m ? [m.from, m.to] : undefined; };
 function boardSet(extra = {}) {
   const color = op.chess.turn() === 'w' ? 'white' : 'black';
-  const myTurn = !op.busy && color === op.c.side && (op.mode === 'ideas' ? !op.ideaDone : op.ply < op.l.moves.length);
+  const myTurn = op.custom ? !op.busy && op.custom.canMove() : !op.busy && color === op.c.side && (op.mode === 'ideas' ? !op.ideaDone : op.ply < op.l.moves.length);
   const opts = { fen: op.chess.fen(), turnColor: color, check: op.chess.in_check(), orientation: op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side,
-    movable: { free: false, color: myTurn ? op.c.side : undefined, dests: myTurn ? toDests(op.chess) : new Map(), showDests: true, events: { after: onOpMove } },
+    movable: { free: false, color: myTurn ? (op.custom?.color === 'both' ? 'both' : op.c.side) : undefined, dests: myTurn ? toDests(op.chess) : new Map(), showDests: true, events: { after: onOpMove } },
     drawable: { autoShapes: [] }, animation: { duration: 200 }, coordinates: true, lastMove: lastMoveOf(op.chess), ...extra };
   if (!openCg) openCg = Chessground($('#oboard'), opts); else openCg.set(opts);
 }
@@ -1891,7 +1976,7 @@ function startLearn(c, l) { op.mode = 'learn'; op.queue = []; loadLine(c, l); }
 function startReview(items) { op.mode = 'review'; op.queue = items.slice(); if (!op.queue.length) return; const n = op.queue.shift(); loadLine(n.c, n.l); }
 function loadLine(c, l) {
   op.gen++;
-  Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null });
+  Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null, custom: null });
   $('#op-mode').textContent = `${c.title} · ${op.mode === 'learn' ? 'Learn' : op.mode === 'game' ? 'Train your game' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
   $('#op-title').textContent = l.title;
   $('#op-intro').textContent = op.mode === 'review' ? 'Play the course moves from memory. Notes come back if you go wrong.' : l.intro;
@@ -1918,7 +2003,10 @@ function advance() {
   if (theirs) {
     op.busy = true; boardSet();
     const g = op.gen;
-    setTimeout(() => { if (g !== op.gen) return; op.busy = false; const q = applyMove(m); if (q) askQuiz(q); else advance(); }, 450);
+    const st = statsAt(op.chess.fen()), hit = st?.m.find(x => x[0] === m.san);
+    setTimeout(() => { if (g !== op.gen) return; op.busy = false; const q = applyMove(m);
+      if (hit && (op.mode === 'learn' || op.mode === 'review')) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>: ${pct(hit[1] / st.n)} of players rated 1200-1600 choose it here.</span>`);
+      if (q) askQuiz(q); else advance(); }, 450);
   } else {
     op.wrong = 0; boardSet();
     if (op.mode === 'game' && op.ply === op.l.moves.length - 1)   // the moment the game went wrong
@@ -1926,6 +2014,7 @@ function advance() {
   }
 }
 function onOpMove(orig, dest) {
+  if (op.custom) return op.custom.onMove(orig, dest);
   if (op.mode === 'ideas') return onIdeaMove(orig, dest);
   const test = new Chess(op.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
   let want = op.l.moves[op.ply];
@@ -1945,6 +2034,7 @@ function onOpMove(orig, dest) {
   }
 }
 function hintShape(full) {
+  if (op.custom) return op.custom.hint ? op.custom.hint(full) : [];
   if (op.mode !== 'ideas' && (!op.l || op.ply >= op.l.moves.length)) return [];
   const c = new Chess(op.chess.fen()), m = c.move(op.mode === 'ideas' ? op.idea.ok[0] : op.l.moves[op.ply].san, { sloppy: true });
   if (!m) return [];
@@ -1952,7 +2042,7 @@ function hintShape(full) {
 }
 $('#op-hint').onclick = () => { if (!op.chess) return; op.errors++; openCg.set({ drawable: { autoShapes: hintShape(false) } }); feedback('<span class="muted">The circled piece moves.</span>'); };
 $('#op-showmove').onclick = () => { if (!op.chess) return; op.errors++; op.wrong = 2; openCg.set({ drawable: { autoShapes: hintShape(true) } }); feedback('<span class="muted">Play the arrow move on the board.</span>'); };
-$('#op-restart').onclick = () => { if (op.mode === 'ideas') loadIdea(); else if (op.l) loadLine(op.c, op.l); };
+$('#op-restart').onclick = () => { if (op.custom) op.custom.restart?.(); else if (op.mode === 'ideas') loadIdea(); else if (op.l) loadLine(op.c, op.l); };
 $('#op-flip').onclick = () => { op.flipped = !op.flipped; if (op.chess) boardSet(); };
 
 function askQuiz(q) {
@@ -2071,9 +2161,442 @@ function playOnFromLine(c, l) {
     sub: `The position at the end of this course line. The plan: ${l.moves[l.moves.length - 1].c || 'develop, castle, and look for your pawn break.'}`,
     intro: 'Free practice against Stockfish: no pass or fail. Stop whenever you like.', onNext: () => { show('openings'); openCourse(c); } });
 }
+/* ================= opening hub: sections of one course ================= */
+// what a move costs in centipawns: best move vs. this move, both searched from the same position
+async function moveCost(fen, uci, movetime = 600) {
+  const sc = r => r.score.mate !== undefined ? (r.score.mate > 0 ? 10000 - r.score.mate : -10000 - r.score.mate) : r.score.cp;
+  const best = await engine.go(fen, { movetime, skill: 20 }).catch(() => null);
+  if (!best) return null;
+  if (best.best === uci) return { loss: 0, best: best.best, score: sc(best) };
+  const mine = await engine.go(fen, { movetime, skill: 20, searchmoves: uci }).catch(() => null);
+  if (!mine) return null;
+  return { loss: Math.max(0, sc(best) - sc(mine)), best: best.best, score: sc(mine) };
+}
+const SECS = ['lines', 'drill', 'speed', 'spar', 'traps', 'plans', 'models', 'games', 'report', 'mine'];
+let miniCgs = [];
+$('#oc-tabs').onclick = e => { const b = e.target.closest('[data-sec]'); if (b && curCourse) ocSection(curCourse, b.dataset.sec); };
+function ocSection(c, sec) {
+  if (!SECS.includes(sec)) sec = 'lines';
+  store.set('ocsec.' + c.id, sec);
+  document.querySelectorAll('#oc-tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.sec === sec));
+  $('#oc-sec-lines').hidden = sec !== 'lines'; $('#oc-sec-games').hidden = sec !== 'games';
+  const box = $('#oc-sec-other'); box.hidden = sec === 'lines' || sec === 'games';
+  miniCgs.forEach(cg => cg.destroy?.()); miniCgs = [];
+  if (!box.hidden) box.innerHTML = '<div class="card">' + ({ drill: hubDrill, speed: hubSpeed, spar: hubSpar, traps: hubTraps, plans: hubPlans, models: hubModels, report: hubReport, mine: hubMine }[sec](c)) + '</div>';
+  if (sec === 'plans') drawMiniBoards(c);
+  box.querySelectorAll('[data-act]').forEach(b => b.onclick = () => HUB_ACTIONS[b.dataset.act](c, b.dataset));
+}
+const HUB_ACTIONS = {};
+const posId = (c, card) => `${c.id}/${card.id}`;
+
+// ---- cards: every position in the course where it is your move
+function customCards(c) {
+  const out = [];
+  for (const l of c.lines.filter(l => l.mine)) {
+    const b = new Chess(); const path = [];
+    l.moves.forEach((m, i) => {
+      if ((b.turn() === 'w') === (c.side === 'white')) out.push({ id: 'my' + l.id.slice(3) + '-' + i, key: posKey(b.fen()), path: path.slice(), want: [m.san], alts: [], line: l.id, ply: i });
+      b.move(m.san, { sloppy: true }); path.push(m.san);
+    });
+  }
+  return out;
+}
+const cardsOf = c => (OPEN[c.id]?.cards || []).concat(customCards(c));
+function cardAccept(c, card) {
+  const mine = progress.rep[posId(c, card)]?.san;
+  const course = [...(coursePosMoves(c).get(card.key) || []), ...card.want];
+  const expected = mine || card.want[0];
+  return { expected, ok: new Set([expected, ...course, ...card.alts.map(a => a.san)]) };
+}
+function cardDue(c) {
+  const now = Date.now(), cards = cardsOf(c);
+  const due = cards.filter(cd => progress.pos[posId(c, cd)] && progress.pos[posId(c, cd)].due <= now);
+  const fresh = cards.filter(cd => !progress.pos[posId(c, cd)]).sort((a, b) => a.ply - b.ply);
+  return { cards, due, fresh };
+}
+function hubDrill(c) {
+  const { cards, due, fresh } = cardDue(c);
+  const known = cards.filter(cd => (progress.pos[posId(c, cd)]?.box || 0) >= 4).length;
+  return `<div class="hub-head"><div><h3>Drill by position</h3><p class="muted">Every position in this course where it is your move is a card. Cards you know come back rarely; the exact spots you forget come back soon. Faster than replaying whole lines.</p></div>
+    <button class="btn primary" data-act="drill">${due.length ? `Drill ${due.length} due${fresh.length ? ' + new' : ''}` : fresh.length ? 'Start with new cards' : 'Practise anyway'}</button></div>
+    <div class="hub-stats"><span><b>${cards.length}</b>cards</span><span><b>${due.length}</b>due</span><span><b>${known}</b>known well</span><span><b>${fresh.length}</b>not seen yet</span></div>`;
+}
+HUB_ACTIONS.drill = c => {
+  const { cards, due, fresh } = cardDue(c);
+  let list = due.slice(0, 20).concat(fresh.slice(0, Math.max(5, 15 - due.length)));
+  if (!list.length) list = cards.slice().sort(() => Math.random() - .5).slice(0, 15);
+  startCards(c, list, 'drill');
+};
+function hubSpeed(c) {
+  const best = progress.spd[c.id]?.best;
+  return `<div class="hub-head"><div><h3>Speed round</h3><p class="muted">20 positions from this course, 5 seconds each. Instant recall saves clock time and lets you think where it matters.</p></div><button class="btn primary" data-act="speed">Start speed round</button></div>
+    <div class="hub-stats"><span><b>${best != null ? best + '/20' : '–'}</b>your best</span><span><b>${cardsOf(c).length}</b>positions in the pool</span></div>`;
+}
+HUB_ACTIONS.speed = c => startCards(c, cardsOf(c).slice().sort(() => Math.random() - .5).slice(0, 20), 'speed');
+
+function startCards(c, list, kind) {
+  if (!list.length) return;
+  curCourse = c; op.mode = 'cards'; op.c = c;
+  const st = { kind, queue: list.slice(), total: list.length, right: 0, done: 0, failed: new Set(), timer: null, t0: 0 };
+  const stopTimer = () => { clearInterval(st.timer); st.timer = null; };
+  const load = () => {
+    op.gen++; stopTimer();
+    const card = st.queue[0];
+    if (!card) return finish();
+    const { expected } = cardAccept(c, card);
+    st.card = card; st.expected = expected; st.missed = false;
+    op.chess = new Chess(); card.path.forEach(m => op.chess.move(m, { sloppy: true }));
+    op.busy = false; op.wrong = 0;
+    $('#op-mode').textContent = `${c.title} · ${kind === 'speed' ? 'Speed round' : 'Drill'} · ${st.done + 1} of ${kind === 'speed' ? st.total : st.total + st.failed.size}`;
+    $('#op-title').textContent = 'Your move';
+    $('#op-intro').textContent = card.path.length ? `After ${sanLine(card.path.map(san => ({ san })), card.path.length).split(' ').slice(-6).join(' ')}` : 'The starting position.';
+    $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
+    $('#op-restart').hidden = true;
+    feedback(kind === 'speed' ? '<span class="muted">Quick: what do you play here?</span><div class="timer"><span id="spd-bar"></span></div>' : '<span class="muted">Play your repertoire move.</span>');
+    opShow('player'); boardSet();
+    $('#op-progress').style.width = (st.done / st.total * 100) + '%';
+    if (kind === 'speed') {
+      st.t0 = Date.now();
+      st.timer = setInterval(() => { const left = 1 - (Date.now() - st.t0) / 5000; const bar = document.getElementById('spd-bar'); if (bar) bar.style.width = Math.max(0, left * 100) + '%'; if (left <= 0) { stopTimer(); miss(null, 'Time is up.'); } }, 100);
+    }
+  };
+  const next = (delay) => { const g = op.gen; setTimeout(() => { if (g === op.gen) load(); }, delay); };
+  const miss = (san, why) => {
+    const card = st.card; st.missed = true;
+    const shape = (() => { const m = new Chess(op.chess.fen()).move(st.expected, { sloppy: true }); return m ? [{ orig: m.from, dest: m.to, brush: 'green' }] : []; })();
+    op.busy = true; boardSet({ drawable: { autoShapes: shape } });
+    if (kind === 'drill') { record('pos', posId(c, card), { box: 1, due: Date.now() + DAY }); if (!st.failed.has(card.id)) { st.failed.add(card.id); st.queue.push(card); } }
+    st.queue.shift(); st.done++;
+    feedback(`<span class="big" style="font-size:18px">${why || `${esc(san)} isn't your move here`}</span><div class="small">The move is <strong>${esc(st.expected)}</strong> (arrow).</div><div class="controls" style="margin-top:8px"><button class="btn primary" id="card-next">Next</button></div>`, 'wrong');
+    $('#card-next').onclick = load;
+  };
+  op.custom = {
+    canMove: () => !!st.card && (op.chess.turn() === 'w') === (c.side === 'white'),
+    onMove(orig, dest) {
+      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
+      if (!mv) return boardSet();
+      stopTimer();
+      const { ok } = cardAccept(c, st.card);
+      if (!ok.has(mv.san)) return miss(mv.san);
+      op.chess.move(mv.san); op.busy = true; boardSet({ lastMove: [orig, dest] });
+      const card = st.card;
+      if (kind === 'drill' && !st.failed.has(card.id)) { const box = Math.min(5, (progress.pos[posId(c, card)]?.box || 0) + 1); record('pos', posId(c, card), { box, due: Date.now() + INTERVALS[box] * DAY }); }
+      st.right++; st.queue.shift(); st.done++;
+      const alt = mv.san !== st.expected;
+      feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>${alt ? `<div class="small muted">Good too. Your repertoire move here is ${esc(st.expected)}.</div>` : ''}`, 'right');
+      next(kind === 'speed' ? 450 : alt ? 1600 : 800);
+    },
+    hint: full => { const m = new Chess(op.chess.fen()).move(st.expected, { sloppy: true }); st.missed = true; return m ? (full ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [{ orig: m.from, brush: 'yellow' }]) : []; },
+  };
+  const finish = () => {
+    stopTimer(); op.busy = true; boardSet();
+    if (kind === 'speed') { const prev = progress.spd[c.id]?.best ?? -1; if (st.right > prev) record('spd', c.id, { best: st.right }); }
+    $('#op-progress').style.width = '100%';
+    feedback(`<span class="big">${kind === 'speed' ? `${st.right} of ${st.total} in time` : `Drill done: ${st.total - st.failed.size} of ${st.total} right first time`}</span>
+      <div class="small">${kind === 'drill' ? 'Cards you missed come back tomorrow; the rest come back later and later as you keep getting them right.' : (progress.spd[c.id]?.best === st.right ? 'A new best for this course.' : `Your best is ${progress.spd[c.id]?.best}/20.`)}</div>
+      <div class="controls" style="margin-top:10px"><button class="btn primary" id="cards-again">${kind === 'speed' ? 'Another round' : 'More cards'}</button><button class="btn" id="cards-back">Back to course</button></div>`, 'right');
+    $('#cards-again').onclick = () => HUB_ACTIONS[kind](c);
+    $('#cards-back').onclick = () => openCourse(c);
+  };
+  load();
+}
+
+// ---- single positions (traps): find the right move in one position
+function startPositions(c, items, label) {
+  curCourse = c; op.mode = 'cards'; op.c = c;
+  let i = 0, right = 0, cur = null, missed = false;
+  const load = () => {
+    op.gen++;
+    cur = items[i];
+    if (!cur) {
+      op.busy = true; boardSet();
+      feedback(`<span class="big">${right} of ${items.length} right</span><div class="controls" style="margin-top:10px"><button class="btn primary" id="pos-again">Again</button><button class="btn" id="pos-back">Back to course</button></div>`, 'right');
+      $('#pos-again').onclick = () => startPositions(c, items, label); $('#pos-back').onclick = () => openCourse(c);
+      return;
+    }
+    missed = false;
+    op.chess = new Chess(cur.fen); if (cur.pre) op.chess.move(cur.pre, { sloppy: true });
+    op.busy = false;
+    $('#op-mode').textContent = `${c.title} · ${label} · ${i + 1} of ${items.length}`;
+    $('#op-title').textContent = cur.title; $('#op-intro').textContent = cur.intro || '';
+    $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = true;
+    feedback('<span class="muted">Find the move.</span>');
+    opShow('player'); boardSet(); $('#op-progress').style.width = (i / items.length * 100) + '%';
+  };
+  op.custom = {
+    canMove: () => !!cur,
+    onMove(orig, dest) {
+      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
+      if (!mv) return boardSet();
+      if (cur.want.includes(mv.san)) {
+        if (!missed) { right++; if (cur.id) record('trp', cur.id, { ok: 1 }); }
+        op.chess.move(mv.san); op.busy = true; boardSet({ lastMove: [orig, dest] });
+        feedback(`<span class="big" style="color:var(--good)">${esc(mv.san)} ✓</span><p style="margin:6px 0 8px">${esc(cur.explain || '')}</p><button class="btn primary" id="pos-next">Next</button>`, 'right');
+        $('#pos-next').onclick = () => { i++; load(); };
+      } else {
+        missed = true; boardSet();
+        feedback(`<span class="big" style="font-size:18px">${mv.san === cur.bad ? `${esc(mv.san)} is exactly the common mistake` : `${esc(mv.san)} isn't it`}</span><div class="small">${mv.san === cur.bad ? esc(cur.badWhy || '') : 'Try again, or use Hint.'}</div>`, 'wrong');
+      }
+    },
+    hint: full => { missed = true; const m = new Chess(op.chess.fen()).move(cur.want[0], { sloppy: true }); return m ? (full ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [{ orig: m.from, brush: 'yellow' }]) : []; },
+  };
+  load();
+}
+function trapItems(c) {
+  return (XP.courses?.[c.id]?.traps || []).filter(t => t.kind === 'set' ? t.reply : t.better).map((t, j) => {
+    const fen = t.fen + ' 0 1';
+    const pawns = (t.loss / 100).toFixed(1);
+    if (t.kind === 'set') return { id: `${c.id}/t${j}-${t.move}`, kind: 'set', fen, pre: t.move, want: [t.reply],
+      title: `They often play ${t.move}? here. Punish it.`, intro: `${pct(t.share)} of players rated 1200-1600 play ${t.move} in this position. It loses about ${pawns} pawns.`,
+      explain: `After ${t.move}, ${t.reply} wins. Remember this pattern: at your level it comes up again and again.` };
+    const course = [...(coursePosMoves(c).get(t.fen) || [])];
+    return { id: `${c.id}/a${j}-${t.move}`, kind: 'avoid', fen, want: [...new Set([t.better, ...course])], bad: t.move,
+      title: 'A common mistake happens here. Find a good move.', intro: `${pct(t.share)} of players at your level go wrong in this position.`,
+      badWhy: `${pct(t.share)} of players at your level play ${t.move} here, and it loses about ${pawns} pawns. ${t.better} is better.`,
+      explain: `The trap: ${t.move} looks natural but loses about ${pawns} pawns. ${t.better} keeps everything under control.` };
+  });
+}
+function hubTraps(c) {
+  const items = trapItems(c);
+  if (!items.length) return `<h3>Traps</h3><p class="muted">The trap finder needs the weekly Lichess statistics. They will appear here after the next update.</p>`;
+  const done = items.filter(t => progress.trp[t.id]?.ok).length;
+  return `<div class="hub-head"><div><h3>Traps at your level</h3><p class="muted">Found in real games of players rated 1200-1600 in this opening and checked by Stockfish: mistakes your opponents make often (punish them) and mistakes that catch your side (avoid them).</p></div><button class="btn primary" data-act="traps">Train all ${items.length}</button></div>
+    <div class="hub-stats" style="margin-bottom:12px"><span><b>${done}/${items.length}</b>solved</span></div>
+    <div class="hub-list">${items.map((t, j) => `<div class="hub-item"><span class="t">${t.kind === 'set' ? '🎯 Set it: ' : '⚠️ Avoid it: '}${esc(t.kind === 'set' ? t.pre + '?' : t.bad + '?')}</span><button class="btn" data-act="trap" data-i="${j}">${progress.trp[t.id]?.ok ? 'Again' : 'Train'}</button><span class="d">${esc(t.intro)}</span></div>`).join('')}</div>`;
+}
+HUB_ACTIONS.traps = c => startPositions(c, trapItems(c), 'Traps');
+HUB_ACTIONS.trap = (c, d) => startPositions(c, [trapItems(c)[+d.i]], 'Traps');
+
+// ---- sparring: an opponent that plays like a 1200-1600 player, then Stockfish takes over
+function hubSpar(c) {
+  const has = Object.keys(XP.stats || {}).length > 0;
+  return `<div class="hub-head"><div><h3>Spar in this opening</h3><p class="muted">Play the opening against an opponent who chooses moves the way players rated 1200-1600 really do${has ? '' : ' (once the weekly statistics are in; until then Stockfish at club strength plays)'}. When the statistics run out, Stockfish at club strength takes over. After 15 moves you get a report: where you left the course and your biggest slip.</p></div><button class="btn primary" data-act="spar">Start sparring</button></div>`;
+}
+HUB_ACTIONS.spar = c => startSpar(c);
+function startSpar(c) {
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  const g = op.gen, me = c.side[0];
+  const st = { evals: [], left: null, done: false };
+  op.chess = new Chess(); op.busy = false;
+  $('#op-mode').textContent = `${c.title} · Sparring`;
+  $('#op-title').textContent = 'Play your opening';
+  $('#op-intro').textContent = 'Your opponent plays like players rated 1200-1600. Play your course moves; after 15 moves you get a report.';
+  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = false;
+  opShow('player');
+  const myTurn = () => op.chess.turn() === me;
+  const oppMove = async () => {
+    op.busy = true; boardSet();
+    const s = statsAt(op.chess.fen());
+    let san = null, why = '';
+    if (s && op.chess.history().length < 26) {
+      let r = Math.random() * s.m.reduce((a, m) => a + m[1], 0);
+      const pick = s.m.find(m => (r -= m[1]) < 0) || s.m[0];
+      san = pick[0]; why = `${pct(pick[1] / s.n)} of players at your level play this`;
+    } else {
+      const r = await engine.go(op.chess.fen(), { movetime: 600, skill: 6 }).catch(() => null);
+      if (g !== op.gen) return;
+      if (!r) return feedback('<span class="big">The engine could not start.</span>', 'wrong');
+      const mv = new Chess(op.chess.fen()).move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
+      san = mv?.san; why = 'Stockfish at club strength';
+    }
+    await new Promise(r => setTimeout(r, 350));
+    if (g !== op.gen || !san) return;
+    const mv = op.chess.move(san, { sloppy: true });
+    op.busy = false; boardSet({ lastMove: [mv.from, mv.to] });
+    if (op.chess.game_over()) return report();
+    feedback(`<span class="muted">Opponent: <strong>${esc(san)}</strong> (${why}). Your move.</span>`);
+  };
+  const report = () => {
+    st.done = true; op.busy = true; boardSet();
+    const worst = st.evals.reduce((w, e) => (!w || e.drop > w.drop ? e : w), null);
+    const lines = [];
+    lines.push(st.left ? `You left the course at <strong>${esc(st.left.label)} ${esc(st.left.san)}</strong>; the course plays ${esc(st.left.course.join(' or '))}.` : 'You stayed in the course as long as it went. Well played.');
+    if (worst && worst.drop >= 80) lines.push(`Biggest slip: <strong>${esc(worst.label)} ${esc(worst.san)}</strong> cost about ${(worst.drop / 100).toFixed(1)} pawns.`);
+    const last = st.evals[st.evals.length - 1];
+    if (last) lines.push(`${youWords(last.after)} after 15 moves.`);
+    feedback(`<span class="big">Sparring report</span><div class="small" style="display:grid;gap:4px;margin-top:4px">${lines.map(x => `<div>${x}</div>`).join('')}</div>
+      <div class="controls" style="margin-top:10px"><button class="btn primary" id="spar-on">Play on against Stockfish</button><button class="btn" id="spar-again">Spar again</button><button class="btn" id="spar-back">Back to course</button></div>`, 'right');
+    $('#spar-on').onclick = () => playOnFromLine(c, { id: 'spar', title: 'Sparring', moves: op.chess.history().map(san => ({ san })) });
+    $('#spar-again').onclick = () => startSpar(c); $('#spar-back').onclick = () => openCourse(c);
+  };
+  op.custom = {
+    canMove: () => !st.done && myTurn(),
+    async onMove(orig, dest) {
+      const before = op.chess.fen(), mv = op.chess.move({ from: orig, to: dest, promotion: 'q' });
+      if (!mv) return boardSet();
+      const ply = op.chess.history().length - 1, label = plyLabel(ply);
+      const course = [...(coursePosMoves(c).get(posKey(before)) || [])];
+      if (!st.left && course.length && !course.includes(mv.san)) st.left = { san: mv.san, label, course };
+      op.busy = true; boardSet({ lastMove: [orig, dest] });
+      feedback('<span class="muted">Thinking…</span>');
+      const r = await moveCost(before, orig + dest + (mv.promotion || ''), 450); if (g !== op.gen) return;
+      if (r) st.evals.push({ san: mv.san, label, drop: r.loss, after: r.score });
+      if (op.chess.game_over() || op.chess.history().length >= 30) return report();
+      oppMove();
+    },
+    restart: () => startSpar(c),
+  };
+  boardSet();
+  engine.start().then(() => { if (g !== op.gen) return; if (!myTurn()) oppMove(); else feedback('<span class="muted">Your move.</span>'); });
+}
+
+// ---- plans: pawn structures with example positions, plus the typical-plans quiz
+function hubPlans(c) {
+  const items = STRUCT[c.id] || [];
+  return `<div class="hub-head"><div><h3>Plans and pawn structures</h3><p class="muted">What to do after the opening: the typical structure, the good squares, and the pawn breaks.</p></div>${c.ideas?.items?.length ? '<button class="btn primary" data-act="ideas">Quiz: typical plans</button>' : ''}</div>
+    <div class="hub-list">${items.map((it, j) => `<div class="struct card" style="background:var(--bg)"><div class="mini-board" id="mini-${j}"></div><div><h3>${esc(it.title)}</h3><p style="margin:6px 0 0">${esc(it.text)}</p><ul>${it.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`).join('') || '<p class="muted">No structure lessons for this course yet.</p>'}</div>`;
+}
+HUB_ACTIONS.ideas = c => startIdeas(c);
+function drawMiniBoards(c) {
+  (STRUCT[c.id] || []).forEach((it, j) => {
+    const b = new Chess(); it.path.split(' ').forEach(m => b.move(m, { sloppy: true }));
+    const node = document.getElementById('mini-' + j); if (!node) return;
+    miniCgs.push(Chessground(node, { fen: b.fen(), orientation: c.side, viewOnly: true, coordinates: false, lastMove: lastMoveOf(b) }));
+  });
+}
+
+// ---- model games: guess the winner's moves
+function hubModels(c) {
+  const ms = XP.courses?.[c.id]?.models || [];
+  if (!ms.length) return `<h3>Model games</h3><p class="muted">Model games come from the weekly Lichess update (strong players' wins in this opening). They will appear here after it runs.</p>`;
+  return `<div class="hub-head"><div><h3>Model games: guess the move</h3><p class="muted">Strong players winning with your side of this opening. Guess each of their moves: you score for the move they played or one Stockfish rates as just as good. It shows how the middlegame should flow.</p></div></div>
+    <div class="hub-list">${ms.map((m, j) => { const best = progress.mg[`${c.id}/${m.id}`]?.best; return `<div class="hub-item"><span class="t">${esc(m.white)}${m.wr ? ` (${m.wr})` : ''} – ${esc(m.black)}${m.br ? ` (${m.br})` : ''}, ${m.year || ''} · ${m.result}</span><button class="btn primary" data-act="model" data-i="${j}">${best != null ? 'Again' : 'Guess the moves'}</button><span class="d">${best != null ? `Your best: ${best}% of moves matched.` : `${Math.ceil(m.moves.length / 2)} moves.`}</span></div>`; }).join('')}</div>`;
+}
+HUB_ACTIONS.model = (c, d) => startModel(c, XP.courses[c.id].models[+d.i]);
+function startModel(c, m) {
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  const g = op.gen, me = c.side[0];
+  let ply = 0, asked = 0, hits = 0, done = false;
+  op.chess = new Chess(); op.busy = false;
+  $('#op-mode').textContent = `${c.title} · Model game`;
+  $('#op-title').textContent = `${m.white} – ${m.black}, ${m.year || ''}`;
+  $('#op-intro').textContent = `Guess ${c.side === 'white' ? 'White' : 'Black'}'s moves. The first moves play themselves.`;
+  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = true;
+  opShow('player');
+  const step = () => {
+    if (g !== op.gen) return;
+    $('#op-progress').style.width = (ply / m.moves.length * 100) + '%';
+    if (ply >= m.moves.length) {
+      done = true; op.busy = true; boardSet();
+      const score = asked ? Math.round(hits / asked * 100) : 0;
+      if (score > (progress.mg[`${c.id}/${m.id}`]?.best ?? -1)) record('mg', `${c.id}/${m.id}`, { best: score });
+      return feedback(`<span class="big">You matched ${hits} of ${asked} moves (${score}%)</span><div class="small">Play through it again in a few days: the plans start to feel natural.</div><div class="controls" style="margin-top:10px"><button class="btn" id="mg-tocourse">Back to course</button></div>`, 'right'),
+        ($('#mg-tocourse').onclick = () => openCourse(c));
+    }
+    const mine = (op.chess.turn() === me) && m.ok[ply];
+    if (!mine) {
+      op.busy = true; boardSet();
+      setTimeout(() => { if (g !== op.gen) return; const mv = op.chess.move(m.moves[ply], { sloppy: true }); ply++; op.busy = false; boardSet({ lastMove: [mv.from, mv.to] }); step(); }, ply < 4 ? 250 : 550);
+    } else { op.busy = false; boardSet(); feedback(`<span class="muted">Your guess for ${plyLabel(ply)}</span><div class="small muted">${hits}/${asked} so far</div>`); }
+  };
+  op.custom = {
+    canMove: () => !done && op.chess.turn() === me && !!m.ok[ply],
+    onMove(orig, dest) {
+      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
+      if (!mv) return boardSet();
+      asked++;
+      const played = m.moves[ply], good = m.ok[ply].includes(mv.san);
+      if (good) hits++;
+      const real = op.chess.move(played, { sloppy: true }); ply++;
+      op.busy = true; boardSet({ lastMove: [real.from, real.to] });
+      feedback(good ? `<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>${mv.san !== played ? `<div class="small muted">Good too. The game went ${esc(played)}.</div>` : ''}` : `<span class="big" style="font-size:18px">The game went ${esc(played)}</span><div class="small muted">Your ${esc(mv.san)} was not as strong here.</div>`, good ? 'right' : '');
+      setTimeout(step, good && mv.san === played ? 600 : 1500);
+    },
+    hint: full => { const mv = new Chess(op.chess.fen()).move(m.moves[ply], { sloppy: true }); return mv ? (full ? [{ orig: mv.from, dest: mv.to, brush: 'green' }] : [{ orig: mv.from, brush: 'yellow' }]) : []; },
+  };
+  step();
+}
+
+// ---- report: how this opening goes in your games
+function hubReport(c) {
+  const gs = c.games;
+  if (!gs.length) return `<h3>Report</h3><p class="muted">None of your analysed games reached this course yet.</p>`;
+  const score = arr => arr.length ? Math.round(arr.reduce((s, x) => s + (x.g.result === 'win' ? 1 : x.g.result === 'draw' ? .5 : 0), 0) / arr.length * 100) : 0;
+  const avg = (arr, f) => { const v = arr.map(f).filter(x => x != null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  // which line each game followed longest
+  const byLine = {};
+  for (const x of gs) {
+    const b = new Chess(); x.g.plies.slice(0, x.k).forEach(p => b.move(p.san, { sloppy: true }));
+    const k = posKey(b.fen());
+    const line = c.lines.find(l => { const lb = new Chess(); return l.moves.some(m => { lb.move(m.san, { sloppy: true }); return posKey(lb.fen()) === k; }); });
+    (byLine[line?.title || 'Other'] ||= []).push(x);
+  }
+  const w10 = avg(gs, x => x.g.myWin[Math.min(20, x.g.myWin.length - 1)]), w15 = avg(gs, x => x.g.myWin[Math.min(30, x.g.myWin.length - 1)]);
+  const t10 = avg(gs, x => { const i = x.g.plies.findIndex((p, j) => j >= 18 && isMine(x.g, j) && p.clk != null); return i >= 0 ? +x.g.tc.split('+')[0] - x.g.plies[i].clk : null; });
+  const devs = {};
+  gs.filter(x => !x.mine && x.k < x.g.plies.length).forEach(x => { const lab = `${plyLabel(x.k)} ${x.g.plies[x.k].san}`; devs[lab] = (devs[lab] || 0) + 1; });
+  const months = {};
+  gs.forEach(x => { const d = new Date(x.g.end * 1000); const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; (months[k] ||= []).push(x); });
+  const mk = Object.keys(months).sort().slice(-6);
+  return `<h3>Report: ${esc(c.title)} in your games</h3>
+    <div class="hub-stats" style="margin:10px 0 16px"><span><b>${gs.length}</b>games</span><span><b>${score(gs)}%</b>score</span><span><b>${w10 != null ? Math.round(w10) + '%' : '–'}</b>win chance after move 10</span><span><b>${w15 != null ? Math.round(w15) + '%' : '–'}</b>after move 15</span><span><b>${t10 != null ? Math.round(t10) + 's' : '–'}</b>clock used for 10 moves</span></div>
+    <div class="grid2" style="margin-top:0">
+      <div><div class="eyebrow" style="margin-bottom:6px">Score by line</div><div class="bars-mini">${Object.entries(byLine).sort((a, b) => b[1].length - a[1].length).map(([t, arr]) => `<div><span title="${esc(t)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t)}</span><i style="width:${score(arr)}%"></i><span class="num">${score(arr)}% · ${arr.length}</span></div>`).join('')}</div></div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Score by month</div><div class="bars-mini">${mk.map(k => `<div><span>${k}</span><i style="width:${score(months[k])}%"></i><span class="num">${score(months[k])}% · ${months[k].length}</span></div>`).join('')}</div>
+        <div class="eyebrow" style="margin:14px 0 6px">Where your opponents left the course</div><div class="small">${Object.entries(devs).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => `${esc(k)} <span class="muted">×${n}</span>`).join(' · ') || 'Nowhere yet.'}</div></div>
+    </div>`;
+}
+
+// ---- my moves: choose between equally good moves, and add your own lines
+function hubMine(c) {
+  const choices = cardsOf(c).filter(cd => cd.alts.length && cd.ply <= 16).sort((a, b) => a.ply - b.ply).slice(0, 24);
+  const mine = c.lines.filter(l => l.mine);
+  return `<div class="hub-head"><div><h3>My moves</h3><p class="muted">Where Stockfish rates other moves as just as good, pick the one you like. Drills and speed rounds then expect your choice. You can also add your own lines.</p></div><button class="btn primary" data-act="build">Add your own line</button></div>
+    ${mine.length ? `<div class="eyebrow" style="margin:6px 0">Your lines</div><div class="hub-list" style="margin-bottom:16px">${mine.map(l => `<div class="hub-item"><span class="t">${esc(l.title)}</span><button class="btn" data-act="dropline" data-id="${esc(l.id.slice(3))}">Remove</button><span class="mv">${esc(sanLine(l.moves))}</span></div>`).join('')}</div>` : ''}
+    <div class="eyebrow" style="margin:6px 0">Choose your moves</div>
+    <div class="hub-list">${choices.map(cd => { const chosen = progress.rep[posId(c, cd)]?.san || cd.want[0]; const opts = [...new Set([...cd.want, ...cd.alts.map(a => a.san)])]; return `<div class="hub-item"><span class="t">After ${esc(cd.path.length ? sanLine(cd.path.map(san => ({ san }))).split(' ').slice(-4).join(' ') : 'the start')}</span><span class="d"><div class="choice-row">${opts.map(o => `<button data-act="choose" data-card="${cd.id}" data-san="${esc(o)}" aria-pressed="${o === chosen}">${esc(o)}${cd.want.includes(o) ? ' · course' : ''}</button>`).join('')}</div></span></div>`; }).join('') || '<p class="muted">No equal alternatives in this course.</p>'}</div>`;
+}
+HUB_ACTIONS.choose = (c, d) => { const cd = cardsOf(c).find(x => x.id === d.card); if (!cd) return; record('rep', posId(c, cd), { san: d.san }); ocSection(c, 'mine'); };
+HUB_ACTIONS.dropline = (c, d) => { record('cl', d.id, { ...progress.cl[d.id], deleted: true }); applyCustomLines(); ocSection(c, 'mine'); };
+HUB_ACTIONS.build = c => startBuilder(c);
+function startBuilder(c) {
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  const g = op.gen, me = c.side[0];
+  op.chess = new Chess(); op.busy = false;
+  $('#op-mode').textContent = `${c.title} · Your own line`;
+  $('#op-title').textContent = 'Build a line';
+  $('#op-intro').textContent = "Play both sides. Stockfish checks each of your moves; for your opponent, tap one of the popular replies or play any move.";
+  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = false;
+  opShow('player');
+  const panel = async (note = '') => {
+    const h = op.chess.history(), s = statsAt(op.chess.fen());
+    const pop = op.chess.turn() !== me && s ? `<div class="choice-row">${s.m.slice(0, 5).map(m => `<button data-pop="${esc(m[0])}">${esc(m[0])} · ${pct(m[1] / s.n)}</button>`).join('')}</div>` : '';
+    feedback(`${note}<div class="small muted">${h.length ? esc(sanLine(h.map(san => ({ san })))) : 'Start position.'}</div>${op.chess.turn() !== me ? `<div class="small" style="margin-top:6px">Opponent's move${s ? ' (popular at your level):' : ':'}</div>${pop}` : '<div class="small" style="margin-top:6px">Your move.</div>'}
+      <div class="controls" style="margin-top:10px"><button class="btn" id="bl-undo"${h.length ? '' : ' disabled'}>Undo</button><button class="btn primary" id="bl-save"${h.length >= 4 ? '' : ' disabled'}>Save line</button></div>`);
+    document.querySelectorAll('[data-pop]').forEach(b => b.onclick = () => { const mv = op.chess.move(b.dataset.pop, { sloppy: true }); if (mv) { boardSet({ lastMove: [mv.from, mv.to] }); panel(); } });
+    $('#bl-undo').onclick = () => { op.chess.undo(); boardSet(); panel(); };
+    $('#bl-save').onclick = () => {
+      const moves = op.chess.history(), id = Date.now().toString(36);
+      record('cl', id, { course: c.id, title: sanLine(moves.map(san => ({ san }))).split(' ').slice(0, 8).join(' ') + (moves.length > 8 ? ' …' : ''), moves });
+      applyCustomLines();
+      feedback('<span class="big">Line saved.</span><div class="small">It is in your Lines list and its positions join your drill cards.</div><div class="controls" style="margin-top:10px"><button class="btn" id="bl-back">Back to course</button></div>', 'right');
+      $('#bl-back').onclick = () => { openCourse(c); ocSection(c, 'lines'); };
+    };
+  };
+  op.custom = {
+    color: 'both',
+    canMove: () => true,
+    async onMove(orig, dest) {
+      const before = op.chess.fen(), wasMine = op.chess.turn() === me;
+      const mv = op.chess.move({ from: orig, to: dest, promotion: 'q' });
+      if (!mv) return boardSet();
+      boardSet({ lastMove: [orig, dest] });
+      if (!wasMine) return panel();
+      panel('<span class="muted">Stockfish is checking your move…</span>');
+      const r = await moveCost(before, orig + dest + (mv.promotion || ''));
+      if (g !== op.gen || !r) return panel();
+      const loss = r.loss;
+      const best = new Chess(before).move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' })?.san;
+      panel(loss > 60 ? `<span class="big" style="font-size:16px;color:var(--mistake)">${esc(mv.san)} costs about ${(loss / 100).toFixed(1)} pawns</span><div class="small">Stockfish prefers ${esc(best)}. Undo, or keep it if you like it anyway.</div>` : `<span style="color:var(--good);font-weight:700">${esc(mv.san)} ✓ Stockfish approves.</span>`);
+    },
+    restart: () => startBuilder(c),
+  };
+  boardSet(); panel();
+}
+
 function startIdeas(c) { op.mode = 'ideas'; op.c = c; op.l = null; op.ideaIdx = 0; loadIdea(); }
 function loadIdea() {
-  op.gen++;
+  op.gen++; op.custom = null;
   const c = op.c, it = c.ideas.items[op.ideaIdx];
   op.idea = it; op.ideaDone = false; op.wrong = 0; op.errors = 0; op.busy = false;
   op.chess = new Chess(); for (const s of it.line) op.chess.move(s, { sloppy: true });
@@ -2416,7 +2939,7 @@ const engine = {
     this.queue = p.catch(() => {});
     return p;
   },
-  async search(fen, { movetime = 800, skill = 20 } = {}) {
+  async search(fen, { movetime = 800, skill = 20, searchmoves = null } = {}) {
     if (!(await this.start())) throw new Error('engine unavailable');
     return new Promise(res => {
       let last = null;
@@ -2430,7 +2953,7 @@ const engine = {
       };
       this.w.postMessage('setoption name Skill Level value ' + skill);
       this.w.postMessage('position fen ' + fen);
-      this.w.postMessage('go movetime ' + movetime);
+      this.w.postMessage('go movetime ' + movetime + (searchmoves ? ' searchmoves ' + searchmoves : ''));   // searchmoves: score only this move
     });
   },
 };
@@ -2841,7 +3364,7 @@ onProgressChanged = () => {
   if (!$('#mg-home').hidden && !$('#view-middle').hidden) renderMiddleHome();
   if (!$('#op-home').hidden) renderOpeningsHome();
   if (!$('#tac-home').hidden && !$('#view-tactics').hidden) renderTacticsHome();
-  if (!$('#view-openings').hidden && !$('#op-course').hidden && curCourse) openCourse(curCourse, true);
+  if (!$('#view-openings').hidden && !$('#op-course').hidden && curCourse) { applyCustomLines(); openCourse(curCourse, true); }
   updateScore();
 };
 
@@ -2857,7 +3380,7 @@ renderReport(); renderCoachNotes(); setupFilters(); renderList(); renderOpenings
 // the app opens on Today (a #view in the address still opens that page)
 const startView = location.hash.slice(1);
 show(views.includes(startView) ? startView : 'today');
-if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, get game() { return gameCg; }, get explore() { return explore; }, get tac() { return tacCg; }, get mgb() { return mgCg; }, playOn: (c, l) => { const C = COURSES.find(x => x.id === c); playOnFromLine(C, C.lines.find(x => x.id === l)); } };   // local testing only
+if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, op, COURSES, OPEN, engine, get game() { return gameCg; }, get explore() { return explore; }, get tac() { return tacCg; }, get mgb() { return mgCg; }, playOn: (c, l) => { const C = COURSES.find(x => x.id === c); playOnFromLine(C, C.lines.find(x => x.id === l)); } };   // local testing only
 </script>
 
 <script>

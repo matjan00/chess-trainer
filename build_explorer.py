@@ -25,7 +25,7 @@ OPP_SHARE = 0.06        # opponent replies at least this common are followed
 
 
 def key(board):
-    return " ".join(board.fen().split()[:4])
+    return " ".join(board.fen().split()[:3]) + " -"   # same key as the app (no en-passant square)
 
 
 def get(url, tries=6):
