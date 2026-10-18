@@ -89,7 +89,7 @@ def main():
     # the page doesn't need the per-move FEN strings, the drills carry their own
     slim = [{**g, "plies": [{k: v for k, v in p.items() if k != "fen"} for p in g["plies"]]} for g in games]
     (DIST / "analysis.json").write_text(json.dumps(slim, separators=(",", ":")), encoding="utf-8")
-    for f in ("drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json"):
+    for f in ("drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json"):
         if (DATA / f).exists(): shutil.copy(DATA / f, DIST / f)
     shutil.copy(ROOT / "vendor" / "sf" / "stockfish.wasm", DIST / "stockfish.wasm")
     print("built", DIST / "index.html")
@@ -103,7 +103,7 @@ def main():
 APP = ROOT / "docs"
 SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}
 DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json",
-              "convert.json", "technique.json", "endgames.json", "essentials.json"]
+              "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json"]
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
 # fonts travel with the app (no Google Fonts request, so nothing waits for the internet on a plane)
 FONTS = sorted(f.name for f in (ROOT / "vendor" / "pwa" / "fonts").iterdir())
@@ -228,6 +228,8 @@ def build_app(html):
         (APP / "vendor" / "fonts" / f).write_bytes(data)
     for f in ("icon-180.png", "icon-192.png", "icon-512.png"):
         shutil.copy(ROOT / "vendor" / "pwa" / "icons" / f, APP / f)
+    if not (DATA / "explorer.json").exists():   # the weekly Lichess job hasn't run yet
+        (DATA / "explorer.json").write_text('{"stats":{},"courses":{}}', encoding="utf-8"); shutil.copy(DATA / "explorer.json", DIST / "explorer.json")
     for f in DATA_FILES:
         shutil.copy(DIST / f, APP / f)
     (APP / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=1), encoding="utf-8")
