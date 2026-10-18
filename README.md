@@ -27,4 +27,7 @@ Personal chess training app for Janczu00, published at https://claude.ai/artifac
 | `data/essentials.json` | Essential endgame lessons |
 | `analyze.py`, `build*.py` | Game analysis and exercise builders |
 | `update.py` / `update.bat` | Pull new games and rebuild everything |
+| `build_openings.py` | Drill cards for every course position where it is your move, with Stockfish-approved alternatives (`data/openings.json`) |
+| `build_explorer.py` | What 1200-1600 players play (Lichess), traps, extra lines, longer lines, model games (`data/explorer.json`); runs weekly in the GitHub job "Opening statistics" with the `LICHESS_TOKEN` secret |
+| `data/structures.json` | Pawn-structure lessons shown under Plans in each course |
 | Coach's notes | Worked out by the page from `data/analysis.json` (no manual editing needed) |
