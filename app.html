@@ -583,13 +583,19 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
       <div class="backrow"><button class="btn" data-back="course">← Back to course</button></div>
       <div class="viewer">
         <div class="board-col">
-          <div class="board" id="oboard"></div>
+          <div class="board-shell"><div class="evalbar" id="op-evalbar" hidden><span style="height:50%"></span></div><div class="board" id="oboard"></div></div>
+          <div class="controls" style="align-items:center">
+            <button class="btn" id="op-back" aria-label="Previous move">◀</button>
+            <button class="btn" id="op-fwd" aria-label="Next move">▶</button>
+            <span class="small muted" id="op-navinfo"></span>
+          </div>
+          <div class="small muted" id="op-evaltext" hidden></div>
           <div class="controls actionbar">
             <button class="btn" id="op-hint" data-key="h">Hint<kbd>H</kbd></button>
             <button class="btn" id="op-showmove" data-key="s">Show move<kbd>S</kbd></button>
             <button class="btn" id="op-restart" data-key="r">Restart<kbd>R</kbd></button>
           </div>
-          <div class="controls"><button class="btn" id="op-flip">Flip board</button></div>
+          <div class="controls"><button class="btn" id="op-flip">Flip board</button><button class="btn" id="op-evalbtn" data-key="e">Stockfish eval: off<kbd>E</kbd></button></div>
         </div>
         <div class="side">
           <div class="card">
@@ -1375,6 +1381,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { tpStep(1); e.preventDefault(); }
     return;
   }
+  if (!$('#view-openings').hidden && !$('#op-player').hidden && op.chess && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { opStep(e.key === 'ArrowLeft' ? -1 : 1); e.preventDefault(); return; }
   if ($('#view-games').hidden || !cur || e.target.matches('input, select, textarea')) return;
   if (e.key === 'ArrowLeft') { goto(ply - 1); e.preventDefault(); }
   if (e.key === 'ArrowRight') { goto(ply + 1); e.preventDefault(); }
@@ -1621,13 +1628,75 @@ function openCourse(c, keepScroll = false) {
 const op = { mode: null, queue: [], c: null, l: null, chess: null, ply: 0, wrong: 0, errors: 0, busy: false, flipped: false, idea: null, gen: 0 };
 // the last move actually played on this board (undefined for a position set up from scratch), so an old highlight never lingers
 const lastMoveOf = chess => { const h = chess.history({ verbose: true }); const m = h[h.length - 1]; return m ? [m.from, m.to] : undefined; };
+// moving back and forth: op.view = how many moves in the position shown (null = the live position)
+function posAtPly(n) {
+  const h = op.chess.history({ verbose: true }), undone = [];
+  while (op.chess.history().length > n) undone.push(op.chess.undo());
+  const v = { fen: op.chess.fen(), check: op.chess.in_check(), turn: op.chess.turn(), lastMove: n ? [h[n - 1].from, h[n - 1].to] : undefined };
+  while (undone.length) { const m = undone.pop(); op.chess.move({ from: m.from, to: m.to, promotion: m.promotion }); }
+  return v;
+}
+function opStep(d) {
+  if (!op.chess) return;
+  const len = op.chess.history().length, v = Math.max(0, Math.min(len, (op.view ?? len) + d));
+  op.view = v === len ? null : v; boardSet();
+}
+function opNav() {
+  const len = op.chess.history().length, at = op.view ?? len;
+  $('#op-back').disabled = at === 0; $('#op-fwd').disabled = op.view == null;
+  const h = op.chess.history();
+  $('#op-navinfo').textContent = op.view == null ? '' : `${at ? `After ${at % 2 ? Math.ceil(at / 2) + '.' : at / 2 + '...'}${h[at - 1]}` : 'Start position'} · ▶ to come back`;
+}
+$('#op-back').onclick = () => opStep(-1);
+$('#op-fwd').onclick = () => opStep(1);
+// Stockfish evaluation under the board, on request; remembered between visits
+let opEvalOn = store.get('opeval', false), opEvalTok = 0;
+const opEvals = new Map();
+function opEvalShow(fen) {
+  $('#op-evalbtn').innerHTML = `Stockfish eval: ${opEvalOn ? 'on' : 'off'}<kbd>E</kbd>`;
+  $('#op-evalbar').hidden = $('#op-evaltext').hidden = !opEvalOn;
+  if (!opEvalOn) return;
+  if ($('#oboard').offsetHeight) $('#op-evalbar').style.height = $('#oboard').offsetHeight + 'px';
+  $('#op-evalbar').classList.toggle('flip', openCg?.state.orientation === 'black');
+  const tok = ++opEvalTok, put = e => {
+    if (tok !== opEvalTok) return;
+    $('#op-evalbar span').style.height = winPctWhite(e, 0) + '%';
+    const t = e.m !== undefined ? (e.m > 0 ? 'White mates in ' : 'Black mates in ') + Math.abs(e.m)
+      : `${e.cp > 0 ? '+' : ''}${(e.cp / 100).toFixed(1)} · ${Math.abs(e.cp) < 50 ? 'about equal' : `${Math.abs(e.cp) < 150 ? 'slightly better' : Math.abs(e.cp) < 400 ? 'better' : 'winning'} for ${e.cp > 0 ? 'White' : 'Black'}`}`;
+    $('#op-evaltext').textContent = 'Stockfish: ' + t;
+  };
+  const c = new Chess(fen);
+  if (c.in_checkmate()) return put({ m: c.turn() === 'w' ? -1 : 1 }), $('#op-evaltext').textContent = 'Checkmate';
+  if (c.game_over()) return put({ cp: 0 });
+  if (opEvals.has(fen)) return put(opEvals.get(fen));
+  $('#op-evaltext').textContent = 'Stockfish: thinking…';
+  setTimeout(async () => {
+    if (tok !== opEvalTok) return;
+    const r = await engine.go(fen, { movetime: 700, skill: 20, polite: true }).catch(() => null);
+    if (!r?.score) return;
+    const sign = fen.split(' ')[1] === 'w' ? 1 : -1;
+    const e = r.score.mate !== undefined ? { m: r.score.mate * sign } : { cp: r.score.cp * sign };
+    opEvals.set(fen, e); put(e);
+  }, 250);
+}
+$('#op-evalbtn').onclick = () => { opEvalOn = !opEvalOn; store.set('opeval', opEvalOn); if (op.chess) boardSet(); else opEvalShow(''); };
 function boardSet(extra = {}) {
+  if (op.viewOf !== op.chess) { op.view = null; op.viewOf = op.chess; }
+  if (op.view != null && op.view >= op.chess.history().length) op.view = null;
+  const orientation = op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side;
+  if (op.view != null) {        // looking back: show that position, nothing can move
+    const v = posAtPly(op.view);
+    openCg.set({ fen: v.fen, turnColor: v.turn === 'w' ? 'white' : 'black', check: v.check, orientation, lastMove: v.lastMove,
+      movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: [] } });
+    opNav(); opEvalShow(v.fen); return;
+  }
   const color = op.chess.turn() === 'w' ? 'white' : 'black';
   const myTurn = op.custom ? !op.busy && op.custom.canMove() : !op.busy && color === op.c.side && (op.mode === 'ideas' ? !op.ideaDone : op.ply < op.l.moves.length);
   const opts = { fen: op.chess.fen(), turnColor: color, check: op.chess.in_check(), orientation: op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side,
     movable: { free: false, color: myTurn ? (op.custom?.color === 'both' ? 'both' : op.c.side) : undefined, dests: myTurn ? toDests(op.chess) : new Map(), showDests: true, events: { after: onOpMove } },
     drawable: { autoShapes: [] }, animation: { duration: 200 }, coordinates: true, lastMove: lastMoveOf(op.chess), ...extra };
   if (!openCg) openCg = Chessground($('#oboard'), opts); else openCg.set(opts);
+  opNav(); opEvalShow(op.chess.fen());
 }
 function feedback(html, cls = '') { const f = $('#op-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
 function addNote(m, i) {
@@ -2595,7 +2664,7 @@ const engine = {
   queue: Promise.resolve(),
   /** returns {best (uci), score {cp|mate} for the side to move}. Searches run one at a time. */
   go(fen, opts = {}) {
-    this.w?.postMessage('stop');   // cut short a search nobody needs any more
+    if (!opts.polite) this.w?.postMessage('stop');   // cut short a search nobody needs any more (polite = wait in line instead)
     const run = () => this.search(fen, opts);
     const p = this.queue.then(run, run);
     this.queue = p.catch(() => {});
