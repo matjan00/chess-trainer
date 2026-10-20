@@ -1,0 +1,38 @@
+# Phone reminders for Today's training at 9:00, 18:00 and 21:00 Warsaw time, skipped once all 4 tasks are done.
+# Two start times per reminder: one for summer time, one for winter time (remind.py ignores the wrong one).
+# Each starts ~25 minutes early because GitHub often starts scheduled jobs late; remind.py waits until the hour.
+# Needs the repository secret NTFY_TOPIC. "Run workflow" by hand sends a test notification.
+name: Daily reminder
+
+on:
+  schedule:
+    - cron: "35 6 * * *"     # 9:00 summer
+    - cron: "35 7 * * *"     # 9:00 winter
+    - cron: "35 15 * * *"    # 18:00 summer
+    - cron: "35 16 * * *"    # 18:00 winter
+    - cron: "35 18 * * *"    # 21:00 summer
+    - cron: "35 19 * * *"    # 21:00 winter
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: remind.py
+          sparse-checkout-cone-mode: false
+      - name: Remind if today's training isn't done
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          case "${{ github.event.schedule }}" in
+            "35 6 * * *")  python3 remind.py 9 2 ;;
+            "35 7 * * *")  python3 remind.py 9 1 ;;
+            "35 15 * * *") python3 remind.py 18 2 ;;
+            "35 16 * * *") python3 remind.py 18 1 ;;
+            "35 18 * * *") python3 remind.py 21 2 ;;
+            "35 19 * * *") python3 remind.py 21 1 ;;
+            *)             python3 remind.py test ;;
+          esac
