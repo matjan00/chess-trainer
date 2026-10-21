@@ -1,18 +1,11 @@
-# Phone reminders for Today's training at 9:00, 18:00 and 21:00 Warsaw time, skipped once all 4 tasks are done.
+# Test push for the phone reminders ("Run workflow"). Earlier: phone reminders for Today's training at 9:00, 18:00 and 21:00 Warsaw time, skipped once all 4 tasks are done.
 # Two start times per reminder: one for summer time, one for winter time (remind.py ignores the wrong one).
 # Each starts ~25 minutes early because GitHub often starts scheduled jobs late; remind.py waits until the hour.
 # Needs the repository secret NTFY_TOPIC. "Run workflow" by hand sends a test notification.
 name: Daily reminder
 
 on:
-  schedule:
-    - cron: "35 6 * * *"     # 9:00 summer
-    - cron: "35 7 * * *"     # 9:00 winter
-    - cron: "35 15 * * *"    # 18:00 summer
-    - cron: "35 16 * * *"    # 18:00 winter
-    - cron: "35 18 * * *"    # 21:00 summer
-    - cron: "35 19 * * *"    # 21:00 winter
-  workflow_dispatch:
+  workflow_dispatch:     # the timed reminders now run inside Supabase (supabase/chess_remind.sql); GitHub started them too unreliably
 
 jobs:
   remind:
