@@ -3,7 +3,7 @@
 // completely saved. Anything missing is fetched and saved the next time there is a connection, and the app
 // asks for a check on every start ('warm'), so the offline copy repairs itself. Sign-in and sync calls to
 // Supabase always go to the network. version.json is never cached, so the app can tell when an update exists.
-const VERSION = 'chess-v22';
+const VERSION = 'chess-v23';
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json", "structures.json", "vendor/chess.min.js", "vendor/chessground.min.js", "vendor/supabase.js", "vendor/stockfish.wasm.js", "vendor/stockfish.wasm", "vendor/stockfish.js", "vendor/fonts/f0-latin-ext.woff2", "vendor/fonts/f1-latin.woff2", "vendor/fonts/f2-latin-ext.woff2", "vendor/fonts/f3-latin.woff2", "vendor/fonts/f4-latin-ext.woff2", "vendor/fonts/f5-latin.woff2", "vendor/fonts/f6-latin-ext.woff2", "vendor/fonts/f7-latin.woff2", "vendor/fonts/f8-latin-ext.woff2", "vendor/fonts/f9-latin.woff2", "vendor/fonts/fonts.css"];
 async function warm() {
   const c = await caches.open(VERSION);
