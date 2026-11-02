@@ -11,3 +11,14 @@ __pycache__/
 
 # personal progress export (imported into the app once)
 progress-from-claude.json
+
+# Watch tab: raw Reddit downloads and lookups stay on this PC (other people's comments; data/tube.json is the result)
+tube/*.log
+tube/texts*.json
+tube/titles_*.json
+tube/threads.json
+tube/raw_comments.json
+tube/posts.json
+tube/candidates.json
+tube/collect_done.json
+tube/batches/
