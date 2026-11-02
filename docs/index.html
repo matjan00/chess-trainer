@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 27;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 29;</script>
 </head>
 <body>
 
@@ -684,6 +684,51 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .notes-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; }
 .note { border-left: 3px solid var(--accent); padding: 6px 10px; background: var(--surface); border-radius: 0 6px 6px 0; font-size: 14px; }
 .note b { font: 600 13px var(--mono); margin-right: 6px; }
+.note[data-ply] { cursor: pointer; } .note[data-ply]:hover { background: var(--surface-2); }
+.note.on { border-left-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--surface)); }
+/* move tree (Lichess style): main line inline, other replies as indented branches */
+.tree { position: relative; font: 14px/1.9 var(--mono); max-height: 46vh; overflow-y: auto; padding-right: 4px; }
+.tree .tm { border: 0; background: none; font: inherit; color: var(--ink); padding: 1px 4px; border-radius: 4px; cursor: pointer; }
+.tree .tm:hover { background: var(--surface-2); }
+.tree .tm.c::after { content: '•'; color: var(--accent); margin-left: 1px; }
+.tree .tm.cur { background: var(--accent); color: var(--accent-ink); }
+.tree .tm.cur::after { color: inherit; }
+.tree .tv { margin: 2px 0 2px 6px; padding-left: 10px; border-left: 2px solid var(--line); color: var(--ink-2); }
+.tree .tv .tm { color: var(--ink-2); } .tree .tv .tm.cur { color: var(--accent-ink); }
+.tree-next { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tree-next button { font: 600 13px var(--mono); }
+.why-box { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); font-size: 14px; }
+/* course map: each line is a stop on a path, coloured by how well you know it */
+.map-sum { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 13px; color: var(--ink-2); margin-bottom: 14px; }
+.map-sum b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.map-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--surface-2); flex: 1 1 100%; }
+.map-bar i { display: block; height: 100%; }
+.map { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; position: relative; }
+.map::before { content: ''; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; background: var(--line); }
+.map li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; align-items: center; position: relative; }
+.medal-dot { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--body); border: 2px solid var(--line); background: var(--bg); color: var(--ink-3); position: relative; z-index: 1; }
+.medal-dot svg { width: 16px; height: 16px; fill: currentColor; }
+.lv0 .medal-dot { border-style: dashed; }
+.lv1 .medal-dot { border-color: var(--accent); color: var(--accent); }
+.lv2 .medal-dot { background: #b0713f; border-color: #b0713f; color: #fff; }
+.lv3 .medal-dot { background: #8f9aa3; border-color: #8f9aa3; color: #fff; }
+.lv4 .medal-dot { background: #c99a1e; border-color: #c99a1e; color: #fff; }
+.map li.next .line-row { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.status.lvl2 { background: color-mix(in srgb, #b0713f 20%, transparent); color: #b0713f; }
+.status.lvl3 { background: color-mix(in srgb, #8f9aa3 25%, transparent); color: var(--ink-2); }
+.status.lvl4 { background: color-mix(in srgb, #c99a1e 22%, transparent); color: #a37a10; }
+.medals { display: inline-flex; gap: 8px; align-items: center; }
+.medals i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 3px; vertical-align: -1px; }
+.score-row { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+.score-row b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.pts-toast { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); z-index: 50; pointer-events: none; font: 700 22px var(--display); color: var(--good); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 16px; box-shadow: 0 6px 20px rgb(0 0 0 / .15); animation: rise 1.3s ease-out forwards; }
+@keyframes rise { 0% { opacity: 0; transform: translate(-50%, 12px); } 15% { opacity: 1; transform: translate(-50%, 0); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -28px); } }
+.levelup { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.levelup .medal-dot { width: 40px; height: 40px; animation: pop .6s cubic-bezier(.2, .9, .3, 1.4) both; }
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; animation: fall 1.6s cubic-bezier(.3, .6, .6, 1) forwards; }
+@keyframes fall { to { transform: translate(var(--dx), 105vh) rotate(var(--r)); opacity: .9; } }
+.book-alert { border-color: var(--mistake); margin-top: 16px; }
 .quiz-opts { display: grid; gap: 8px; margin-top: 10px; }
 .quiz-opts button { text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 9px 12px; cursor: pointer; font: inherit; color: inherit; }
 .quiz-opts button:hover:not(:disabled) { border-color: var(--ink-3); }
@@ -778,6 +823,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
       <div class="today-head"><h3>Today's training</h3><span class="small muted" id="today-streak"></span></div>
       <div class="today-list" id="today-list"></div>
     </div>
+    <div class="card rec book-alert" id="today-book" hidden></div>
     <div class="card resume" id="today-resume" hidden></div>
     <div class="card day-sum" id="today-sum" hidden></div>
   </section>
@@ -862,6 +908,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
     <div id="op-home">
       <h2>Opening courses</h2>
       <p class="muted" style="margin:6px 0 0;max-width:72ch">Learn each <button class="gl" data-term="line">line</button> by playing it on the board, then keep it fresh with short reviews. A line comes back after 1, 3, 7, 16 and 35 days, and sooner if you get it wrong. <button class="gl" data-term="schedule">Why those gaps?</button></p>
+      <div class="score-row" id="op-week"></div>
       <div class="review-banner card rec" id="op-due" hidden></div>
       <div class="eyebrow" style="margin:22px 0 10px">Your repertoire</div>
       <div class="course-grid" id="op-yours"></div>
@@ -876,9 +923,11 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
           <div class="eyebrow" id="oc-eyebrow"></div>
           <h2 id="oc-title" style="margin:6px 0 6px"></h2>
           <p class="muted" id="oc-why" style="margin:0;max-width:75ch"></p>
+          <div class="score-row" id="oc-score"></div>
         </div>
         <div class="controls course-actions">
           <button class="btn primary" id="oc-review">Review due lines</button>
+          <button class="btn" id="oc-tree" title="Every move of this course on one board, with all the branches">Move tree</button>
           <button class="btn" id="oc-ideas" title="Positions from this opening: find the move that follows the typical plan">Quiz: typical plans</button>
         </div>
       </div>
@@ -932,7 +981,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
             <button class="btn" id="op-showmove" data-key="s">Show move<kbd>S</kbd></button>
             <button class="btn" id="op-restart" data-key="r">Restart<kbd>R</kbd></button>
           </div>
-          <div class="controls"><button class="btn" id="op-flip">Flip board</button><button class="btn" id="op-evalbtn" data-key="e">Stockfish eval: off<kbd>E</kbd></button></div>
+          <div class="controls"><button class="btn" id="op-flip">Flip board</button><button class="btn" id="op-sound"></button><button class="btn" id="op-evalbtn" data-key="e">Stockfish eval: off<kbd>E</kbd></button></div>
         </div>
         <div class="side">
           <div class="card">
@@ -943,6 +992,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
           </div>
           <div class="card feedback" id="op-feedback"></div>
           <div class="card" id="op-quiz" hidden></div>
+          <div class="card" id="op-tree" hidden></div>
           <div class="notes-list" id="op-notes"></div>
         </div>
       </div>
@@ -1134,7 +1184,7 @@ const store = {
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 16, 35];   // days until the next review, by box
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day'];   // day: how many of Today's 4 tasks are done, read by the phone reminders
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day', 'opx'];   // day: how many of Today's 4 tasks are done, read by the phone reminders
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -1843,6 +1893,39 @@ for (const x of Object.values(OPEN)) for (const cd of x.cards || []) cd.key = po
 const statsAt = fen => { const s = XP.stats?.[posKey(fen)]; return s && s.n >= 30 ? s : null; };
 const pct = x => `${Math.round(x * 100)}%`;
 const plyLabel = i => `${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'}`;
+/* arrows and circles in course comments: [b5-c7] draws an arrow, [e5] a circle; r:/g:/b:/y: in front picks the colour.
+   A comment without them still gets some: an arrow to each square it names that the moved piece attacks, a circle on the others. */
+const BRUSH = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
+for (const c of COURSES) for (const l of c.lines) for (const m of l.moves) if (m.c?.includes('[')) {
+  const shapes = [];
+  m.c = m.c.replace(/\[(?:([rgby]):)?([a-h][1-8])(?:-([a-h][1-8]))?\]/g, (_, col, a, b) => { shapes.push(b ? { orig: a, dest: b, brush: BRUSH[col] || 'green' } : { orig: a, brush: BRUSH[col] || 'green' }); return ''; }).replace(/\s{2,}/g, ' ').trim();
+  if (shapes.length) m.shapes = shapes;
+}
+// the squares a piece attacks (sliding pieces stop at the first piece in the way)
+function attacksFrom(chess, sq) {
+  const p = chess.get(sq), out = new Set();
+  if (!p) return out;
+  const f = sq.charCodeAt(0) - 97, r = +sq[1] - 1;
+  const ray = (dx, dy, slide) => {
+    for (let x = f + dx, y = r + dy; x >= 0 && x < 8 && y >= 0 && y < 8; x += dx, y += dy) {
+      const s = String.fromCharCode(97 + x) + (y + 1); out.add(s);
+      if (!slide || chess.get(s)) break;
+    }
+  };
+  const ROOK = [[1, 0], [-1, 0], [0, 1], [0, -1]], BISHOP = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+  if (p.type === 'n') [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]].forEach(([a, b]) => ray(a, b, false));
+  else if (p.type === 'p') { const d = p.color === 'w' ? 1 : -1; ray(1, d, false); ray(-1, d, false); }
+  else (p.type === 'r' ? ROOK : p.type === 'b' ? BISHOP : [...ROOK, ...BISHOP]).forEach(([a, b]) => ray(a, b, p.type !== 'k'));
+  return out;
+}
+// squares a comment names in plain words ("eyes c7", "the e5 square"), not the ones inside written moves like Nxc3 or 9.e4
+const namedSquares = text => [...new Set([...String(text).matchAll(/(?:^|[\s(,'"])([a-h][1-8])(?!\w)/g)].map(x => x[1]))];
+function commentShapes(m, chess, mv) {
+  if (m?.shapes) return m.shapes;
+  if (!m?.c || !mv) return [];
+  const hits = attacksFrom(chess, mv.to);
+  return namedSquares(m.c).filter(s => s !== mv.to).slice(0, 4).map(s => hits.has(s) ? { orig: mv.to, dest: s, brush: 'green' } : { orig: s, brush: 'blue' });
+}
 for (const c of COURSES) {
   const x = XP.courses?.[c.id] || {};
   for (const l of c.lines) {
@@ -1863,7 +1946,7 @@ function applyCustomLines() {
   for (const c of COURSES) {
     const mine = Object.entries(progress.cl).filter(([, v]) => v.course === c.id && !v.deleted).map(([id, v]) => ({ id: 'my-' + id, mine: true, title: v.title, intro: 'Your own line. Every one of your moves was checked by Stockfish when you made it.', moves: v.moves.map(san => ({ san })) }));
     c.lines = c.baseLines.concat(mine);
-    c._pos = null; c._comments = null;
+    c._pos = null; c._comments = null; c._tree = null;
   }
 }
 applyCustomLines();
@@ -1920,19 +2003,23 @@ function renderOpeningsHome() {
   const card = c => {
     const known = c.lines.filter(l => progress.lines[lineKey(c, l)]).length;
     const due = dueLines(c).length;
+    const pts = courseScore(c);
     const gs = c.games.map(x => x.g), sc = gs.length ? Math.round(gs.reduce((s, g) => s + (g.result === 'win' ? 1 : g.result === 'draw' ? .5 : 0), 0) / gs.length * 100) : null;
     return `<button class="card course-card" data-course="${c.id}">
       <div class="top-row"><h3>${esc(c.title)}</h3><span class="side-chip ${c.side}">as ${c.side}</span></div>
       <div class="sub2">${esc(c.sub)}</div>
       <div class="progress"><span style="width:${known / c.lines.length * 100}%"></span></div>
-      <div class="meta"><span><b>${known}/${c.lines.length}</b> lines learned</span>${due ? `<span style="color:var(--mistake)"><b style="color:inherit">${due}</b> due</span>` : ''}${gs.length ? `<span><b>${gs.length}</b> of your games · ${sc}%</span>` : ''}</div>
+      <div class="meta"><span><b>${known}/${c.lines.length}</b> lines learned</span>${medalsHtml(c)}${due ? `<span style="color:var(--mistake)"><b style="color:inherit">${due}</b> due</span>` : ''}${gs.length ? `<span><b>${gs.length}</b> of your games · ${sc}%</span>` : ''}${pts.total ? `<span><b>${pts.total}</b> points${pts.streak > 1 ? ` · ${pts.streak}-day streak` : ''}</span>` : ''}</div>
     </button>`;
   };
   $('#op-yours').innerHTML = COURSES.filter(c => c.kind === 'yours').map(card).join('');
   $('#op-suggested').innerHTML = COURSES.filter(c => c.kind !== 'yours').map(card).join('');
-  const due = COURSES.flatMap(dueLines);
-  const b = $('#op-due'); b.hidden = !due.length;
-  if (due.length) { b.innerHTML = `<div><span class="eyebrow">Recommended</span><h3 style="margin-top:4px">${due.length} line${due.length > 1 ? 's' : ''} due for review</h3><p>A few minutes of review keeps them in your memory.</p></div><button class="btn primary" id="op-due-go">Review now</button>`; $('#op-due-go').onclick = () => startReview(due); }
+  const wk = courseScore(null);
+  $('#op-week').innerHTML = wk.total ? `<span><b>${wk.week}</b> opening points this week</span><span><b>${wk.today}</b> today</span>${wk.streak ? `<span><b>${wk.streak}</b>-day opening streak</span>` : ''}` : '';
+  const q = dailyQueue();
+  const b = $('#op-due'); b.hidden = !q.n;
+  if (q.n) { const parts = [q.lines.length && `${q.lines.length} line${q.lines.length > 1 ? 's' : ''}`, q.nCards && `${q.nCards} position${q.nCards > 1 ? 's' : ''}`].filter(Boolean).join(' + ');
+    b.innerHTML = `<div><span class="eyebrow">Daily review · all courses</span><h3 style="margin-top:4px">${parts} due today</h3><p>One session, about ${q.mins} minute${q.mins > 1 ? 's' : ''}. Whatever you get wrong comes back sooner.</p></div><button class="btn primary" id="op-due-go">Start daily review</button>`; $('#op-due-go').onclick = startDaily; }
   else {
     // nothing due: suggest the next new line of your own repertoire (then of the suggested courses)
     const order = [...COURSES.filter(c => c.kind === 'yours'), ...COURSES.filter(c => c.kind !== 'yours')];
@@ -1959,7 +2046,15 @@ function openCourse(c, keepScroll = false) {
   $('#oc-review').onclick = () => startReview(due.length ? due : c.lines.map(l => ({ c, l })));
   $('#oc-ideas').hidden = !c.ideas?.items?.length;
   $('#oc-ideas').onclick = () => startIdeas(c);
-  $('#oc-lines').innerHTML = c.lines.map(l => { const st = lineState(c, l), r = lineReach(c, l); return `<button class="line-row" data-line="${l.id}"><span class="t">${l.mine ? 'Your line: ' : ''}${esc(l.title)}</span><span class="status ${st.s}">${st.label}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span>${r != null ? `<span class="freq">You meet this in about ${r < 0.01 ? 'under 1' : Math.round(r * 100)}% of games at your level</span>` : ''}</button>`; }).join('');
+  $('#oc-tree').onclick = () => startTree(c);
+  const sc = courseScore(c), lv = courseLevels(c), mastery = Math.round(c.lines.reduce((s, l) => s + lineLevel(c, l), 0) / (4 * c.lines.length) * 100);
+  $('#oc-score').innerHTML = `<span><b>${mastery}%</b> mastered</span><span><b>${sc.total}</b> points</span><span><b>${sc.week}</b> this week</span><span><b>${sc.streak}</b>-day streak${sc.streak && !sc.today ? ' (train today to keep it)' : ''}</span>`;
+  const nextUp = c.lines.find(l => lineState(c, l).s === 'due') || c.lines.find(l => !progress.lines[lineKey(c, l)]);
+  $('#oc-lines').innerHTML = `<div class="map-sum">${[4, 3, 2, 1, 0].map(i => `<span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;background:${LEVEL_COLOR[i]}"></i><b>${lv[i]}</b> ${LEVEL_NAME[i].toLowerCase()}</span>`).join('')}
+    <div class="map-bar" title="${mastery}% mastered">${[4, 3, 2, 1].map(i => `<i style="width:${lv[i] / c.lines.length * 100}%;background:${LEVEL_COLOR[i]}"></i>`).join('')}</div></div>
+    <ol class="map">${c.lines.map(l => { const st = lineState(c, l), r = lineReach(c, l), v = lineLevel(c, l);
+      const label = st.s === 'due' ? st.label : v >= 2 ? `${LEVEL_NAME[v]} · ${st.label.replace(/^Known · r/, 'r')}` : st.label;
+      return `<li class="lv${v}${l === nextUp ? ' next' : ''}">${medalDot(v)}<button class="line-row" data-line="${l.id}"><span class="t">${l === nextUp ? '<span class="eyebrow" style="color:var(--accent)">Next up · </span>' : ''}${l.mine ? 'Your line: ' : ''}${esc(l.title)}</span><span class="status ${st.s === 'due' ? 'due' : v >= 2 ? 'lvl' + v : st.s}">${esc(label)}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span>${r != null ? `<span class="freq">You meet this in about ${r < 0.01 ? 'under 1' : Math.round(r * 100)}% of games at your level</span>` : ''}</button></li>`; }).join('')}</ol>`;
   ocSection(c, store.get('ocsec.' + c.id, 'lines'));
   $('#oc-lines').onclick = e => { const b = e.target.closest('[data-line]'); if (b) startLearn(c, c.lines.find(l => l.id === b.dataset.line)); };
   const mineDev = c.games.filter(x => x.mine).length;
@@ -1974,7 +2069,7 @@ function openCourse(c, keepScroll = false) {
 }
 
 /* the line player: learn (with notes and questions), review (from memory), ideas (find the plan move) */
-const op = { mode: null, queue: [], c: null, l: null, chess: null, ply: 0, wrong: 0, errors: 0, busy: false, flipped: false, idea: null, gen: 0 };
+const op = { mode: null, queue: [], c: null, l: null, chess: null, ply: 0, wrong: 0, errors: 0, busy: false, flipped: false, idea: null, gen: 0, tryTok: 0, daily: null, noteShapes: [], liveShapes: null };
 // the last move actually played on this board (undefined for a position set up from scratch), so an old highlight never lingers
 const lastMoveOf = chess => { const h = chess.history({ verbose: true }); const m = h[h.length - 1]; return m ? [m.from, m.to] : undefined; };
 // moving back and forth: op.view = how many moves in the position shown (null = the live position)
@@ -1987,10 +2082,12 @@ function posAtPly(n) {
 }
 function opStep(d) {
   if (!op.chess) return;
+  if (op.custom?.step) return op.custom.step(d);
   const len = op.chess.history().length, v = Math.max(0, Math.min(len, (op.view ?? len) + d));
   op.view = v === len ? null : v; boardSet();
 }
 function opNav() {
+  if (op.custom?.nav) return op.custom.nav();
   const len = op.chess.history().length, at = op.view ?? len;
   $('#op-back').disabled = at === 0; $('#op-fwd').disabled = op.view == null;
   const h = op.chess.history();
@@ -2036,28 +2133,45 @@ function boardSet(extra = {}) {
   if (op.view != null) {        // looking back: show that position, nothing can move
     const v = posAtPly(op.view);
     openCg.set({ fen: v.fen, turnColor: v.turn === 'w' ? 'white' : 'black', check: v.check, orientation, lastMove: v.lastMove,
-      movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: [] } });
+      movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: op.noteShapes[op.view - 1] || [] } });
+    document.querySelectorAll('#op-notes .note').forEach(n => n.classList.toggle('on', +n.dataset.ply === op.view - 1));
     opNav(); opEvalShow(v.fen); return;
   }
   const color = op.chess.turn() === 'w' ? 'white' : 'black';
   const myTurn = op.custom ? !op.busy && op.custom.canMove() : !op.busy && color === op.c.side && (op.mode === 'ideas' ? !op.ideaDone : op.ply < op.l.moves.length);
   const opts = { fen: op.chess.fen(), turnColor: color, check: op.chess.in_check(), orientation: op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side,
     movable: { free: false, color: myTurn ? (op.custom?.color === 'both' ? 'both' : op.c.side) : undefined, dests: myTurn ? toDests(op.chess) : new Map(), showDests: true, events: { after: onOpMove } },
-    drawable: { autoShapes: [] }, animation: { duration: 200 }, coordinates: true, lastMove: lastMoveOf(op.chess), ...extra };
+    drawable: { autoShapes: liveShapes() }, animation: { duration: 200 }, coordinates: true, lastMove: lastMoveOf(op.chess), ...extra };
   if (!openCg) openCg = Chessground($('#oboard'), opts); else openCg.set(opts);
+  document.querySelectorAll('#op-notes .note.on').forEach(n => n.classList.remove('on'));
+  $('#op-tree').hidden = op.mode !== 'tree';
+  for (const b of ['op-hint', 'op-showmove']) $('#' + b).hidden = op.mode === 'tree';
+  if (op.mode === 'tree') $('#op-restart').hidden = true;
   opNav(); opEvalShow(op.chess.fen());
+}
+// the arrows of the last note stay up through your opponent's reply, then go
+function liveShapes() {
+  if (op.custom) return op.custom.shapes?.() || [];
+  const s = op.liveShapes;
+  return s && op.ply - 1 - s.ply <= 1 ? s.shapes : [];
 }
 function feedback(html, cls = '') { const f = $('#op-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
 function addNote(m, i) {
   if (!m.c || (op.mode !== 'learn' && op.mode !== 'game')) return;
-  $('#op-notes').prepend(el('div', { class: 'note' }, `<b>${i % 2 === 0 ? `${i / 2 + 1}.` : `${Math.floor(i / 2) + 1}...`}${esc(m.san)}</b>${esc(m.c)}`));
+  $('#op-notes').prepend(el('div', { class: 'note', 'data-ply': i, title: 'Show this position' }, `<b>${i % 2 === 0 ? `${i / 2 + 1}.` : `${Math.floor(i / 2) + 1}...`}${esc(m.san)}</b>${esc(m.c)}`));
 }
-function startLearn(c, l) { op.mode = 'learn'; op.queue = []; loadLine(c, l); }
-function startReview(items) { op.mode = 'review'; op.queue = items.slice(); if (!op.queue.length) return; const n = op.queue.shift(); loadLine(n.c, n.l); }
+$('#op-notes').onclick = e => {
+  const n = e.target.closest('.note[data-ply]'); if (!n || !op.chess) return;
+  const v = +n.dataset.ply + 1;
+  op.view = v >= op.chess.history().length ? null : v; boardSet();
+  if (op.view == null) n.classList.add('on');
+};
+function startLearn(c, l) { op.mode = 'learn'; op.queue = []; op.daily = null; loadLine(c, l); }
+function startReview(items, daily = false) { op.mode = 'review'; if (!daily) op.daily = null; op.queue = items.slice(); if (!op.queue.length) return; const n = op.queue.shift(); loadLine(n.c, n.l); }
 function loadLine(c, l) {
   op.gen++;
-  Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null, custom: null });
-  $('#op-mode').textContent = `${c.title} · ${op.mode === 'learn' ? 'Learn' : op.mode === 'game' ? 'Train your game' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
+  Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null, custom: null, noteShapes: [], liveShapes: null });
+  $('#op-mode').textContent = `${op.daily ? 'Daily review · ' : ''}${c.title} · ${op.mode === 'learn' ? 'Learn' : op.mode === 'game' ? 'Train your game' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
   $('#op-title').textContent = l.title;
   $('#op-intro').textContent = op.mode === 'review' ? 'Play the course moves from memory. Notes come back if you go wrong.' : l.intro;
   $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
@@ -2070,6 +2184,12 @@ function applyMove(m) {
   const mv = op.chess.move(m.san, { sloppy: true });
   if (!mv) return null;
   op.ply++;
+  sfx.play(mv.captured ? 'capture' : 'move');
+  if (m.c && (op.mode === 'learn' || op.mode === 'game')) {
+    const sh = commentShapes(m, op.chess, mv);
+    op.noteShapes[op.ply - 1] = sh;
+    if (sh.length) op.liveShapes = { ply: op.ply - 1, shapes: sh };
+  }
   boardSet({ lastMove: [mv.from, mv.to] });
   addNote(m, op.ply - 1);
   progressBar();
@@ -2084,9 +2204,16 @@ function advance() {
     op.busy = true; boardSet();
     const g = op.gen;
     const st = statsAt(op.chess.fen()), hit = st?.m.find(x => x[0] === m.san);
+    // the other replies this course prepares you for in the same position (the branches of the move tree)
+    const before = op.chess.fen();
+    const others = op.mode === 'learn' ? [...(coursePosMoves(op.c).get(posKey(before)) || [])].filter(s => s !== m.san) : [];
+    const lastNote = op.liveShapes && op.liveShapes.ply === op.ply - 1;   // time to look at the arrows of your move's note
     setTimeout(() => { if (g !== op.gen) return; op.busy = false; const q = applyMove(m);
-      if (hit && (op.mode === 'learn' || op.mode === 'review')) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>: ${pct(hit[1] / st.n)} of players rated 1200-1600 choose it here.</span>`);
-      if (q) askQuiz(q); else advance(); }, 450);
+      const branch = others.length ? `<div class="small muted" style="margin-top:4px">The course also covers ${others.map(s => `<strong>${esc(s)}</strong>`).join(', ')} here, in other lines. <button class="gl" id="op-totree">See them in the move tree</button></div>` : '';
+      if (hit && (op.mode === 'learn' || op.mode === 'review')) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>: ${pct(hit[1] / st.n)} of players rated 1200-1600 choose it here.</span>${branch}`);
+      else if (branch) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>.</span>${branch}`);
+      document.getElementById('op-totree')?.addEventListener('click', () => startTree(op.c, treeNodeAt(op.c, before)));
+      if (q) askQuiz(q); else advance(); }, lastNote ? 1300 : 450);
   } else {
     op.wrong = 0; boardSet();
     if (op.mode === 'game' && op.ply === op.l.moves.length - 1)   // the moment the game went wrong
@@ -2101,16 +2228,20 @@ function onOpMove(orig, dest) {
   if (mv && (mv.san === want.san || want.alt?.includes(mv.san))) {
     if (mv.san !== want.san) want = { ...want, san: mv.san };
     feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>`, 'right');
+    op.tryTok++; sfx.play('right');
     const q = applyMove(want); if (q) askQuiz(q); else advance();
   } else if (mv && coursePosMoves(op.c).get(posKey(op.chess.fen()))?.has(mv.san)) {
     // the same position comes up in another line of this course, where this move is the recommendation
     boardSet({ drawable: { autoShapes: hintShape(true) } });
     feedback(`<span class="big" style="font-size:18px">${esc(mv.san)} is also a course move</span><div class="small">Another line of this course plays it here. This line continues with the arrow move instead.</div>`);
   } else {
-    op.wrong++; op.errors++;
+    op.wrong++; op.errors++; op.tryTok++;
+    sfx.play('wrong');
     boardSet();
     if (op.wrong >= 2) openCg.set({ drawable: { autoShapes: hintShape(true) } });
-    feedback(`<span class="big" style="font-size:18px">${mv ? esc(mv.san) : 'That move'} isn't the course move</span><div class="small">${op.wrong >= 2 ? 'The arrow shows it.' : 'Try again, or press Hint.'}</div>${op.mode === 'review' && want.c ? `<div class="small muted" style="margin-top:6px">${esc(want.c)}</div>` : ''}`, 'wrong');
+    const fen = op.chess.fen();
+    feedback(`<span class="big" style="font-size:18px">${mv ? esc(mv.san) : 'That move'} isn't the course move</span><div class="small">${op.wrong >= 2 ? 'The arrow shows it.' : 'Try again, or press Hint.'}</div>${op.mode === 'review' && want.c ? `<div class="small muted" style="margin-top:6px">${esc(want.c)}</div>` : ''}${mv ? '<div class="why-box" id="op-why"><span class="muted">Asking Stockfish what goes wrong after it…</span></div>' : ''}`, 'wrong');
+    if (mv) explainWrong(fen, mv, want);
   }
 }
 function hintShape(full) {
@@ -2137,10 +2268,255 @@ function askQuiz(q) {
     if (!right) return;   // let them try again until they find it
     box.querySelectorAll('.quiz-opts button').forEach(x => x.disabled = true);
     record('quiz', `${lineKey(op.c, op.l)}/${op.ply - 1}`, { ok: 1 });
+    sfx.play('right'); award(op.c, 1);
     $('#quiz-exp').innerHTML = `<p style="margin:10px 0">${esc(q.explain)}</p><button class="btn primary" id="quiz-go">Continue</button>`;
     $('#quiz-go').onclick = () => { box.hidden = true; op.busy = false; advance(); };
   };
 }
+
+/* ---- the move tree: the whole course on one board, with a branch wherever the course covers more than one move */
+function courseTree(c) {
+  if (c._tree) return c._tree;
+  const root = { id: 0, ply: 0, kids: [], lines: [] }, nodes = [root];
+  for (const l of c.lines) {
+    let n = root; const b = new Chess();
+    for (const m of l.moves) {
+      if (m.ext) break;   // the "how games usually go on" tails stay out of the tree
+      b.move(m.san, { sloppy: true });
+      let k = n.kids.find(x => x.san === m.san);
+      if (!k) { k = { id: nodes.length, san: m.san, ply: n.ply + 1, parent: n, kids: [], lines: [], key: posKey(b.fen()) }; nodes.push(k); n.kids.push(k); }
+      if (!k.m || (m.c && !k.m.c)) k.m = m;
+      if (!k.lines.includes(l)) k.lines.push(l);
+      n = k;
+    }
+  }
+  return (c._tree = { root, nodes });
+}
+// the tree node of a position (found by position, so another move order still lands on it)
+function treeNodeAt(c, fen) { const T = courseTree(c), k = posKey(fen); return T.nodes.find(n => n.key === k) || T.root; }
+// main line inline, the other moves as indented branches right after the move they replace
+function treeHtml(n, cur) {
+  let h = '', num = true;
+  while (n) {
+    const label = n.ply % 2 === 1 ? `${(n.ply + 1) / 2}.` : num ? `${n.ply / 2}...` : '';
+    h += `<button class="tm${n.m?.c ? ' c' : ''}${n === cur ? ' cur' : ''}" data-n="${n.id}">${label}${esc(n.san)}</button> `;
+    num = false;
+    const sib = n.parent.kids;
+    if (sib[0] === n && sib.length > 1) { h += sib.slice(1).map(s => `<div class="tv">${treeHtml(s, cur)}</div>`).join(''); num = true; }
+    n = n.kids[0];
+  }
+  return h;
+}
+function startTree(c, at = null) {
+  curCourse = c; op.mode = 'tree'; op.c = c; op.l = null; op.daily = null; op.queue = []; op.gen++;
+  const T = courseTree(c);
+  let cur = at || T.root;
+  const go = (n, note = '') => {
+    cur = n; op.chess = new Chess();
+    const path = []; for (let x = n; x.parent; x = x.parent) path.unshift(x.san);
+    path.forEach(s => op.chess.move(s, { sloppy: true }));
+    op.busy = false; boardSet(); render(note);
+  };
+  const render = note => {
+    $('#op-mode').textContent = `${c.title} · Move tree`;
+    $('#op-title').textContent = cur.parent ? `After ${plyLabel(cur.ply - 1)}${cur.san}` : 'Start position';
+    $('#op-intro').textContent = 'Click a move in the tree, step with ◀ ▶, or play a move on the board. Blue arrows show where the course goes from here.';
+    $('#op-progress').style.width = (cur.ply ? Math.min(100, cur.ply / 20 * 100) : 0) + '%';
+    const st = statsAt(op.chess.fen());
+    const next = cur.kids.map(k => { const s = st?.m.find(x => x[0] === k.san); return `<button class="btn" data-n="${k.id}">${plyLabel(cur.ply)}${esc(k.san)}${s ? ` <span class="muted small">${pct(s[1] / st.n)}</span>` : ''}</button>`; }).join('');
+    const lines = cur.parent ? cur.lines : [];
+    feedback(`${note}${cur.m?.c ? `<div>${esc(cur.m.c)}</div>` : `<span class="muted">${cur.parent ? 'No note on this move.' : 'The starting position.'}</span>`}
+      ${cur.kids.length ? `<div class="small muted" style="margin-top:10px">${cur.kids.length > 1 ? `The course covers ${cur.kids.length} moves here` : 'The course continues with'}${st ? ' (how often players at your level choose each)' : ''}:</div><div class="tree-next">${next}</div>` : '<div class="small muted" style="margin-top:10px">The course line ends here.</div>'}
+      ${lines.length ? `<div class="small muted" style="margin-top:10px">Part of ${lines.length === 1 ? 'the line' : `${lines.length} lines`}: ${lines.slice(0, 4).map(l => `<button class="gl" data-learn="${esc(l.id)}">${esc(l.title)}</button>`).join(', ')}${lines.length > 4 ? ' …' : ''}</div>` : ''}`);
+    const tr = $('#op-tree'); tr.hidden = false;
+    tr.innerHTML = `<div class="eyebrow" style="margin-bottom:6px">Move tree · ${T.nodes.length - 1} moves · <span style="color:var(--accent)">•</span> has a note</div><div class="tree">${T.root.kids.length ? treeHtml(T.root.kids[0], cur) : ''}</div>`;
+    const box = tr.querySelector('.tree'), b = box.querySelector('.cur');
+    if (b) box.scrollTop = b.offsetTop - box.clientHeight / 2;
+  };
+  const pick = e => {
+    const n = e.target.closest('[data-n]'); if (n) return go(T.nodes[+n.dataset.n]);
+    const l = e.target.closest('[data-learn]'); if (l) startLearn(c, c.lines.find(x => x.id === l.dataset.learn));
+  };
+  $('#op-tree').onclick = pick;
+  $('#op-feedback').onclick = e => { if (op.mode === 'tree') pick(e); };
+  op.custom = {
+    color: 'both',
+    canMove: () => true,
+    onMove(orig, dest) {
+      const mv = new Chess(op.chess.fen()).move({ from: orig, to: dest, promotion: 'q' });
+      const k = mv && cur.kids.find(x => x.san === mv.san);
+      if (k) { sfx.play(mv.captured ? 'capture' : 'move'); return go(k); }
+      sfx.play('wrong');
+      go(cur, `<div class="why-box" style="margin:0 0 10px">${mv ? `<strong>${esc(mv.san)}</strong> isn't in this course.` : ''} ${cur.kids.length ? 'The course moves are below and on the board.' : ''}</div>`);
+    },
+    step(d) { if (d < 0 && cur.parent) go(cur.parent); else if (d > 0 && cur.kids[0]) go(cur.kids[0]); },
+    nav() { $('#op-back').disabled = !cur.parent; $('#op-fwd').disabled = !cur.kids.length; $('#op-navinfo').textContent = cur.kids.length > 1 ? `${cur.kids.length} branches here: ▶ follows the main one` : ''; },
+    shapes() {
+      const h = op.chess.history({ verbose: true }), sh = cur.m ? commentShapes(cur.m, op.chess, h[h.length - 1]) : [];
+      const next = cur.kids.map((k, i) => { const m = new Chess(op.chess.fen()).move(k.san, { sloppy: true }); return m && { orig: m.from, dest: m.to, brush: i === 0 ? 'blue' : 'paleBlue' }; }).filter(Boolean);
+      return [...sh, ...next];
+    },
+  };
+  $('#op-quiz').hidden = true; $('#op-notes').innerHTML = '';
+  opShow('player'); go(cur);
+}
+
+/* ---- why a wrong move is wrong: Stockfish's answer to it, drawn on the board, next to what the course move keeps */
+const PIECE_NAME = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+async function explainWrong(fen, mv, want) {
+  const tok = ++op.tryTok, g = op.gen, live = () => tok === op.tryTok && g === op.gen && document.getElementById('op-why');
+  const after = new Chess(fen); after.move(mv.san);
+  const wantMv = new Chess(fen).move(want.san, { sloppy: true });
+  if (after.game_over() || !wantMv) return document.getElementById('op-why')?.remove();
+  const r = await engine.go(after.fen(), { movetime: 500, skill: 20 }).catch(() => null);
+  const rc = r && await engine.go(fen, { movetime: 500, skill: 20, searchmoves: wantMv.from + wantMv.to + (wantMv.promotion || '') }).catch(() => null);
+  if (!live()) return;
+  if (!r || !rc) return document.getElementById('op-why').remove();
+  const sc = s => s.mate !== undefined ? (s.mate > 0 ? 10000 - s.mate : -10000 - s.mate) : s.cp;
+  const mine = -sc(r.score), course = sc(rc.score), loss = course - mine;   // both from your side of the board
+  const words = s => s.mate !== undefined ? standWords(0, s.mate) : standWords(s.cp);
+  const myWords = r.score.mate !== undefined ? standWords(0, -r.score.mate) : standWords(-r.score.cp);
+  const box = document.getElementById('op-why');
+  if (loss < 40) {
+    box.innerHTML = `Stockfish says <strong>${esc(mv.san)}</strong> is about as good here. It's fine to play, but this course is built around <strong>${esc(want.san)}</strong>, so that's the one to learn.`;
+    return;
+  }
+  const rep = after.move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
+  if (!rep) return box.remove();
+  const what = rep.captured ? ` and takes your ${PIECE_NAME[rep.captured]} on ${rep.to}` : rep.san.includes('+') ? ', with check' : '';
+  const cost = Math.abs(mine) > 5000 ? 'It loses by force.' : `That costs you about ${(loss / 100).toFixed(1)} pawn${loss >= 150 ? 's' : ''} of advantage.`;
+  const arrows = [{ orig: mv.from, dest: mv.to, brush: 'paleRed' }, { orig: rep.from, dest: rep.to, brush: 'red' }];
+  box.innerHTML = `<strong>Why not ${esc(mv.san)}?</strong> Your opponent answers <strong>${esc(rep.san)}</strong>${what}. After that you'd be ${myWords}; with <strong>${esc(want.san)}</strong> you'd be ${words(rc.score)}. ${cost}
+    <div class="controls" style="margin-top:8px"><button class="btn" id="op-whyshow">Show it on the board</button></div>`;
+  const withHint = () => [...arrows, ...(op.wrong >= 2 ? hintShape(true) : [])];
+  openCg.set({ drawable: { autoShapes: withHint() } });
+  let shown = false;
+  $('#op-whyshow').onclick = () => {
+    shown = !shown;
+    if (shown) openCg.set({ fen: after.fen(), lastMove: [rep.from, rep.to], check: after.in_check(), movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: [{ orig: mv.from, dest: mv.to, brush: 'paleRed' }] } });
+    else { boardSet(); openCg.set({ drawable: { autoShapes: withHint() } }); }
+    $('#op-whyshow').textContent = shown ? 'Back to the position' : 'Show it on the board';
+  };
+}
+
+/* ---- mastery: every line climbs New → Learning → Bronze → Silver → Gold as reviews keep going right */
+const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
+const LEVEL_COLOR = ['var(--line)', 'var(--accent)', '#b0713f', '#8f9aa3', '#c99a1e'];
+function lineLevel(c, l) { const b = progress.lines[lineKey(c, l)]?.box || 0; return b >= 5 ? 4 : b >= 4 ? 3 : b >= 3 ? 2 : b ? 1 : 0; }
+const MEDAL_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>';
+const medalDot = lv => `<span class="medal-dot">${lv >= 2 ? MEDAL_SVG : lv === 1 ? '…' : ''}</span>`;
+function courseLevels(c) { const n = [0, 0, 0, 0, 0]; c.lines.forEach(l => n[lineLevel(c, l)]++); return n; }
+const medalsHtml = c => { const n = courseLevels(c); return `<span class="medals">${[4, 3, 2].filter(i => n[i]).map(i => `<span title="${LEVEL_NAME[i]}"><i style="background:${LEVEL_COLOR[i]}"></i><b>${n[i]}</b></span>`).join('')}</span>`; };
+
+/* ---- points and streaks per course: learning a line 10, a perfect review 5, a review with slips 2,
+   a position card or quiz question 1, a fixed game 5. Stored per course per day so phone and laptop add up. */
+function award(c, n) {
+  if (!c || !n) return;
+  const k = `${c.id}/${dayKey()}`;
+  record('opx', k, { n: (progress.opx[k]?.n || 0) + n });
+  const t = el('div', { class: 'pts-toast', role: 'status' }, `+${n}`);
+  document.body.append(t); setTimeout(() => t.remove(), 1400);
+}
+function courseScore(c) {
+  const days = Object.entries(progress.opx).filter(([k]) => !c || k.startsWith(c.id + '/')).map(([k, v]) => [k.split('/')[1], v.n || 0]);
+  const by = new Map(); for (const [d, n] of days) by.set(d, (by.get(d) || 0) + n);
+  const total = [...by.values()].reduce((s, n) => s + n, 0);
+  const d = new Date(); let week = 0;
+  for (let i = 0; i < 7; i++) { week += by.get(dayKey(d)) || 0; d.setDate(d.getDate() - 1); }
+  let streak = 0; const s = new Date();
+  if (!by.has(dayKey(s))) s.setDate(s.getDate() - 1);
+  while (by.has(dayKey(s))) { streak++; s.setDate(s.getDate() - 1); }
+  return { total, week, streak, today: by.get(dayKey()) || 0 };
+}
+
+/* ---- sounds, made on the spot (no files, so they work offline too); the switch is remembered */
+const sfx = {
+  on: store.get('sound', true), ctx: null,
+  play(kind) {
+    if (!this.on) return;
+    try {
+      const c = this.ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (c.state === 'suspended') c.resume();
+      const t = c.currentTime;
+      const tone = (f, at, dur, type = 'sine', vol = .12) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t + at); g.gain.linearRampToValueAtTime(vol, t + at + .01); g.gain.exponentialRampToValueAtTime(.0008, t + at + dur);
+        o.connect(g).connect(c.destination); o.start(t + at); o.stop(t + at + dur + .05);
+      };
+      const knock = (freq, dur, vol) => {   // a short filtered noise burst sounds like a piece on wood
+        const b = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4);
+        const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+        s.buffer = b; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.2; g.gain.value = vol;
+        s.connect(f).connect(g).connect(c.destination); s.start(t);
+      };
+      ({
+        move: () => knock(1500, .07, 1.4),
+        capture: () => { knock(700, .12, 2); knock(2200, .05, .8); },
+        right: () => { tone(784, 0, .16); tone(1175, .08, .28); },
+        wrong: () => tone(196, 0, .22, 'triangle', .14),
+        done: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .1, .4, 'sine', .1)),
+      })[kind]?.();
+    } catch {}
+  },
+};
+const soundLabel = () => { $('#op-sound').textContent = `Sound: ${sfx.on ? 'on' : 'off'}`; };
+$('#op-sound').onclick = () => { sfx.on = !sfx.on; store.set('sound', sfx.on); soundLabel(); if (sfx.on) sfx.play('right'); };
+soundLabel();
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const box = el('div', { class: 'confetti', 'aria-hidden': 'true' });
+  const cols = ['#2f8a57', '#2b55a8', '#c99a1e', '#dd7f14', '#b0713f', '#8f9aa3'];
+  for (let i = 0; i < 60; i++) {
+    const p = el('i');
+    p.style.cssText = `left:${Math.random() * 100}%;background:${cols[i % cols.length]};animation-delay:${Math.random() * .35}s;--dx:${(Math.random() - .5) * 160}px;--r:${Math.round(Math.random() * 720 - 360)}deg`;
+    box.append(p);
+  }
+  document.body.append(box); setTimeout(() => box.remove(), 2300);
+}
+
+/* ---- one daily review across all courses: due lines first, then due position cards, course by course */
+function dailyQueue() {
+  const lines = COURSES.flatMap(dueLines);
+  const cards = COURSES.map(c => ({ c, due: cardDue(c).due.slice(0, 25) })).filter(x => x.due.length);
+  const nCards = cards.reduce((s, x) => s + x.due.length, 0);
+  return { lines, cards, nCards, n: lines.length + nCards, mins: Math.max(1, Math.round(lines.length * 1 + nCards / 5)) };
+}
+function startDaily() {
+  const q = dailyQueue();
+  if (!q.n) return;
+  op.daily = { segs: [...(q.lines.length ? [{ lines: q.lines }] : []), ...q.cards.map(x => ({ c: x.c, cards: x.due }))], total: q.n };
+  dailyNext();
+}
+function dailyNext() {
+  const d = op.daily, s = d?.segs.shift();
+  if (!s) return dailyDone();
+  if (s.lines) startReview(s.lines, true); else startCards(s.c, s.cards, 'drill', true);
+}
+const dailyLeft = () => op.daily ? op.daily.segs.reduce((s, x) => s + (x.lines || x.cards).length, 0) : 0;
+const dailyBtn = () => op.daily ? `<button class="btn primary" id="daily-go">${op.daily.segs.length ? `Continue daily review (${dailyLeft()} left)` : 'Finish daily review'}</button>` : '';
+const dailyHook = () => document.getElementById('daily-go')?.addEventListener('click', dailyNext);
+function dailyDone() {
+  const total = op.daily?.total || 0; op.daily = null;
+  op.busy = true; boardSet();
+  $('#op-mode').textContent = 'Daily review · all courses'; $('#op-title').textContent = 'All done for today'; $('#op-intro').textContent = '';
+  sfx.play('done'); confetti();
+  $('#op-progress').style.width = '100%';
+  const sc = courseScore(null);
+  feedback(`<span class="big">Daily review done</span><div class="small">All ${total} due item${total === 1 ? '' : 's'} reviewed. ${sc.today ? `${sc.today} opening points today.` : ''} Whatever you missed comes back tomorrow.</div>
+    <div class="controls" style="margin-top:10px"><button class="btn primary" id="daily-home">Back to openings</button></div>`, 'right');
+  $('#daily-home').onclick = () => { renderOpeningsHome(); opShow('home'); };
+}
+
+/* ---- out of book: a recent game where you left one of your courses, ready to fix in a minute */
+function bookAlerts() {
+  const since = Date.now() / 1000 - 7 * 86400;
+  return COURSES.flatMap(c => c.games.filter(x => x.mine && x.target && x.g.end > since && !progress.og[x.id]?.ok).map(x => ({ c, x })))
+    .sort((a, b) => b.x.g.end - a.x.g.end);
+}
+const agoWords = t => { const d = Math.floor((startOfDay() / 1000 - t) / 86400) + 1; return t * 1000 >= startOfDay() ? 'today' : d <= 1 ? 'yesterday' : `${d} days ago`; };
+
 function finishLine() {
   if (op.mode === 'game') return finishGameDrill();
   const k = lineKey(op.c, op.l), p = progress.lines[k];
@@ -2148,14 +2524,21 @@ function finishLine() {
   if (op.mode === 'learn') { box = Math.max(1, p?.box || 0); msg = 'Line learned.'; due = Date.now() + INTERVALS[box] * DAY; }
   else if (op.errors === 0) { box = Math.min(5, (p?.box || 0) + 1); msg = 'Perfect from memory.'; due = Date.now() + INTERVALS[box] * DAY; }
   else { box = 1; msg = `Done, with ${op.errors} slip${op.errors > 1 ? 's' : ''}.`; due = Date.now() + DAY; op.queue.push({ c: op.c, l: op.l }); }
+  const before = lineLevel(op.c, op.l);
   record('lines', k, { box, due });
-  const nextBtn = op.queue.length ? `<button class="btn primary" id="op-next">Next line (${op.queue.length} left)</button>` : '';
+  const after = lineLevel(op.c, op.l);
+  award(op.c, op.mode === 'learn' ? 10 : op.errors === 0 ? 5 : 2);
+  sfx.play(op.errors === 0 || op.mode === 'learn' ? 'done' : 'right');
+  if (op.mode === 'learn' || after > before || (op.errors === 0 && !op.queue.length)) confetti();
+  const levelUp = after > before && after >= 2 ? `<div class="levelup lv${after}">${medalDot(after)}<div><strong>${LEVEL_NAME[after]}!</strong><div class="small muted">This line moved up to ${LEVEL_NAME[after].toLowerCase()}.${after < 4 ? ` Next: ${LEVEL_NAME[after + 1].toLowerCase()}.` : ' Top level.'}</div></div></div>` : '';
+  const nextBtn = op.queue.length ? `<button class="btn primary" id="op-next">Next line (${op.queue.length} left)</button>` : dailyBtn();
   const learnNext = op.mode === 'learn' ? op.c.lines.find(l => !progress.lines[lineKey(op.c, l)]) : null;
-  feedback(`<span class="big">${msg}</span><div class="small">${op.errors && op.mode === 'review' ? 'It comes back at the end of this session and again tomorrow.' : `Next review ${fmtIn(due)}.`}</div>
+  feedback(`<span class="big">${msg}</span><div class="small">${op.errors && op.mode === 'review' ? 'It comes back at the end of this session and again tomorrow.' : `Next review ${fmtIn(due)}.`}</div>${levelUp}
     <div class="controls" style="margin-top:10px">${nextBtn}${learnNext ? `<button class="btn primary" id="op-learnnext">Learn next: ${esc(learnNext.title)}</button>` : ''}<button class="btn" id="op-spar">Play on against Stockfish</button><button class="btn" id="op-tocourse">Back to course</button></div>`, 'right');
   $('#op-spar').onclick = () => playOnFromLine(op.c, op.l);
   $('#op-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
   $('#op-learnnext')?.addEventListener('click', () => startLearn(op.c, learnNext));
+  dailyHook();
   $('#op-tocourse').onclick = () => openCourse(op.c);
 }
 
@@ -2216,7 +2599,7 @@ function gameDrillLine(c, x) {
     moves };
 }
 function startGameDrills(c, xs) {
-  op.mode = 'game';
+  op.mode = 'game'; op.daily = null;
   op.queue = xs.slice(1).map(x => ({ c, l: gameDrillLine(c, x) }));
   loadLine(c, gameDrillLine(c, xs[0]));
 }
@@ -2224,6 +2607,7 @@ function startGameDrills(c, xs) {
 function finishGameDrill() {
   const x = op.l.game, ok = op.errors === 0;
   record('og', x.id, { ok: ok ? 1 : (progress.og[x.id]?.ok || 0) });
+  award(op.c, ok ? 5 : 2); sfx.play(ok ? 'done' : 'right'); if (ok) confetti();
   if (!ok) op.queue.push({ c: op.c, l: op.l });   // try it once more at the end
   feedback(`<span class="big">${ok ? 'Fixed! That is how the game should have gone.' : `Done, with ${op.errors} slip${op.errors > 1 ? 's' : ''}. It comes back at the end.`}</span>
     <div class="controls" style="margin-top:10px">${op.queue.length ? `<button class="btn primary" id="og-next">Next game (${op.queue.length} left)</button>` : ''}<button class="btn" id="og-spar">Play on against Stockfish</button><button class="btn" id="og-tocourse">Back to course</button></div>`, 'right');
@@ -2314,8 +2698,9 @@ function hubSpeed(c) {
 }
 HUB_ACTIONS.speed = c => startCards(c, cardsOf(c).slice().sort(() => Math.random() - .5).slice(0, 20), 'speed');
 
-function startCards(c, list, kind) {
+function startCards(c, list, kind, daily = false) {
   if (!list.length) return;
+  if (!daily) op.daily = null;
   curCourse = c; op.mode = 'cards'; op.c = c;
   const st = { kind, queue: list.slice(), total: list.length, right: 0, done: 0, failed: new Set(), timer: null, t0: 0 };
   const stopTimer = () => { clearInterval(st.timer); st.timer = null; };
@@ -2327,7 +2712,7 @@ function startCards(c, list, kind) {
     st.card = card; st.expected = expected; st.missed = false;
     op.chess = new Chess(); card.path.forEach(m => op.chess.move(m, { sloppy: true }));
     op.busy = false; op.wrong = 0;
-    $('#op-mode').textContent = `${c.title} · ${kind === 'speed' ? 'Speed round' : 'Drill'} · ${st.done + 1} of ${kind === 'speed' ? st.total : st.total + st.failed.size}`;
+    $('#op-mode').textContent = `${op.daily ? 'Daily review · ' : ''}${c.title} · ${kind === 'speed' ? 'Speed round' : 'Drill'} · ${st.done + 1} of ${kind === 'speed' ? st.total : st.total + st.failed.size}`;
     $('#op-title').textContent = 'Your move';
     $('#op-intro').textContent = card.path.length ? `After ${sanLine(card.path.map(san => ({ san })), card.path.length).split(' ').slice(-6).join(' ')}` : 'The starting position.';
     $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
@@ -2343,6 +2728,7 @@ function startCards(c, list, kind) {
   const next = (delay) => { const g = op.gen; setTimeout(() => { if (g === op.gen) load(); }, delay); };
   const miss = (san, why) => {
     const card = st.card; st.missed = true;
+    sfx.play('wrong');
     const shape = (() => { const m = new Chess(op.chess.fen()).move(st.expected, { sloppy: true }); return m ? [{ orig: m.from, dest: m.to, brush: 'green' }] : []; })();
     op.busy = true; boardSet({ drawable: { autoShapes: shape } });
     if (kind === 'drill') { record('pos', posId(c, card), { box: 1, due: Date.now() + DAY }); if (!st.failed.has(card.id)) { st.failed.add(card.id); st.queue.push(card); } }
@@ -2359,6 +2745,7 @@ function startCards(c, list, kind) {
       const { ok } = cardAccept(c, st.card);
       if (!ok.has(mv.san)) return miss(mv.san);
       op.chess.move(mv.san); op.busy = true; boardSet({ lastMove: [orig, dest] });
+      sfx.play('right'); if (kind === 'drill' && !st.failed.has(st.card.id)) award(c, 1);
       const card = st.card;
       if (kind === 'drill' && !st.failed.has(card.id)) { const box = Math.min(5, (progress.pos[posId(c, card)]?.box || 0) + 1); record('pos', posId(c, card), { box, due: Date.now() + INTERVALS[box] * DAY }); }
       st.right++; st.queue.shift(); st.done++;
@@ -2370,11 +2757,13 @@ function startCards(c, list, kind) {
   };
   const finish = () => {
     stopTimer(); op.busy = true; boardSet();
-    if (kind === 'speed') { const prev = progress.spd[c.id]?.best ?? -1; if (st.right > prev) record('spd', c.id, { best: st.right }); }
+    if (kind === 'speed') { const prev = progress.spd[c.id]?.best ?? -1; if (st.right > prev) record('spd', c.id, { best: st.right }); award(c, st.right); }
+    if (!op.daily) { sfx.play('done'); if (st.failed.size === 0 || kind === 'speed') confetti(); }
     $('#op-progress').style.width = '100%';
     feedback(`<span class="big">${kind === 'speed' ? `${st.right} of ${st.total} in time` : `Drill done: ${st.total - st.failed.size} of ${st.total} right first time`}</span>
       <div class="small">${kind === 'drill' ? 'Cards you missed come back tomorrow; the rest come back later and later as you keep getting them right.' : (progress.spd[c.id]?.best === st.right ? 'A new best for this course.' : `Your best is ${progress.spd[c.id]?.best}/20.`)}</div>
-      <div class="controls" style="margin-top:10px"><button class="btn primary" id="cards-again">${kind === 'speed' ? 'Another round' : 'More cards'}</button><button class="btn" id="cards-back">Back to course</button></div>`, 'right');
+      <div class="controls" style="margin-top:10px">${dailyBtn()}<button class="btn${op.daily ? '' : ' primary'}" id="cards-again">${kind === 'speed' ? 'Another round' : 'More cards'}</button><button class="btn" id="cards-back">Back to course</button></div>`, 'right');
+    dailyHook();
     $('#cards-again').onclick = () => HUB_ACTIONS[kind](c);
     $('#cards-back').onclick = () => openCourse(c);
   };
@@ -2383,7 +2772,7 @@ function startCards(c, list, kind) {
 
 // ---- single positions (traps): find the right move in one position
 function startPositions(c, items, label) {
-  curCourse = c; op.mode = 'cards'; op.c = c;
+  curCourse = c; op.mode = 'cards'; op.c = c; op.daily = null;
   let i = 0, right = 0, cur = null, missed = false;
   const load = () => {
     op.gen++;
@@ -2454,7 +2843,7 @@ function hubSpar(c) {
 }
 HUB_ACTIONS.spar = c => startSpar(c);
 function startSpar(c) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
   const g = op.gen, me = c.side[0];
   const st = { evals: [], left: null, done: false };
   op.chess = new Chess(); op.busy = false;
@@ -2544,7 +2933,7 @@ function hubModels(c) {
 }
 HUB_ACTIONS.model = (c, d) => startModel(c, XP.courses[c.id].models[+d.i]);
 function startModel(c, m) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
   const g = op.gen, me = c.side[0];
   let ply = 0, asked = 0, hits = 0, done = false;
   op.chess = new Chess(); op.busy = false;
@@ -2630,7 +3019,7 @@ HUB_ACTIONS.choose = (c, d) => { const cd = cardsOf(c).find(x => x.id === d.card
 HUB_ACTIONS.dropline = (c, d) => { record('cl', d.id, { ...progress.cl[d.id], deleted: true }); applyCustomLines(); ocSection(c, 'mine'); };
 HUB_ACTIONS.build = c => startBuilder(c);
 function startBuilder(c) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++;
+  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
   const g = op.gen, me = c.side[0];
   op.chess = new Chess(); op.busy = false;
   $('#op-mode').textContent = `${c.title} · Your own line`;
@@ -2674,7 +3063,7 @@ function startBuilder(c) {
   boardSet(); panel();
 }
 
-function startIdeas(c) { op.mode = 'ideas'; op.c = c; op.l = null; op.ideaIdx = 0; loadIdea(); }
+function startIdeas(c) { op.mode = 'ideas'; op.daily = null; op.c = c; op.l = null; op.ideaIdx = 0; loadIdea(); }
 function loadIdea() {
   op.gen++; op.custom = null;
   const c = op.c, it = c.ideas.items[op.ideaIdx];
@@ -3378,14 +3767,14 @@ function resumeLast(last) {
 }
 function todayTasks() {
   const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
-  const due = COURSES.flatMap(dueLines).length;
-  const reviewedToday = today('lines').length;
+  const due = dailyQueue().n;
+  const reviewedToday = today('lines').length + today('pos').length;
   const tactics = today('puz').length + today('pun').length + today('solved').length;
   const checks = today('chk').length;
   const played = today('cv').length + today('eg').length + today('eo').length + today('tq').length;
   const tasks = [
-    { nm: 'Opening reviews', ct: due ? `${due} line${due > 1 ? 's' : ''} due` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && reviewedToday > 0 || !due && Object.keys(progress.lines).length > 0,
-      go: () => { show('openings'); if (due) startReview(COURSES.flatMap(dueLines)); else { renderOpeningsHome(); opShow('home'); } } },
+    { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && reviewedToday > 0 || !due && Object.keys(progress.lines).length > 0,
+      go: () => { show('openings'); if (due) startDaily(); else { renderOpeningsHome(); opShow('home'); } } },
     { nm: '10 tactics', ct: `${Math.min(tactics, 10)}/10 puzzles, punish or mistake positions`, done: tactics >= 10, go: () => { launchFrom('today'); show('tactics'); startPuzzles(null); } },
     { nm: '5 blunder checks', ct: `${Math.min(checks, 5)}/5 · the habit that saves games`, done: checks >= 5, go: () => { launchFrom('today'); show('tactics'); startCheck(); } },
     { nm: 'Play out a winning position', ct: played ? `${played} done today` : 'Convert a win against Stockfish', done: played > 0,
@@ -3412,6 +3801,14 @@ function renderToday() {
   const still = seen ? ' style="animation:none;stroke-dashoffset:0"' : '';
   $('#today-cheer').innerHTML = doneCount === 4 ? `<div class="cheer"><span class="medal"${seen ? ' style="animation:none"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"${still}><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><strong>All four done. That's a full training day.</strong><span class="small muted">${streak > 1 ? `${streak} days in a row now. ` : ''}Anything more today is a bonus.</span></div></div>` : '';
   if (doneCount === 4) store.set('cheered', todayKey);
+  // out of book: you left one of your courses in a recent game
+  const alerts = bookAlerts(), ba = $('#today-book');
+  ba.hidden = !alerts.length;
+  if (alerts.length) {
+    const { c, x } = alerts[0], g = x.g;
+    ba.innerHTML = `<div><span class="eyebrow" style="color:var(--mistake)">Out of book · ${agoWords(g.end)}</span><h3 style="margin-top:4px">You left your ${esc(c.title)} course at ${moveLabel(x.k)}${esc(g.plies[x.k].san)}</h3><p class="small" style="margin:4px 0 0">Against ${esc(g.opp)} (${g.oppRating}), ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'a draw'}. The course plays <strong>${esc(x.target.want.join(' or '))}</strong>. Replay the game and play it right: about a minute.${alerts.length > 1 ? ` <span class="muted">${alerts.length - 1} more game${alerts.length > 2 ? 's' : ''} after this one.</span>` : ''}</p></div><button class="btn primary" id="today-book-go">Fix it now</button>`;
+    $('#today-book-go').onclick = () => { show('openings'); curCourse = c; startGameDrills(c, alerts.filter(a => a.c === c).map(a => a.x)); };
+  }
   // pick up where you left off
   const last = store.get('last', null);
   $('#today-resume').hidden = !last || Date.now() - last.t > 14 * DAY;
