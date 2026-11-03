@@ -1615,10 +1615,12 @@ for (const k of ['phase', 'sev']) $('#d-' + k).onclick = e => {
 let openCg = null;
 const lineKey = (c, l) => `${c.id}/${l.id}`;
 const fmtIn = ms => { const d = Math.round((ms - Date.now()) / DAY); return d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; };
+// "due" means due any time today: a line you reviewed yesterday evening is due this evening, and the course page already calls it "today"
+const endOfToday = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
 function lineState(c, l) {
   const p = progress.lines[lineKey(c, l)];
   if (!p) return { s: 'new', label: 'New' };
-  if (p.due <= Date.now()) return { s: 'due', label: 'Review due' };
+  if (p.due <= endOfToday()) return { s: 'due', label: 'Review due' };
   if (p.box >= 4) return { s: 'known', label: `Known · review ${fmtIn(p.due)}` };
   return { s: 'learning', label: `Review ${fmtIn(p.due)}` };
 }
@@ -2416,7 +2418,7 @@ function cardAccept(c, card) {
   return { expected, ok: new Set([expected, ...course, ...card.alts.map(a => a.san)]) };
 }
 function cardDue(c) {
-  const now = Date.now(), cards = cardsOf(c);
+  const now = endOfToday(), cards = cardsOf(c);
   const due = cards.filter(cd => progress.pos[posId(c, cd)] && progress.pos[posId(c, cd)].due <= now);
   const fresh = cards.filter(cd => !progress.pos[posId(c, cd)]).sort((a, b) => a.ply - b.ply);
   return { cards, due, fresh };
