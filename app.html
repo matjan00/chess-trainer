@@ -288,6 +288,13 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .vlen { position: absolute; right: 6px; bottom: 6px; background: rgba(10, 14, 12, .82); color: #fff; font: 600 12px/1 var(--mono); padding: 3px 5px; border-radius: 4px; }
 .vkind { position: absolute; left: 6px; top: 6px; background: rgba(10, 14, 12, .72); color: #fff; font: 600 11px/1 var(--body); letter-spacing: .04em; text-transform: uppercase; padding: 4px 6px; border-radius: 4px; }
 .vc.watched .vth img { opacity: .45; }
+.vbar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255, 255, 255, .35); }
+.vbar i { display: block; height: 100%; background: #e5402f; }
+.vc .vbar ~ .vlen { bottom: 10px; }
+.w-resume { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 18px; align-items: center; margin-top: 18px; border-color: var(--accent); }
+.w-resume h3 { font-size: 21px; margin-top: 4px; }
+.w-resume .btn { min-height: 44px; padding-inline: 18px; margin-top: 12px; }
+@media (max-width: 600px) { .w-resume { grid-template-columns: 1fr; } }
 .vc.watched .vth::after { content: "Watched ✓"; position: absolute; left: 6px; bottom: 6px; background: var(--good); color: #fff; font: 600 11px/1 var(--body); padding: 4px 6px; border-radius: 4px; }
 .vt { font-weight: 600; font-size: 15px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px; }
 .vm { font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -3579,7 +3586,9 @@ function renderToday() {
 /* ---------- watch: chess videos that Reddit's chess players recommend, matched to your games ----------
    tube.json is built by tube/build_tube.py from Reddit comments that link YouTube videos. Each video has a kind
    (lesson / play = speedrun or game review / course), topics, the opening courses it fits, a level (1 beginner,
-   2 club player, 3 advanced) and how often it was recommended. Watched / saved-for-later sync as progress kind 'vid'. */
+   2 club player, 3 advanced) and how often it was recommended. Per video, progress kind 'vid' syncs w (watched),
+   l (saved for later), o (last opened), p / d (where you stopped / its length, in seconds) and, in a playlist,
+   v (the video you were on). */
 const VIDS = TUBE.videos || [];
 const VID_BY = Object.fromEntries(VIDS.map(v => [v.id, v]));
 const KIND_NAME = { lesson: 'Lesson', play: 'Speedrun', course: 'Course' };
@@ -3588,6 +3597,17 @@ const fmtLen = t => { if (!t) return ''; const h = Math.floor(t / 3600), m = Mat
 const lenWords = t => t >= 3600 ? `${Math.floor(t / 3600)} h ${Math.round(t % 3600 / 60)} min` : `${Math.max(1, Math.round(t / 60))} min`;
 const vidSeen = id => !!progress.vid[id]?.w;
 const vidLater = id => !!progress.vid[id]?.l;
+const vidWhen = id => progress.vid[id]?.o || progress.vid[id]?.t || 0;
+// started but not finished: more than half a minute in, not marked watched
+const vidUnfinished = id => { const x = progress.vid[id]; return !!x && !x.w && (x.p || 0) >= 30; };
+const vidHistory = () => Object.keys(progress.vid).filter(id => VID_BY[id] && (progress.vid[id].o || progress.vid[id].w)).sort((a, b) => vidWhen(b) - vidWhen(a));
+const vidResume = () => vidHistory().find(vidUnfinished);
+function vidBar(id) {
+  const x = progress.vid[id];
+  if (!x || x.w || !x.p || !x.d) return '';
+  return `<span class="vbar"><i style="width:${Math.min(100, Math.round(x.p / x.d * 100))}%"></i></span>`;
+}
+const vidStopped = id => { const x = progress.vid[id], v = VID_BY[id]; return `${v.pl && x.vi != null ? `video ${x.vi + 1}, ` : ''}${fmtLen(Math.round(x.p))}${x.d ? ` of ${fmtLen(Math.round(x.d))}` : ''}`; };
 // a club player around 1400 gets the most from level 2: beginner basics sink, advanced ones a little;
 // on a topic shelf, a video mainly about that topic beats one that only touches it
 const vidScore = (v, topic) => v.r * (v.lvl === 2 ? 1 : v.lvl === 1 ? .4 : .7) * (topic && v.top[0] === topic ? 1.6 : 1) * (vidSeen(v.id) ? .05 : 1);
@@ -3609,7 +3629,7 @@ function watchNeeds() {
   return needs;
 }
 function vidCard(v) {
-  return `<button class="vc${vidSeen(v.id) ? ' watched' : ''}" data-vid="${v.id}"><span class="vth"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${v.th || v.id}/hq2.jpg"><span class="vkind">${KIND_NAME[v.kind] || ''}</span>${v.pl ? '<span class="vlen">Playlist</span>' : v.len ? `<span class="vlen">${fmtLen(v.len)}</span>` : ''}</span><span class="vt">${esc(v.t)}</span><span class="vm">${esc(v.ch)}${v.y ? ` · ${v.y}` : ''}</span><span class="vm"><span class="rec-n">${v.n} recommendation${v.n === 1 ? '' : 's'}</span> on Reddit</span></button>`;
+  return `<button class="vc${vidSeen(v.id) ? ' watched' : ''}" data-vid="${v.id}"><span class="vth"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${v.th || v.id}/hq2.jpg"><span class="vkind">${KIND_NAME[v.kind] || ''}</span>${vidBar(v.id)}${v.pl ? '<span class="vlen">Playlist</span>' : v.len ? `<span class="vlen">${fmtLen(v.len)}</span>` : ''}</span><span class="vt">${esc(v.t)}</span><span class="vm">${esc(v.ch)}${v.y ? ` · ${v.y}` : ''}</span><span class="vm"><span class="rec-n">${v.n} recommendation${v.n === 1 ? '' : 's'}</span> on Reddit</span></button>`;
 }
 function shelf(title, why, list, more) {
   if (!list.length) return '';
@@ -3620,6 +3640,13 @@ function renderWatch() {
   $('#w-hide').checked = watch.hide;
   if (!VIDS.length) { $('#w-body').innerHTML = '<p class="w-empty">No videos yet. They arrive with the next update.</p>'; return; }
   let h = '';
+  const resume = vidResume();
+  if (resume) {
+    const v = VID_BY[resume];
+    h += `<div class="card w-resume"><button class="vc" data-vid="${v.id}"><span class="vth"><img alt="" src="https://i.ytimg.com/vi/${progress.vid[resume].v || v.th || v.id}/hq2.jpg">${vidBar(v.id)}</span></button><div><span class="eyebrow">Continue watching · ${agoWords(vidWhen(resume) / 1000)}</span><h3>${esc(v.t)}</h3><div class="small muted">${esc(v.ch)} · you stopped at ${vidStopped(resume)}</div><button class="btn primary" data-vid="${v.id}">Resume</button></div></div>`;
+  }
+  const hist = vidHistory().filter(id => id !== resume).map(id => VID_BY[id]);
+  if (hist.length) h += `<div class="shelf-h"><h3>Your history</h3><span class="small muted">${hist.length} video${hist.length === 1 ? '' : 's'}, newest first</span></div><div class="shelf">${hist.slice(0, 30).map(vidCard).join('')}</div>`;
   const later = vidPick(v => vidLater(v.id) && !vidSeen(v.id));
   h += shelf('Saved for later', '', later);
   if (TUBE.creators?.length) h += `<div class="shelf-h"><h3>Who Reddit names most</h3></div><p class="shelf-why">Teachers people keep pointing each other to, by how many comments name them. Tap one to see their videos here.</p><div class="w-chips">${TUBE.creators.map(([ch, k]) => `<button data-wtopic="ch:${esc(ch)}">${esc(ch)} <span class="muted">· ${k}</span></button>`).join('')}</div>`;
@@ -3659,9 +3686,15 @@ $('#w-body').onclick = e => {
 function openVideo(id) {
   const v = VID_BY[id]; if (!v) return;
   watch.open = id;
+  // start where you stopped (a few seconds back), and in a playlist on the video you were on
+  const x = progress.vid[id] || {}, back = !x.w && x.p >= 30 ? Math.floor(x.p - 5) : 0;
+  const src = v.pl ? (x.v && !x.w ? `${x.v}?list=${v.pl}&start=${back}&` : `videoseries?list=${v.pl}&`) : `${id}?start=${back}&`;
+  watch.pos = { p: x.p || 0, d: x.d || 0, v: x.v, vi: x.vi, saved: Date.now() };
   $('#pl-frame').innerHTML = navigator.onLine
-    ? `<iframe src="https://www.youtube-nocookie.com/embed/${v.pl ? `videoseries?list=${v.pl}&` : `${id}?`}rel=0&autoplay=1&playsinline=1" title="${esc(v.t)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+    ? `<iframe src="https://www.youtube-nocookie.com/embed/${src}rel=0&autoplay=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" title="${esc(v.t)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
     : '<div class="off">Videos need an internet connection.</div>';
+  vidRecord(id, { o: Date.now() });
+  listenToPlayer();
   const topicNames = v.top.map(t => TUBE.topics?.[t]).filter(Boolean);
   $('#pl-eyebrow').textContent = [KIND_NAME[v.kind], ...topicNames].filter(Boolean).join(' · ');
   $('#pl-t').textContent = v.t;
@@ -3679,27 +3712,72 @@ function playerButtons() {
   $('#pl-watched').setAttribute('aria-pressed', vidSeen(id)); $('#pl-watched').textContent = vidSeen(id) ? 'Watched ✓' : 'Mark as watched';
   $('#pl-later').setAttribute('aria-pressed', vidLater(id)); $('#pl-later').textContent = vidLater(id) ? 'Saved for later ✓' : 'Watch later';
 }
-function setVid(field) {
-  const id = watch.open, cur = progress.vid[id] || {};
-  record('vid', id, { w: cur.w || 0, l: cur.l || 0, [field]: cur[field] ? 0 : 1 });
+function vidRecord(id, change) {
+  const { t, ...cur } = progress.vid[id] || {};
+  record('vid', id, { w: 0, l: 0, ...cur, ...change });
   store.set('progress', progress);
+}
+function setVid(field) {
+  const id = watch.open;
+  vidRecord(id, { [field]: progress.vid[id]?.[field] ? 0 : 1 });
   playerButtons();
 }
+// The YouTube player reports where it is (postMessage "infoDelivery") once we tell it we're listening.
+// The position is saved every 30 seconds and when the player closes; 90% of a single video counts as watched.
+function listenToPlayer() {
+  const f = $('#pl-frame iframe'); if (!f) return;
+  let tries = 0;
+  const hello = () => { if (watch.heard || !f.isConnected || tries++ > 20) return; f.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); setTimeout(hello, 500); };
+  watch.heard = false;
+  f.addEventListener('load', hello);
+}
+function savePos(force) {
+  const id = watch.open, q = watch.pos; if (!id || !q || !q.p) return;
+  if (!force && Date.now() - q.saved < 30000) return;
+  q.saved = Date.now();
+  const v = VID_BY[id], done = !v.pl && q.d && q.p >= q.d * .9;
+  vidRecord(id, { p: Math.round(q.p), d: Math.round(q.d), ...(v.pl ? { v: q.v, vi: q.vi } : {}), ...(done ? { w: 1 } : {}) });
+  if (done) playerButtons();
+}
+addEventListener('message', e => {
+  if (!/^https:\/\/www\.youtube(-nocookie)?\.com$/.test(e.origin) || !watch.open) return;
+  let m; try { m = JSON.parse(e.data); } catch { return; }
+  const info = m?.info; if (!info) return;
+  watch.heard = true;
+  const q = watch.pos;
+  if (info.videoData?.video_id && info.videoData.video_id !== q.v) {   // the playlist moved on to another video
+    if (q.v && VID_BY[watch.open].pl) { q.p = 0; q.d = 0; }
+    q.v = info.videoData.video_id;
+  }
+  if (typeof info.playlistIndex === 'number') q.vi = info.playlistIndex;
+  if (typeof info.duration === 'number' && info.duration > 0) q.d = info.duration;
+  if (typeof info.currentTime === 'number' && info.currentTime > 0) { q.p = info.currentTime; savePos(false); }
+});
 $('#pl-watched').onclick = () => setVid('w');
 $('#pl-later').onclick = () => setVid('l');
 function closePlayer() {
   if ($('#player').hidden) return;
+  savePos(true);
   $('#player').hidden = true; $('#pl-frame').innerHTML = ''; watch.open = null;   // removing the frame stops the video
   if (!$('#view-watch').hidden) renderWatch();
   if (!$('#view-today').hidden) renderToday();
 }
 $('#pl-close').onclick = closePlayer;
+document.addEventListener('visibilitychange', () => { if (document.hidden) savePos(true); });
 $('#player').onclick = e => { if (e.target.id === 'player') closePlayer(); };
 addEventListener('keydown', e => { if (e.key === 'Escape') closePlayer(); });
 // Today: one video for the thing your games need most
 function renderTodayWatch() {
   const box = $('#today-watch');
   let pick = null, need = null;
+  const resume = vidResume();
+  if (resume) {
+    const v = VID_BY[resume];
+    box.hidden = false;
+    box.innerHTML = `<span class="vth"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${progress.vid[resume].v || v.th || v.id}/hq2.jpg">${vidBar(resume)}</span><div><span class="eyebrow">Continue watching</span><h3>${esc(v.t)}</h3><div class="small muted">${esc(v.ch)} · you stopped at ${vidStopped(resume)}</div></div>`;
+    box.onclick = () => openVideo(resume);
+    return;
+  }
   for (const n of watchNeeds()) {
     pick = VIDS.filter(v => v.top.includes(n.topic) && !vidSeen(v.id) && v.kind !== 'course' && v.lvl > 1).sort((a, b) => vidScore(b, n.topic) - vidScore(a, n.topic))[0];
     if (pick) { need = n; break; }
@@ -3710,7 +3788,11 @@ function renderTodayWatch() {
   box.onclick = () => openVideo(pick.id);
 }
 
+let clSig = JSON.stringify(progress.cl);
 onProgressChanged = () => {
+  // your own lines arrive with the synced progress: join them to the courses before anything counts what is due
+  const sig = JSON.stringify(progress.cl);
+  if (sig !== clSig) { clSig = sig; applyCustomLines(); }
   if (!$('#view-today').hidden) renderToday();
   if (!$('#view-watch').hidden && $('#player').hidden) renderWatch();
   if (!$('#view-endgame').hidden) renderEndgameHome();
