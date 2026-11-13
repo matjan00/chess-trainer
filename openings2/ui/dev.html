@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O2 dev harness</title>
+<!-- Dev harness for the Openings 2 UI. Serve the REPO ROOT (python -m http.server 8800) and open /openings2/ui/dev.html.
+     It borrows the app's real stylesheet from ../../app.html, vendored chess.js + chessground, and stands in for record/progress/sfx.
+     Progress is kept in localStorage 'ct.o2dev.progress'. Clock: dev bar buttons set localStorage ct.o2now (O2 time travel). -->
+<link rel="stylesheet" href="../../vendor/chessground.base.css">
+<link rel="stylesheet" href="../../vendor/chessground.brown.css">
+<link rel="stylesheet" href="../../vendor/chessground.cburnett.css">
+<style id="app-css"></style>
+<link rel="stylesheet" href="o2.css">
+<style>
+  #devbar { position: sticky; top: 0; z-index: 35; background: #222; color: #eee; font: 12px/1.3 system-ui, sans-serif; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #devbar button { font: 12px system-ui; padding: 4px 8px; border-radius: 5px; border: 1px solid #555; background: #333; color: #eee; cursor: pointer; }
+  #devbar b { color: #ffd166; }
+  #glossary { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 80; display: grid; place-items: center; padding: 16px; }
+  #glossary .card { max-width: 420px; }
+</style>
+<script src="../../vendor/pwa/chess.min.js"></script>
+</head>
+<body>
+<div id="devbar">
+  <span>O2 dev · clock: <b id="dev-clock">real</b></span>
+  <button data-shift="1">+1 day</button><button data-shift="3">+3 days</button><button data-shift="7">+1 week</button><button data-shift="0">Real clock</button>
+  <button id="dev-reset">Reset progress</button>
+  <span id="dev-info"></span>
+</div>
+<main class="wrap"><section class="view" id="view-openings"><div id="o2-slot"></div></section></main>
+<nav id="nav" aria-label="Fake app tabs"><button>Today</button><button aria-current="page">Openings</button><button>Train</button><button>Games</button><button>Stats</button></nav>
+<div id="glossary" hidden><div class="card"><h3 id="gl-t"></h3><p id="gl-d"></p><button class="btn" id="gl-close">Close</button></div></div>
+<script type="module">
+import { Chessground } from '../../vendor/pwa/chessground.min.js';
+
+// the app's real stylesheet (first <style> of app.html), so the harness looks like the app
+const appHtml = await fetch('../../app.html').then(r => r.text());
+document.getElementById('app-css').textContent = (appHtml.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1].replace('/*CG_CSS*/', '');
+document.getElementById('o2-slot').outerHTML = await fetch('o2.html').then(r => r.text());
+await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'o2core.js'; s.onload = res; s.onerror = rej; document.head.append(s); });
+await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'o2stats.js'; s.onload = res; s.onerror = rej; document.head.append(s); });   // T6: installs itself through O2's extension API
+
+const DATA_URL = new URLSearchParams(location.search).get('data') || 'courses2.dev.json';
+const [data, GAMES, XP] = await Promise.all([
+  fetch(DATA_URL).then(r => r.json()),
+  fetch('../../data/analysis.json').then(r => r.json()).catch(() => []),
+  fetch('../../data/explorer.json').then(r => r.json()).catch(() => ({ stats: {} })),
+]);
+// stand-ins for the app's helpers
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('ct.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('ct.' + k, JSON.stringify(v)); } catch {} },
+};
+const progress = store.get('o2dev.progress', {});
+function record(kind, id, value) { (progress[kind] ||= {})[id] = { ...value, t: Date.now() }; store.set('o2dev.progress', progress); }
+const sfx = { on: store.get('sound', false), play(k) { if (this.on) console.debug('sfx', k); } };
+const statsAt = fen => { const s = XP.stats?.[O2.posKey(fen)]; return s && s.n >= 30 ? s : null; };
+window.O2 = O2;
+O2.init({ root: document.getElementById('o2'), data, hooks: { Chessground, record, progress, store, sfx, confetti: () => {}, statsAt, games: GAMES,
+  onChange: () => info() } });
+O2.GLOSSARY.forEach(([id, t, d]) => (window.GL ||= {})[id] = [t, d]);
+document.addEventListener('click', e => { const b = e.target.closest('.gl[data-term]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const [t, d] = GL[b.dataset.term] || [b.dataset.term, '']; document.getElementById('gl-t').textContent = t; document.getElementById('gl-d').textContent = d; document.getElementById('glossary').hidden = false; }, true);
+document.getElementById('gl-close').onclick = () => document.getElementById('glossary').hidden = true;
+
+// dev bar: time travel + reset
+function info() {
+  const v = localStorage.getItem('ct.o2now');
+  document.getElementById('dev-clock').textContent = v ? new Date(O2.now()).toLocaleString() : 'real';
+  const s = O2.dueSummary();
+  document.getElementById('dev-info').textContent = `due ${s.n} · o2c ${Object.keys(progress.o2c || {}).length} · o2l ${Object.keys(progress.o2l || {}).length}`;
+}
+document.getElementById('devbar').onclick = e => {
+  const b = e.target.closest('[data-shift]');
+  if (b) {
+    const d = +b.dataset.shift;
+    if (!d) localStorage.removeItem('ct.o2now'); else localStorage.setItem('ct.o2now', String(O2.now() + d * 86400000));
+    O2.refresh(); info();
+  }
+  if (e.target.id === 'dev-reset' && confirm('Reset all O2 dev progress?')) { localStorage.removeItem('ct.o2dev.progress'); localStorage.removeItem('ct.o2now'); location.reload(); }
+};
+info();
+// test helper: screen point of a square (scaled to a screenshot frame of fw x fh, default = CSS pixels)
+window.fc = (s, fw = 800, fh = 600) => {
+  const r = document.querySelector('#o2board cg-container').getBoundingClientRect();
+  const black = document.querySelector('#o2board').classList.contains('orientation-black');
+  const f = s.charCodeAt(0) - 97, rk = +s[1] - 1, x = black ? 7 - f : f, y = black ? rk : 7 - rk;
+  return [Math.round((r.left + (x + .5) * r.width / 8) * fw / innerWidth), Math.round((r.top + (y + .5) * r.height / 8) * fh / innerHeight)];
+};
+</script>
+</body>
+</html>

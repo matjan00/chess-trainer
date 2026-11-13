@@ -1,16 +1,28 @@
-"""Opening statistics from Lichess (what 1200-1600 players actually play), plus everything built on them:
-traps at your level, extra branches, longer lines and model games. Runs in the GitHub job "Opening statistics"
-(needs the LICHESS_TOKEN repository secret; the key is never printed or stored).
+"""Opening statistics from Lichess (what 1200-1600 players actually play) and masters model games, for the
+Openings 2 courses. Runs in the GitHub job "Opening statistics" (needs the LICHESS_TOKEN repository secret;
+the key is never printed or stored).
+
+Reads data/courses2.json (compiled by openings2/tools/compile_courses2.py; override with --courses PATH or the
+environment variable COURSES2), walks each course's move tree (our course moves; the opponent's course replies plus
+every reply with at least OPP_SHARE of the games), and keeps every statistic already in data/explorer.json (old
+courses and old traps/extra/ext/models stay untouched). New: for each chapter's branch position (where its lines stop
+sharing moves) the top masters games won by the course's side are added to courses.<id>.models, each with
+"source": "lichess-masters:<id>", moves (SAN) and "ok" (engine-approved alternatives for our moves).
+
+Options:
+  --dry-run        no token, no network, nothing written: lists the positions that would be fetched
+  --courses PATH   courses2.json to read          --explorer PATH   stats file to read and write
+Without LICHESS_TOKEN (and no --dry-run) it prints a note and exits 0 without touching anything.
 
 Output: data/explorer.json
-  stats:  {position key: {"n": games, "m": [[san, games, score for the side to move], ...]}}
-  courses: {course_id: {"traps": [...], "extra": [lines], "ext": {line_id: [moves]}, "models": [games]}}
+  stats:   {position key: {"n": games, "m": [[san, games, score for the side to move], ...]}}
+  courses: {course_id: {"traps", "extra", "ext" (old, kept), "models": [games],
+                         "mastersDone": {branch position key: [game ids]}  (what was already asked of Lichess)}}
 """
-import json, os, subprocess, sys, time, urllib.parse
+import argparse, io, json, os, subprocess, sys, time, urllib.parse
 from collections import deque
 from pathlib import Path
-import chess, chess.engine, chess.pgn, io
-from engine_path import find_engine
+import chess, chess.engine, chess.pgn
 
 ROOT = Path(__file__).parent
 DATA = ROOT / "data"
@@ -18,12 +30,15 @@ TOKEN = os.environ.get("LICHESS_TOKEN", "")
 LICHESS = "https://explorer.lichess.ovh/lichess?variant=standard&speeds=blitz,rapid&ratings=1200,1400,1600&moves=10&topGames=0&recentGames=0&fen="
 MASTERS = "https://explorer.lichess.ovh/masters?moves=0&topGames=15&fen="
 MASTERS_PGN = "https://explorer.lichess.ovh/masters/pgn/"
-MAX_PLY = 20            # how deep the statistics tree goes
-MAX_POS = 350           # positions visited per course at most
+MAX_PLY = 30            # how deep the statistics tree goes (course lines run up to about ply 28)
+MAX_POS = 400           # positions visited per course at most
 BUDGET = 85 * 60        # stop asking Lichess after this many seconds; finish with what is saved
 START = time.time()
 MIN_GAMES = 40          # below this the statistics are too thin to use
 OPP_SHARE = 0.06        # opponent replies at least this common are followed
+MASTERS_PER_CHAPTER = 2  # model games kept per chapter branch position
+MASTERS_BACK = 3        # no masters games there? try up to this many positions 2 plies earlier
+BRANCH_MAX_PLY = 16     # the branch position is at most this deep
 
 
 def key(board):
@@ -46,28 +61,79 @@ def get(url, tries=6):
     return None
 
 
-def main():
-    if not TOKEN:
-        sys.exit("LICHESS_TOKEN is not set")
-    courses = json.loads((DATA / "courses.json").read_text(encoding="utf-8"))
-    old = json.loads((DATA / "explorer.json").read_text(encoding="utf-8")) if (DATA / "explorer.json").exists() else {}
+def course_maps(c):
+    """position key -> our course moves / the opponent's course moves (by position, so transpositions count)"""
+    mine, theirs = {}, {}
+    for n in c["nodes"].values():
+        (mine if n["mine"] else theirs).setdefault(n["k"], set()).add(n["san"])
+    return mine, theirs
+
+
+def branch_positions(c):
+    """One per chapter: the position where its (non-punish) lines stop sharing moves, at most BRANCH_MAX_PLY deep
+    (a one-line chapter: the end of that line, capped). Returns [(chapter id, [uci moves from the start])]."""
+    byid = {l["id"]: l for l in c["lines"]}
+    res = []
+    for ch in c.get("chapters", []):
+        ls = [byid[i] for i in ch["lines"] if i in byid]
+        paths = [l["nodes"] for l in ls if l.get("kind") != "punish"] or [l["nodes"] for l in ls]
+        if not paths: continue
+        n = min(len(p) for p in paths)
+        common = 0
+        while common < n and all(p[common] == paths[0][common] for p in paths): common += 1
+        if len(paths) == 1: common = n
+        common = min(common, BRANCH_MAX_PLY)
+        res.append((ch["id"], [c["nodes"][nid]["uci"] for nid in paths[0][:common]]))
+    return res
+
+
+def board_after(ucis):
+    b = chess.Board()
+    for u in ucis: b.push_uci(u)
+    return b
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description="Lichess statistics and masters model games for the Openings 2 courses")
+    ap.add_argument("--courses", default=os.environ.get("COURSES2") or str(DATA / "courses2.json"))
+    ap.add_argument("--explorer", default=str(DATA / "explorer.json"))
+    ap.add_argument("--dry-run", action="store_true")
+    args = ap.parse_args(argv)
+    dry = args.dry_run
+    if not TOKEN and not dry:
+        print("LICHESS_TOKEN is not set: nothing fetched, explorer.json left unchanged.")
+        return 0
+    if not Path(args.courses).exists():
+        print(f"{args.courses} not found (compile it first with openings2/tools/compile_courses2.py): nothing to do.")
+        return 0
+    courses = json.loads(Path(args.courses).read_text(encoding="utf-8")).get("courses", [])
+    expath = Path(args.explorer)
+    old = json.loads(expath.read_text(encoding="utf-8")) if expath.exists() else {}
     stats = dict(old.get("stats", {}))      # reuse what earlier runs fetched: each run continues where the last stopped
     out = dict(old.get("courses", {}))
-    eng = chess.engine.SimpleEngine.popen_uci(str(find_engine(ROOT)))
-    eng.configure({"Threads": max(1, (os.cpu_count() or 2)), "Hash": 256})
+    state = {"eng": None}
     evals = {}
+    would = []                              # dry run: what is not cached
 
-    def ev(board, depth=14):
-        """score in centipawns for the side to move, and the best move"""
+    def engine():
+        if state["eng"] is None:
+            from engine_path import find_engine
+            state["eng"] = chess.engine.SimpleEngine.popen_uci(str(find_engine(ROOT)))
+            state["eng"].configure({"Threads": max(1, (os.cpu_count() or 2)), "Hash": 256})
+        return state["eng"]
+
+    def best_move(board, depth=14):
         k = key(board)
         if k not in evals:
-            info = eng.analyse(board, chess.engine.Limit(depth=depth))
-            evals[k] = (info["score"].pov(board.turn).score(mate_score=10000), info["pv"][0].uci() if info.get("pv") else None)
+            info = engine().analyse(board, chess.engine.Limit(depth=depth))
+            evals[k] = info["pv"][0].uci() if info.get("pv") else None
         return evals[k]
 
     def explore(board):
         k = key(board)
         if k in stats: return stats[k]
+        if dry:
+            would.append(board.fen()); return None
         if time.time() - START > BUDGET: return None      # out of time: use only what is saved
         body = get(LICHESS + urllib.parse.quote(board.fen()))
         if body is None: return None
@@ -83,140 +149,106 @@ def main():
         return stats[k]
 
     for c in courses:
+        cid = c["id"]
         me = chess.WHITE if c["side"] == "white" else chess.BLACK
-        course_moves = {}                                    # position -> course moves (by position, transpositions too)
-        for l in c["lines"]:
-            b = chess.Board()
-            for m in l["moves"]:
-                course_moves.setdefault(key(b), set()).add(m["san"]); b.push_san(m["san"])
-        # breadth-first over the course and the popular replies around it
+        mine, theirs = course_maps(c)
+
+        # 1. statistics: breadth-first over the course and the popular replies around it
         seen, fetched = set(), 0
-        q = deque([(chess.Board(), [])])
+        q = deque([(chess.Board(), 0)])
         while q and fetched < MAX_POS:
-            b, path = q.popleft()
+            b, ply = q.popleft()
             k = key(b)
-            if k in seen or len(path) > MAX_PLY: continue
+            if k in seen or ply > MAX_PLY: continue
             seen.add(k)
             s = explore(b); fetched += 1
-            if not s or s["n"] < MIN_GAMES: continue
             if b.turn == me:
-                nxt = list(course_moves.get(k, [])) or ([b.san(chess.Move.from_uci(ev(b)[1]))] if ev(b)[1] else [])
+                nxt = list(mine.get(k, []))
+                if not nxt and s and s["n"] >= MIN_GAMES and not dry:      # off the course: the engine's move
+                    bm = best_move(b)
+                    nxt = [b.san(chess.Move.from_uci(bm))] if bm else []
             else:
-                nxt = [san for san, t, _ in s["m"] if t / s["n"] >= OPP_SHARE][:5]
-            for san in nxt:
-                b2 = b.copy(); b2.push_san(san); q.append((b2, path + [san]))
-        print(f'{c["id"]}: {fetched} positions', flush=True)
-        if time.time() - START > BUDGET and c["id"] in out:
-            print("  out of time: keeping the earlier results for this opening", flush=True); continue
+                nxt = list(theirs.get(k, []))                               # the course's own replies always
+                if s and s["n"] >= MIN_GAMES:
+                    nxt += [san for san, t, _ in s["m"] if t / s["n"] >= OPP_SHARE][:5]
+                elif not nxt:
+                    continue
+            for san in dict.fromkeys(nxt):
+                try:
+                    b2 = b.copy(); b2.push_san(san)
+                except ValueError:
+                    continue
+                q.append((b2, ply + 1))
+        print(f"{cid}: {fetched} positions walked, {len(would)} uncached so far" if dry else f"{cid}: {fetched} positions", flush=True)
 
-        # traps and common mistakes at this level, in and around the course
-        traps = []
-        for k in seen:
-            s = stats.get(k)
-            if not s or s["n"] < MIN_GAMES: continue
-            b = chess.Board(k + " 0 1")
-            best, _ = ev(b)
-            for san, t, _score in s["m"]:
-                share = t / s["n"]
-                if share < 0.08: continue
-                b2 = b.copy(); b2.push_san(san)
-                after = -ev(b2)[0]                             # back to the mover's point of view
-                loss = best - after
-                if b.turn != me and loss >= 150:              # they often blunder here: you can punish it
-                    reply = ev(b2)[1]
-                    traps.append({"kind": "set", "fen": k, "move": san, "share": round(share, 2), "loss": loss,
-                                  "reply": b2.san(chess.Move.from_uci(reply)) if reply else None})
-                if b.turn == me and loss >= 120:              # players at your level often go wrong here
-                    better = ev(b)[1]
-                    traps.append({"kind": "avoid", "fen": k, "move": san, "share": round(share, 2), "loss": loss,
-                                  "better": b.san(chess.Move.from_uci(better)) if better else None})
-        traps.sort(key=lambda x: -x["share"] * min(x["loss"], 600))
-        traps = traps[:14]
-
-        def continue_line(b, plies):
-            """popular replies for the opponent, the engine's choice for you, while the statistics are thick"""
-            moves = []
-            for _ in range(plies):
-                if b.is_game_over(): break
-                if b.turn == me:
-                    mv = ev(b)[1]
-                    if not mv: break
-                    san = b.san(chess.Move.from_uci(mv)); moves.append({"san": san, "auto": "engine"})
-                else:
-                    s = stats.get(key(b)) or explore(b)
-                    if not s or s["n"] < 30 or not s["m"]: break
-                    san = s["m"][0][0]
-                    moves.append({"san": san, "auto": "popular", "share": round(s["m"][0][1] / s["n"], 2)})
-                b.push_san(san)
-            return moves
-
-        # extra branches: popular replies (>= 10%) the course doesn't cover
-        extra = []
-        for l in c["lines"]:
-            b = chess.Board()
-            for i, m in enumerate(l["moves"]):
-                if b.turn != me:
-                    s = stats.get(key(b))
-                    for san, t, _ in (s["m"] if s else []):
-                        share = t / s["n"]
-                        if share < 0.10 or san in course_moves.get(key(b), set()): continue
-                        b2 = b.copy(); b2.push_san(san)
-                        if -ev(b2)[0] - ev(b)[0] < -150: continue     # that's a blunder: it belongs in Traps
-                        path = [x["san"] for x in l["moves"][:i]]
-                        if any(e["path"] == path and e["reply"] == san for e in extra): continue
-                        cont = continue_line(b2.copy(), 9)
-                        if len(cont) < 3: continue
-                        extra.append({"path": path, "reply": san, "share": round(share, 2), "from": l["id"], "cont": cont})
-                b.push_san(m["san"])
-        extra.sort(key=lambda e: -e["share"])
-        extra = extra[:8]
-
-        # longer lines: carry each line on with popular replies and engine moves
-        ext = {}
-        for l in c["lines"]:
-            b = chess.Board()
-            for m in l["moves"]: b.push_san(m["san"])
-            cont = continue_line(b, 8)
-            if len(cont) >= 2: ext[l["id"]] = cont
-
-        # model games: strong players' wins for your side from the course's main position
-        models = (out.get(c["id"]) or {}).get("models", [])
-        b = chess.Board()
-        main = c["lines"][0]["moves"]
-        for m in main[:min(8, len(main))]: b.push_san(m["san"])
-        body = get(MASTERS + urllib.parse.quote(b.fen())) if not models and time.time() - START < BUDGET else None
-        games = json.loads(body).get("topGames", []) if body else []
+        # 2. masters model games at each chapter's branch position
+        rec = out.setdefault(cid, {"traps": [], "extra": [], "ext": {}, "models": []})
+        rec.setdefault("models", [])
+        done = rec.setdefault("mastersDone", {})
+        have = {m["id"] for m in rec["models"]}
         want = "white" if me == chess.WHITE else "black"
-        for gm in [g for g in games if g.get("winner") == want][:2]:
-            pgn = get(MASTERS_PGN + gm["id"])
-            if not pgn: continue
-            game = chess.pgn.read_game(io.StringIO(pgn))
-            gb = game.board(); moves, ok = [], {}
-            for ply, mv in enumerate(game.mainline_moves()):
-                if ply >= 40: break
-                san = gb.san(mv)
-                if gb.turn == me and ply >= 4:
-                    infos = eng.analyse(gb, chess.engine.Limit(depth=14), multipv=3)
-                    top = infos[0]["score"].pov(me).score(mate_score=10000)
-                    good = {gb.san(x["pv"][0]) for x in infos if "pv" in x and top - x["score"].pov(me).score(mate_score=10000) <= 40}
-                    good.add(san)
-                    ok[ply] = sorted(good)
-                moves.append(san); gb.push(mv)
-            models.append({"id": gm["id"], "white": gm["white"]["name"], "black": gm["black"]["name"],
-                           "wr": gm["white"].get("rating"), "br": gm["black"].get("rating"), "year": gm.get("year"),
-                           "result": "1-0" if gm["winner"] == "white" else "0-1", "moves": moves, "ok": ok})
-        out[c["id"]] = {"traps": traps, "extra": extra, "ext": ext, "models": models}
-        print(f'  traps {len(traps)}, extra lines {len(extra)}, longer lines {len(ext)}, model games {len(models)}', flush=True)
-        save(stats, out)                                   # after every opening, so nothing is lost
+        for chap, ucis in branch_positions(c):
+            cands = [board_after(ucis[:len(ucis) - 2 * i]) for i in range(MASTERS_BACK + 1) if len(ucis) - 2 * i >= 4]
+            games = []
+            for b in cands:
+                k = key(b)
+                if k in done:
+                    if dry: print(f"  [{chap}] masters cached ({len(done[k])} games) {k}")
+                    if done[k]: break
+                    continue
+                if dry:
+                    print(f"  [{chap}] would fetch masters {b.fen()}"); continue
+                if time.time() - START > BUDGET: break
+                body = get(MASTERS + urllib.parse.quote(b.fen()))
+                if body is None: continue
+                games = [g for g in json.loads(body).get("topGames", []) if g.get("winner") == want]
+                games.sort(key=lambda g: -((g["white"].get("rating") or 0) + (g["black"].get("rating") or 0)))
+                done[k] = [g["id"] for g in games[:MASTERS_PER_CHAPTER]]
+                if games: break
+            added = 0
+            for gm in games:
+                if added >= MASTERS_PER_CHAPTER: break
+                if gm["id"] in have: continue
+                pgn = get(MASTERS_PGN + gm["id"])
+                if not pgn: continue
+                game = chess.pgn.read_game(io.StringIO(pgn))
+                gb = game.board(); moves, ok = [], {}
+                for ply, mv in enumerate(game.mainline_moves()):
+                    if ply >= 40: break
+                    san = gb.san(mv)
+                    if gb.turn == me and ply >= 4:
+                        infos = engine().analyse(gb, chess.engine.Limit(depth=14), multipv=3)
+                        top = infos[0]["score"].pov(me).score(mate_score=10000)
+                        good = {gb.san(x["pv"][0]) for x in infos if "pv" in x and top - x["score"].pov(me).score(mate_score=10000) <= 40}
+                        good.add(san)
+                        ok[ply] = sorted(good)
+                    moves.append(san); gb.push(mv)
+                rec["models"].append({"id": gm["id"], "white": gm["white"]["name"], "black": gm["black"]["name"],
+                                      "wr": gm["white"].get("rating"), "br": gm["black"].get("rating"), "year": gm.get("year"),
+                                      "result": "1-0" if gm["winner"] == "white" else "0-1", "moves": moves, "ok": ok,
+                                      "source": "lichess-masters:" + gm["id"], "chapter": chap})
+                have.add(gm["id"]); added += 1
+            if added: print(f"  [{chap}] +{added} masters games", flush=True)
+        if not dry:
+            save(stats, out, expath)                       # after every opening, so nothing is lost
+            if time.time() - START > BUDGET:
+                print("  out of time budget: stopping, the next run continues", flush=True); break
 
-    eng.quit()
-    save(stats, out)
+    if dry:
+        print(f"DRY RUN: {len(would)} positions would be fetched from Lichess ({len(stats)} cached positions reused)")
+        for f in would: print("  ", f)
+        return 0
+    if state["eng"]: state["eng"].quit()
+    save(stats, out, expath)
     print(len(stats), "positions with statistics;", "stopped early (time budget), the next run continues" if time.time() - START > BUDGET else "complete")
+    return 0
 
 
-def save(stats, out):
-    (DATA / "explorer.json").write_text(json.dumps({"stats": stats, "courses": out}, separators=(",", ":")), encoding="utf-8")
+def save(stats, out, path):
+    tmp = Path(str(path) + ".tmp")
+    tmp.write_text(json.dumps({"stats": stats, "courses": out}, separators=(",", ":")), encoding="utf-8")
+    os.replace(tmp, path)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

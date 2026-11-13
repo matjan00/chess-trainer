@@ -1,0 +1,55 @@
+Q6 WARN caro/cl-bc4 ply 11 Bc4: not in the engine top 3 and no statistics (engine: h4); justify or replace
+Q13 WARN caro/cl-bd3 ply 9 Bd3: mover is 4 points down after the 6-ply principal variation and the move loses 53 cp
+Q13 WARN caro/nf3-c3 ply 5 c3: mover is 2 points down after the 6-ply principal variation and the move loses 186 cp
+Q13 WARN caro/f4 ply 3 f4: mover is 9 points down after the 6-ply principal variation and the move loses 36 cp
+Q13 WARN caro/cl-f3 ply 9 f3: mover is 3 points down after the 6-ply principal variation and the move loses 45 cp
+Q16 INFO caro: 42 lines, 3 traps, 338 cards (target 220-320). adv-short: main 5, side 2; adv-sharp: side 2, main 4; classical: main 1, side 4, punish 1; exchange: main 4, side 3; knights: main 3, side 4, punish 2; side: main 3, side 4
+
+line                  kind    plies  new   final  worst ours  worst opp   reach
+short-main            main       24   12   -0.22       17 cp      12 cp    0.3%
+short-be3             main       26    8   -0.24       17 cp       0 cp    0.3%
+short-c3              main       24    8   -0.26       17 cp      21 cp    0.3%
+nf3-bd3               main       22    7   +0.15       17 cp      30 cp    0.1%
+bd3                   main       24    9   -0.16       17 cp      24 cp    2.6%
+nd2                   side       24    9   -0.27       17 cp      17 cp    0.1%
+h3                    side       24    9   +0.00       17 cp      38 cp    0.3%
+nc3-quiet             side       24    9   +0.28       17 cp      29 cp    0.0%
+nc3-bd3               side       24    8   -0.06       17 cp      29 cp    0.2%
+nc3-g4                main       28   10   +0.00       17 cp      29 cp    0.1%
+h4                    main       28   11   -0.16       17 cp      15 cp    0.7%
+g4                    main       20    7   +0.07       17 cp      31 cp    0.5%
+c4                    main       22    8   -0.30       17 cp      25 cp    0.5%
+cl-main               main       26   11   -0.13       17 cp      29 cp    0.7%
+cl-bf4                side       28    4   +0.00       17 cp      29 cp    2.2%
+cl-nf3                side       24    7   -0.16       17 cp      29 cp    2.2%
+cl-bc4                side       22    6   +0.00       17 cp      29 cp    2.2%
+cl-bd3                side       18    5   +0.00       17 cp      53 cp    0.0%
+cl-bd3-oo             punish     18    3   +0.67       17 cp      67 cp    0.2%
+ex-main               main       20    8   -0.13       17 cp      24 cp    0.6%
+ex-h3                 side       20    5   -0.25       21 cp      24 cp    0.6%
+ex-nf3                main       22   10   -0.14       17 cp      16 cp    1.4%
+ex-nf3-nc3            main       24    8   +0.00       17 cp      24 cp    0.7%
+ex-nc3                side       24    9   +0.00       17 cp      25 cp    1.9%
+panov-main            main       22    8   -0.19       17 cp      24 cp    0.1%
+panov-bd3             side       24    6   -0.03       17 cp      24 cp    0.1%
+tk-main               main       24   11   -0.16       17 cp      20 cp    0.2%
+tk-be2                side       24    9   -0.25       17 cp      20 cp    0.0%
+tk-exd5               side       24    9   +0.01       17 cp      30 cp    0.1%
+nf3-e5                main       20    8   -0.08       17 cp      16 cp    0.6%
+nf3-e5-h3             main       24    8   +0.38       17 cp      29 cp    0.1%
+nf3-e5-h3p            punish     20    5   +1.28       17 cp     116 cp    0.2%
+nf3-bb5               side       16    5   -0.03       17 cp      21 cp    0.9%
+nf3-d3                side       22    9   +0.00       17 cp      16 cp    0.7%
+nf3-c3                punish     16    6   +1.70       17 cp     186 cp    0.1%
+fantasy               main       22    9   -0.21       17 cp      17 cp    0.8%
+f4                    side       24   11   +0.16       17 cp      36 cp    2.6%
+bc4-bb5               main       18    8   +0.23       17 cp      65 cp    1.2%
+qf3                   side       20    9   +0.40       17 cp      38 cp    0.7%
+qf3-d4                side       22    9   +0.00       17 cp      38 cp    0.7%
+c4-accel              side       22   10   -0.01       17 cp      17 cp    1.1%
+bc4                   main       20    7   +0.13       17 cp      65 cp    3.7%
+tk-bh5                avoid       8    0   -0.24       17 cp      20 cp    0.3%
+cl-f3                 avoid      10    0   +0.15       17 cp      45 cp    0.3%
+bc4-bb3               avoid       8    0   +0.74       17 cp      65 cp    0.1%
+
+0 FAIL, 5 WARN

@@ -1,0 +1,74 @@
+Q6 WARN jobava/c5-e6 ply 8 e6: not in the engine top 3 and no statistics (engine: cxd4); justify or replace
+Q6 WARN jobava/c5-nc6 ply 8 Nc6: not in the engine top 3 and no statistics (engine: cxd4); justify or replace
+Q13 WARN jobava/e6-c6x ply 8 c6: mover is 5 points down after the 6-ply principal variation and the move loses 645 cp
+Q6 WARN jobava/bf5-c5 ply 12 c5: not in the engine top 3 and no statistics (engine: Bd6); justify or replace
+Q11 WARN jobava/bf5-bg6 ply 21 exf4: final position is -0.07 for us; below +0.00
+Q11 WARN jobava/a6-e6 ply 19 Na2: final position is -0.11 for us; below +0.00
+Q13 WARN jobava/g6-oo ply 10 O-O: mover is 6 points down after the 6-ply principal variation and the move loses 532 cp
+Q9 WARN jobava/2e6-a6: only 2 new cards; aim for 3+
+Q11 WARN jobava/2e6-a6 ply 13 Bd3: final position is -0.03 for us; below +0.00
+Q6 WARN jobava/2c5 ply 6 cxd4: not in the engine top 3 and no statistics (engine: Nc6); justify or replace
+Q6 WARN jobava/2c5-nc6 ply 6 cxd4: not in the engine top 3 and no statistics (engine: Nc6); justify or replace
+Q6 WARN jobava/2c5-nc6 ply 8 Nc6: not in the engine top 3 and no statistics (engine: e6); justify or replace
+Q1 WARN jobava/1c6-bf5 ply 7 e3: loses 26 cp (26-35 is borderline; engine: f3)
+Q6 WARN jobava/2c6-qb6 ply 6 Qb6: not in the engine top 3 and no statistics (engine: Nf6); justify or replace
+Q6 WARN jobava/c5-xnc6 ply 10 Nc6: not in the engine top 3 and no statistics (engine: a6); justify or replace
+Q16 INFO jobava: 47 lines, 7 traps, 325 cards (target 220-320). c5: main 2, side 3, punish 1; e6: main 2, side 2, punish 1; bf5: main 3, side 5; a6g6: side 2, main 1, punish 2; second: main 1, side 7, punish 1; nod5: side 6, main 1; odd: side 6, punish 1
+
+line                  kind    plies  new   final  worst ours  worst opp   reach
+c5-main               main       23   12   +0.01       16 cp       9 cp    1.0%
+c5-bg4                side       23    6   +0.23       16 cp      10 cp    0.2%
+c5-e6                 main       19    6   +0.46       16 cp      28 cp    0.3%
+c5-a6                 side       23    8   +0.41       16 cp      11 cp    1.0%
+c5-a6q                side       21    6   +0.21       16 cp       9 cp    1.0%
+c5-nc6                punish     17    5   +2.46       16 cp     230 cp    1.0%
+e6-c6                 main       23    9   +0.00       16 cp       9 cp    1.4%
+e6-bd6                main       25    9   +0.19       16 cp      30 cp    0.4%
+e6-be7                side       21    6   +0.00       16 cp       9 cp    0.1%
+e6-bd7                side       19    5   +0.22       16 cp      32 cp    0.2%
+e6-c6x                punish     15    4   +6.25       16 cp     645 cp    0.1%
+bf5-main              main       19    7   +0.16       16 cp       9 cp    2.6%
+bf5-c5                side       19    4   +0.16       16 cp       9 cp    2.6%
+bf5-bg6               side       21    6   -0.07       16 cp       9 cp    2.6%
+c6-bf5                main       19    7   +0.04       33 cp      18 cp    0.3%
+c6-bg4                side       21    7   +0.76       16 cp      70 cp    0.1%
+a6-bf5                main       21    8   +0.18       16 cp      19 cp    0.1%
+c6-qb6                side       17    5   +0.28       16 cp      16 cp    0.0%
+2bf5                  side       17    7   +0.10       16 cp      12 cp    0.4%
+a6-e6                 side       19    6   -0.11       16 cp      10 cp    0.2%
+a6-nc6                side       21    7   +0.26       16 cp      20 cp    1.0%
+g6-main               main       21    8   +0.19       16 cp      14 cp    0.5%
+g6-oo                 punish     17    4   +5.12       16 cp     532 cp    0.1%
+nc6-e5                punish     13    4   +1.09       16 cp      91 cp    1.2%
+2e6-bd6               main       21    9   +0.48       42 cp      37 cp    0.1%
+2e6-bb4               side       25   10   +0.01       42 cp      37 cp    0.1%
+2e6-a6                side       13    2   -0.03       42 cp      39 cp    1.3%
+2e6-nc6               side       17    5   +0.20       42 cp      37 cp    0.7%
+2c5                   side       17    7   +0.19       16 cp      23 cp    1.5%
+2c5-nc6               punish     15    4   +1.84       16 cp     162 cp    1.5%
+2nc6                  side       17    7   +0.26       16 cp      21 cp    5.6%
+1c6-bf5               side       17    8   +0.06       26 cp      31 cp    3.0%
+2c6-qb6               side       19    7   +0.11       21 cp      40 cp    4.0%
+nf6e6-bb4             side        9    3   +0.00       46 cp      39 cp    0.2%
+nf6e6-c5              side       21    8   +0.09       46 cp      39 cp    0.4%
+nf6e6-b6              side       19    7   +0.35       46 cp      49 cp    0.2%
+kid-main              main       17    7   +0.98       38 cp      72 cp    0.0%
+modern                side       23   11   +0.32       12 cp      58 cp    4.4%
+benoni                side       17    8   +0.49       13 cp      52 cp    3.1%
+philidor              side       17    8   +0.43       13 cp      41 cp    3.1%
+dutch-main            side       21   10   +0.23       22 cp      48 cp    1.7%
+dutch-e6              side       19    7   +1.09       22 cp      61 cp    1.7%
+dutch-stonewall       side       19    8   +0.39       22 cp      48 cp    1.7%
+b6                    side       19    9   +0.89       18 cp      84 cp    1.9%
+e6-c5                 side       17    8   +1.02       11 cp      34 cp    0.0%
+e6-bb4                side       19    8   +0.27       26 cp      29 cp    0.6%
+englund-main          punish     17    8   +2.60       23 cp     138 cp    0.0%
+nc6-ne4               punish     19    0   +3.02       16 cp     202 cp    1.1%
+nc6-ng4               punish     21    0   +1.24       16 cp      91 cp    0.4%
+c5-xnc6               punish     23    0   +1.69       16 cp     138 cp    1.0%
+kid-bg7               punish      7    0   +1.67       38 cp      95 cp    1.8%
+kid-d5                punish     13    0   +0.95       38 cp      72 cp    0.2%
+englund-d6            punish     13    0   +1.90       11 cp     138 cp    0.1%
+englund-f6            punish     15    0   +2.39       11 cp     138 cp    0.0%
+
+0 FAIL, 15 WARN

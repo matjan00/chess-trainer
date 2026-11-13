@@ -67,6 +67,22 @@ def build_drills(games, depth=16, workers=7):
     return out
 
 
+O2_UI = ROOT / "openings2" / "ui"
+
+
+def inline_o2(html):
+    """The Openings tab (openings2/ui, BLUEPRINT section 6) goes into the page at three placeholders:
+    o2.css at /*O2_CSS*/, o2.html at <!--O2_HTML-->, o2core.js + o2stats.js at /*O2_JS*/ (inside the module script)."""
+    parts = {"/*O2_CSS*/": (O2_UI / "o2.css").read_text(encoding="utf-8"),
+             "<!--O2_HTML-->": (O2_UI / "o2.html").read_text(encoding="utf-8"),
+             "/*O2_JS*/": (O2_UI / "o2core.js").read_text(encoding="utf-8") + "\n" + (O2_UI / "o2stats.js").read_text(encoding="utf-8")}
+    for k, v in parts.items():
+        assert html.count(k) == 1, f"app.html must contain {k} exactly once"
+        assert "</script" not in v.lower(), f"{k}: the inlined file must not contain </script>"
+        html = html.replace(k, v)
+    return html
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-drills", action="store_true")
@@ -80,6 +96,7 @@ def main():
     DIST.mkdir(exist_ok=True)
     css = "\n".join((ROOT / "vendor" / f).read_text(encoding="utf-8") for f in ("chessground.base.css", "chessground.brown.css", "chessground.cburnett.css"))
     html = (ROOT / "app.html").read_text(encoding="utf-8").replace("/*CG_CSS*/", css)
+    html = inline_o2(html)
     notes = ROOT / "notes.html"
     if notes.exists():
         html = html.replace("<!--NOTES-->", notes.read_text(encoding="utf-8"))
@@ -89,7 +106,7 @@ def main():
     # the page doesn't need the per-move FEN strings, the drills carry their own
     slim = [{**g, "plies": [{k: v for k, v in p.items() if k != "fen"} for p in g["plies"]]} for g in games]
     (DIST / "analysis.json").write_text(json.dumps(slim, separators=(",", ":")), encoding="utf-8")
-    for f in ("drills.json", "courses.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json", "structures.json", "tube.json"):
+    for f in ("drills.json", "courses2.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "explorer.json", "tube.json"):
         if (DATA / f).exists(): shutil.copy(DATA / f, DIST / f)
     shutil.copy(ROOT / "vendor" / "sf" / "stockfish.wasm", DIST / "stockfish.wasm")
     print("built", DIST / "index.html")
@@ -102,8 +119,8 @@ def main():
 # through the Supabase table chess_progress instead of Claude's database.
 APP = ROOT / "docs"
 SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}
-DATA_FILES = ["analysis.json", "drills.json", "courses.json", "puzzles.json", "punish.json", "check.json",
-              "convert.json", "technique.json", "endgames.json", "essentials.json", "openings.json", "explorer.json", "structures.json", "tube.json"]
+DATA_FILES = ["analysis.json", "drills.json", "courses2.json", "puzzles.json", "punish.json", "check.json",
+              "convert.json", "technique.json", "endgames.json", "essentials.json", "explorer.json", "tube.json"]
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
 # fonts travel with the app (no Google Fonts request, so nothing waits for the internet on a plane)
 FONTS = sorted(f.name for f in (ROOT / "vendor" / "pwa" / "fonts").iterdir())
@@ -228,6 +245,8 @@ def build_app(html):
         (APP / "vendor" / "fonts" / f).write_bytes(data)
     for f in ("icon-180.png", "icon-192.png", "icon-512.png"):
         shutil.copy(ROOT / "vendor" / "pwa" / "icons" / f, APP / f)
+    if not (DATA / "courses2.json").exists():   # no course compiled yet (openings2/tools/compile_courses2.py)
+        (DATA / "courses2.json").write_text('{"v":2,"courses":[]}', encoding="utf-8"); shutil.copy(DATA / "courses2.json", DIST / "courses2.json")
     if not (DATA / "explorer.json").exists():   # the weekly Lichess job hasn't run yet
         (DATA / "explorer.json").write_text('{"stats":{},"courses":{}}', encoding="utf-8"); shutil.copy(DATA / "explorer.json", DIST / "explorer.json")
     for f in DATA_FILES:

@@ -274,17 +274,6 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .task .btn { grid-row: 1 / span 2; grid-column: 3; padding: 6px 10px; font-size: 13px; }
 .task.done .btn { opacity: .7; }
 
-/* your games in an opening */
-.og-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
-.og-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--surface-2); border: 1px solid var(--line); }
-.og-dot.book, .og-mv.book { background: color-mix(in srgb, var(--good) 18%, transparent); border-color: color-mix(in srgb, var(--good) 45%, transparent); }
-.og-dot.dev, .og-mv.dev { background: color-mix(in srgb, var(--mistake) 22%, transparent); border-color: var(--mistake); }
-.og-dot.mis, .og-mv.mis { background: color-mix(in srgb, var(--blunder) 16%, transparent); border-color: var(--blunder); }
-.og-moves { display: flex; flex-wrap: wrap; gap: 6px; font: 13px var(--mono); }
-.og-mv { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
-.og-mv.theirs { color: var(--ink-2); }
-.og-mis { margin-top: 14px; display: grid; gap: 8px; }
-.og-mis div { border-left: 3px solid var(--blunder); padding: 6px 10px; background: var(--bg); border-radius: 0 6px 6px 0; font-size: 14px; }
 .yg-row .ok { color: var(--good); font-weight: 700; }
 
 /* watch: chess videos Reddit recommends, matched to your games */
@@ -348,15 +337,6 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .oc-tabs::-webkit-scrollbar { display: none; }
 .oc-tabs button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 99px; padding: 8px 14px; min-height: 40px; font: 600 14px var(--body); cursor: pointer; white-space: nowrap; }
 .oc-tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.hub-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-.hub-head p { margin: 4px 0 0; max-width: 70ch; }
-.hub-stats { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); }
-.hub-stats b { font: 600 22px var(--display); color: var(--ink); margin-right: 4px; font-variant-numeric: tabular-nums; }
-.hub-list { display: grid; gap: 8px; }
-.hub-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
-.hub-item .t { font-weight: 600; }
-.hub-item .d { grid-column: 1 / -1; font-size: 13px; color: var(--ink-2); }
-.hub-item .mv { font: 12px var(--mono); color: var(--ink-3); grid-column: 1 / -1; }
 .struct { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 16px; align-items: start; }
 @media (max-width: 640px) { .struct { grid-template-columns: minmax(0, 1fr); } }
 .mini-board { width: 100%; max-width: 240px; aspect-ratio: 1; }
@@ -489,6 +469,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
   .rec .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/*O2_CSS*/
 </style>
 
 <header class="top">
@@ -667,100 +648,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
     </div>
   </section>
 
-  <!-- OPENINGS -->
+  <!-- OPENINGS: the O2 tab (openings2/ui/o2.html, inlined by build.py) -->
   <section class="view" id="view-openings" hidden>
-    <div id="op-home">
-      <h2>Opening courses</h2>
-      <p class="muted" style="margin:6px 0 0;max-width:72ch">Learn each <button class="gl" data-term="line">line</button> by playing it on the board, then keep it fresh with short reviews. A line comes back after 1, 3, 7, 16 and 35 days, and sooner if you get it wrong. <button class="gl" data-term="schedule">Why those gaps?</button></p>
-      <div class="score-row" id="op-week"></div>
-      <div class="review-banner card rec" id="op-due" hidden></div>
-      <div class="eyebrow" style="margin:22px 0 10px">Your repertoire</div>
-      <div class="course-grid" id="op-yours"></div>
-      <div class="eyebrow" style="margin:26px 0 10px">Suggested for you</div>
-      <div class="course-grid" id="op-suggested"></div>
-    </div>
-
-    <div id="op-course" hidden>
-      <div class="backrow"><button class="btn" data-back="home">← All courses</button></div>
-      <div class="course-head">
-        <div>
-          <div class="eyebrow" id="oc-eyebrow"></div>
-          <h2 id="oc-title" style="margin:6px 0 6px"></h2>
-          <p class="muted" id="oc-why" style="margin:0;max-width:75ch"></p>
-          <div class="score-row" id="oc-score"></div>
-        </div>
-        <div class="controls course-actions">
-          <button class="btn primary" id="oc-review">Review due lines</button>
-          <button class="btn" id="oc-tree" title="Every move of this course on one board, with all the branches">Move tree</button>
-          <button class="btn" id="oc-ideas" title="Positions from this opening: find the move that follows the typical plan">Quiz: typical plans</button>
-        </div>
-      </div>
-      <div class="oc-tabs" id="oc-tabs" role="tablist" aria-label="Parts of this course">
-        <button data-sec="lines" role="tab">Lines</button><button data-sec="drill" role="tab">Drill</button><button data-sec="speed" role="tab">Speed</button><button data-sec="spar" role="tab">Spar</button><button data-sec="traps" role="tab">Traps</button><button data-sec="plans" role="tab">Plans</button><button data-sec="models" role="tab">Model games</button><button data-sec="games" role="tab">Your games</button><button data-sec="report" role="tab">Report</button><button data-sec="mine" role="tab">My moves</button>
-      </div>
-      <div class="oc-sec" id="oc-sec-lines">
-        <div class="card">
-          <h3>Lines</h3>
-          <p class="sub">Play through each <button class="gl" data-term="line">line</button> once to learn it. Then it joins your reviews.</p>
-          <div class="line-list" id="oc-lines"></div>
-        </div>
-      </div>
-      <div class="oc-sec" id="oc-sec-games" hidden>
-        <div class="card">
-          <h3>In your games</h3>
-          <p class="sub" id="oc-games-sub"></p>
-          <button class="btn primary" id="oc-fixgames" style="margin-bottom:12px" hidden></button>
-          <div id="oc-games"></div>
-        </div>
-      </div>
-      <div class="oc-sec" id="oc-sec-other" hidden></div>
-    </div>
-
-    <div id="op-game" hidden>
-      <div class="backrow"><button class="btn" data-back="course">← Back to course</button></div>
-      <div class="card og-card">
-        <div class="eyebrow" id="og-eyebrow"></div>
-        <h2 id="og-title" style="margin:6px 0 8px"></h2>
-        <p id="og-summary" style="margin:0 0 14px;max-width:75ch"></p>
-        <div class="og-legend small muted"><span><i class="og-dot book"></i>course move</span><span><i class="og-dot dev"></i>left the course</span><span><i class="og-dot mis"></i>your mistake</span></div>
-        <div class="og-moves" id="og-moves"></div>
-        <div id="og-mistakes"></div>
-        <div class="controls" style="margin-top:14px"><button class="btn primary" id="og-train">Train this game</button><button class="btn" id="og-full">Open the full game</button></div>
-      </div>
-    </div>
-
-    <div id="op-player" class="play" hidden>
-      <div class="backrow"><button class="btn" data-back="course">← Back to course</button></div>
-      <div class="viewer">
-        <div class="board-col">
-          <div class="board-shell"><div class="evalbar" id="op-evalbar" hidden><span style="height:50%"></span></div><div class="board" id="oboard"></div></div>
-          <div class="controls" style="align-items:center">
-            <button class="btn" id="op-back" aria-label="Previous move">◀</button>
-            <button class="btn" id="op-fwd" aria-label="Next move">▶</button>
-            <span class="small muted" id="op-navinfo"></span>
-          </div>
-          <div class="small muted" id="op-evaltext" hidden></div>
-          <div class="controls actionbar">
-            <button class="btn" id="op-hint" data-key="h">Hint<kbd>H</kbd></button>
-            <button class="btn" id="op-showmove" data-key="s">Show move<kbd>S</kbd></button>
-            <button class="btn" id="op-restart" data-key="r">Restart<kbd>R</kbd></button>
-          </div>
-          <div class="controls"><button class="btn" id="op-flip">Flip board</button><button class="btn" id="op-sound"></button><button class="btn" id="op-evalbtn" data-key="e">Stockfish eval: off<kbd>E</kbd></button></div>
-        </div>
-        <div class="side">
-          <div class="card">
-            <div class="eyebrow" id="op-mode"></div>
-            <h3 id="op-title" style="margin:6px 0 4px"></h3>
-            <div class="small muted" id="op-intro"></div>
-            <div class="progress" style="margin-top:12px"><span id="op-progress"></span></div>
-          </div>
-          <div class="card feedback" id="op-feedback"></div>
-          <div class="card" id="op-quiz" hidden></div>
-          <div class="card" id="op-tree" hidden></div>
-          <div class="notes-list" id="op-notes"></div>
-        </div>
-      </div>
-    </div>
+<!--O2_HTML-->
   </section>
 
   <!-- TRAIN: Tactics, Middlegame and Endgames share one tab -->
@@ -912,10 +802,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 <script type="module">
 import { Chessground } from 'https://cdn.jsdelivr.net/npm/chessground@9.2.1/dist/chessground.min.js';
 
-const [GAMES, DRILLS, COURSES, PUZZLES, PUNISH, CHECK] = await Promise.all([
+const [GAMES, DRILLS, PUZZLES, PUNISH, CHECK] = await Promise.all([
   fetch('analysis.json').then(r => r.json()),
   fetch('drills.json').then(r => r.json()).catch(() => []),
-  fetch('courses.json').then(r => r.json()).catch(() => []),
   fetch('puzzles.json').then(r => r.json()).catch(() => []),
   fetch('punish.json').then(r => r.json()).catch(() => []),
   fetch('check.json').then(r => r.json()).catch(() => []),
@@ -927,13 +816,15 @@ const [CONVERT, TECH, ENDGAMES] = await Promise.all([
 ]);
 const TUBE = await fetch('tube.json').then(r => r.json()).catch(() => ({ videos: [] }));
 const ESSENTIALS_DATA = await fetch('essentials.json').then(r => r.json()).catch(() => []);
-// opening hub data: drill cards (with engine alternatives), Lichess statistics at 1200-1600, pawn-structure lessons
-const [OPEN, XP, STRUCT] = await Promise.all([
-  fetch('openings.json').then(r => r.json()).catch(() => ({})),
+// openings: the compiled courses (data/courses2.json, openings2/tools/compile_courses2.py) and Lichess statistics at 1200-1600
+const [O2_DATA, XP] = await Promise.all([
+  fetch('courses2.json').then(r => r.json()).catch(() => ({ v: 2, courses: [] })),
   fetch('explorer.json').then(r => r.json()).catch(() => ({ stats: {}, courses: {} })),
-  fetch('structures.json').then(r => r.json()).catch(() => ({})),
 ]);
 GAMES.sort((a, b) => a.end - b.end);
+
+/* ---------- the Openings tab (O2): plain scripts inlined here by build.py ---------- */
+/*O2_JS*/
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -947,8 +838,7 @@ const store = {
    One document per person: data/users/<id>/progress. Every entry carries its own
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
-const INTERVALS = [0, 1, 3, 7, 16, 35];   // days until the next review, by box
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day', 'opx', 'vid'];   // day: how many of Today's 4 tasks are done, read by the phone reminders; vid: videos watched / saved for later
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day', 'opx', 'vid', ...O2.KINDS];   // O2.KINDS: the Openings tab (o2c o2l o2g o2t o2m o2d); the old opening kinds (lines, ideas, quiz, og, pos, rep, cl, spd, trp, opx) stay so stored progress still merges; day: how many of Today's 4 tasks are done, read by the phone reminders; vid: videos watched / saved for later
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -1174,12 +1064,14 @@ const GLOSSARY = [
   ['accuracy', 'Accuracy', 'A 0–100 score for how close your moves were to the engine\'s best, worked out the way Lichess does. A few blunders pull it down hard.'],
   ['line', 'Line', 'One fixed sequence of opening moves, for example 1.d4 d5 2.Nc3 Nf6 3.Bf4. A course is made of several lines.'],
   ['course', 'Course', 'A set of opening lines for one opening, with notes on the plans behind the moves.'],
-  ['schedule', 'Why reviews come back after 1, 3, 7, 16 and 35 days', 'You remember something best when you practise it just before you would forget it. Each correct review makes the memory last longer, so the gaps can grow. A mistake brings the line back the next day. This way a few minutes a day keeps the whole repertoire fresh.'],
+  ['schedule', 'Why reviews come back after 1, 3, 7, 14, 30, 90 and 180 days', 'You remember something best when you practise it just before you would forget it. Each correct review makes the memory last longer, so the gaps can grow. A mistake brings the move back the next day. This way a few minutes a day keeps the whole repertoire fresh.'],
   ['convert', 'Converting a win', 'Turning a winning position into an actual win: stay safe, trade pieces, and don\'t give your opponent chances.'],
   ['opposition', 'Opposition', 'In king and pawn endings: the kings stand face to face with one square between them, and the side that does NOT have to move holds the opposition. It decides whether a pawn can promote.'],
   ['passed', 'Passed pawn', 'A pawn with no enemy pawns in front of it or on the files next to it. Nothing but pieces can stop it from promoting.'],
   ['rating', 'Puzzle rating', 'Your level in these puzzles. It starts near your chess.com rapid rating and moves up when you solve a puzzle first try, and down when you miss one or use a hint.'],
 ];
+// the Openings tab's words (comments link them with <button class="gl" data-term=...>)
+for (const row of O2.GLOSSARY) if (!GLOSSARY.some(g => g[0] === row[0])) GLOSSARY.push(row);
 function openGlossary(term) {
   $('#gl-list').innerHTML = GLOSSARY.map(([id, t, d]) => `<div id="gl-${id}"${id === term ? ' class="hit"' : ''}><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('');
   $('#glossary').hidden = false;
@@ -1198,7 +1090,7 @@ const views = ['today', 'watch', 'report', 'games', 'openings', 'tactics', 'midd
 const TAB_OF = { today: 'today', watch: 'watch', report: 'stats', games: 'games', openings: 'openings', tactics: 'train', middle: 'train', endgame: 'train', drills: 'train' };
 const VIEW_NAME = { today: 'Today', watch: 'Watch', report: 'Stats', games: 'Games', openings: 'Openings', tactics: 'Tactics', middle: 'Middlegame', endgame: 'Endgames', drills: 'Tactics' };
 // chessground can't draw arrows on a hidden (0x0) board: it produces NaN coordinates
-const boards = () => [gameCg, drillCg, openCg, tacCg, mgCg].filter(Boolean);
+const boards = () => [gameCg, drillCg, tacCg, mgCg].filter(Boolean);
 const visibleBoard = cg => cg.state.dom.elements.wrap.offsetWidth > 0;
 let curView = 'today', curTab = 'today', trainView = ['tactics', 'middle', 'endgame'].includes(store.get('train')) ? store.get('train') : 'tactics';
 // where the exercise players' back buttons lead: the page the exercise was started from
@@ -1224,7 +1116,9 @@ function show(v, tabOverride) {
   if (v === 'endgame') renderEndgameHome();
   if (v === 'today') renderToday();
   if (v === 'watch') renderWatch();
+  if (v === 'openings' && $('#o2-player').hidden) O2.refresh();   // its mini boards were drawn while the tab was hidden
   requestAnimationFrame(() => {
+    if (v === 'openings') document.body.dispatchEvent(new Event('chessground.resize'));
     boards().forEach(cg => visibleBoard(cg) && cg.redrawAll());
     if (v === 'games' && cur && !explore) goto(ply);                       // restore the viewer's arrows
     if (v === 'tactics' && tp.kind === 'check' && !tp.done && tp.item && !$('#tac-player').hidden)
@@ -1672,7 +1566,6 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { tpStep(1); e.preventDefault(); }
     return;
   }
-  if (!$('#view-openings').hidden && !$('#op-player').hidden && op.chess && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { opStep(e.key === 'ArrowLeft' ? -1 : 1); e.preventDefault(); return; }
   if ($('#view-games').hidden || !cur || e.target.matches('input, select, textarea')) return;
   if (e.key === 'ArrowLeft') { goto(ply - 1); e.preventDefault(); }
   if (e.key === 'ArrowRight') { goto(ply + 1); e.preventDefault(); }
@@ -1760,569 +1653,16 @@ for (const k of ['phase', 'sev']) $('#d-' + k).onclick = e => {
   refillQueue(); nextDrill();
 };
 
-/* ---------- openings ---------- */
-let openCg = null;
-const lineKey = (c, l) => `${c.id}/${l.id}`;
-const fmtIn = ms => { const d = Math.round((ms - Date.now()) / DAY); return d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; };
-// "due" means due any time today: a line you reviewed yesterday evening is due this evening, and the course page already calls it "today"
-const endOfToday = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
-function lineState(c, l) {
-  const p = progress.lines[lineKey(c, l)];
-  if (!p) return { s: 'new', label: 'New' };
-  if (p.due <= endOfToday()) return { s: 'due', label: 'Review due' };
-  if (p.box >= 4) return { s: 'known', label: `Known · review ${fmtIn(p.due)}` };
-  return { s: 'learning', label: `Review ${fmtIn(p.due)}` };
-}
-const dueLines = c => c.lines.filter(l => lineState(c, l).s === 'due').map(l => ({ c, l }));
-const sanLine = (moves, n = moves.length) => moves.slice(0, n).map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.` : '') + m.san).join(' ');
-
-// every course move by position (piece placement, side, castling, en passant), so transpositions are recognised
-// (the en-passant square is left out: chess.js and python-chess write it differently, and it almost never matters here)
+/* ---------- openings: the tab is O2 (openings2/ui/o2core.js + o2stats.js, inlined by build.py at the O2_JS placeholder) ---------- */
+// positions by piece placement, side and castling (the en-passant square is left out: chess.js and python-chess write it differently)
 const posKey = fen => fen.split(' ').slice(0, 3).join(' ') + ' -';
 // data built by the Python scripts may carry an en-passant square: normalise those keys the same way
 for (const [k, v] of Object.entries(XP.stats || {})) { const n = posKey(k); if (n !== k) { XP.stats[n] = v; delete XP.stats[k]; } }
 for (const x of Object.values(XP.courses || {})) for (const t of x.traps || []) t.fen = posKey(t.fen);
-for (const x of Object.values(OPEN)) for (const cd of x.cards || []) cd.key = posKey(cd.key);
 // what players rated 1200-1600 play here (Lichess rapid + blitz), or null when the weekly statistics have no data
 const statsAt = fen => { const s = XP.stats?.[posKey(fen)]; return s && s.n >= 30 ? s : null; };
-const pct = x => `${Math.round(x * 100)}%`;
-const plyLabel = i => `${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'}`;
-/* arrows and circles in course comments: [b5-c7] draws an arrow, [e5] a circle; r:/g:/b:/y: in front picks the colour.
-   A comment without them still gets some: an arrow to each square it names that the moved piece attacks, a circle on the others. */
-const BRUSH = { r: 'red', g: 'green', b: 'blue', y: 'yellow' };
-for (const c of COURSES) for (const l of c.lines) for (const m of l.moves) if (m.c?.includes('[')) {
-  const shapes = [];
-  m.c = m.c.replace(/\[(?:([rgby]):)?([a-h][1-8])(?:-([a-h][1-8]))?\]/g, (_, col, a, b) => { shapes.push(b ? { orig: a, dest: b, brush: BRUSH[col] || 'green' } : { orig: a, brush: BRUSH[col] || 'green' }); return ''; }).replace(/\s{2,}/g, ' ').trim();
-  if (shapes.length) m.shapes = shapes;
-}
-// the squares a piece attacks (sliding pieces stop at the first piece in the way)
-function attacksFrom(chess, sq) {
-  const p = chess.get(sq), out = new Set();
-  if (!p) return out;
-  const f = sq.charCodeAt(0) - 97, r = +sq[1] - 1;
-  const ray = (dx, dy, slide) => {
-    for (let x = f + dx, y = r + dy; x >= 0 && x < 8 && y >= 0 && y < 8; x += dx, y += dy) {
-      const s = String.fromCharCode(97 + x) + (y + 1); out.add(s);
-      if (!slide || chess.get(s)) break;
-    }
-  };
-  const ROOK = [[1, 0], [-1, 0], [0, 1], [0, -1]], BISHOP = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
-  if (p.type === 'n') [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]].forEach(([a, b]) => ray(a, b, false));
-  else if (p.type === 'p') { const d = p.color === 'w' ? 1 : -1; ray(1, d, false); ray(-1, d, false); }
-  else (p.type === 'r' ? ROOK : p.type === 'b' ? BISHOP : [...ROOK, ...BISHOP]).forEach(([a, b]) => ray(a, b, p.type !== 'k'));
-  return out;
-}
-// squares a comment names in plain words ("eyes c7", "the e5 square"), not the ones inside written moves like Nxc3 or 9.e4
-const namedSquares = text => [...new Set([...String(text).matchAll(/(?:^|[\s(,'"])([a-h][1-8])(?!\w)/g)].map(x => x[1]))];
-function commentShapes(m, chess, mv) {
-  if (m?.shapes) return m.shapes;
-  if (!m?.c || !mv) return [];
-  const hits = attacksFrom(chess, mv.to);
-  return namedSquares(m.c).filter(s => s !== mv.to).slice(0, 4).map(s => hits.has(s) ? { orig: mv.to, dest: s, brush: 'green' } : { orig: s, brush: 'blue' });
-}
-for (const c of COURSES) {
-  const x = XP.courses?.[c.id] || {};
-  for (const l of c.lines) {
-    const e = x.ext?.[l.id];
-    if (e?.length) l.moves = l.moves.concat(e.map((m, i) => ({ san: m.san, ext: true,
-      c: i === 0 ? 'The course line ends here. The next moves show how games usually go on: the most popular replies at your level, and Stockfish\'s choices for you.'
-        : m.auto === 'popular' ? `The most common reply at your level (${pct(m.share)} of games).` : undefined })));
-  }
-  (x.extra || []).forEach((e, i) => c.lines.push({ id: `x${i}`, extra: true,
-    title: `Extra: ${plyLabel(e.path.length)} ${e.reply} (${pct(e.share)} at your level)`,
-    intro: `A reply the course didn't cover, played in ${pct(e.share)} of games at your level. Your moves are Stockfish's choices; your opponent's are the most popular replies.`,
-    moves: [...e.path.map(san => ({ san })), { san: e.reply, c: `Played in ${pct(e.share)} of games by players rated 1200-1600.` },
-      ...e.cont.map((m, j) => ({ san: m.san, c: m.auto === 'popular' ? `The most common reply here (${pct(m.share)}).` : j === 0 ? "Stockfish's choice: the best answer to this move." : undefined }))] }));
-  c.baseLines = c.lines.slice();
-}
-// your own lines (My moves → Add your own line) join the course like any other line
-function applyCustomLines() {
-  for (const c of COURSES) {
-    const mine = Object.entries(progress.cl).filter(([, v]) => v.course === c.id && !v.deleted).map(([id, v]) => ({ id: 'my-' + id, mine: true, title: v.title, intro: 'Your own line. Every one of your moves was checked by Stockfish when you made it.', moves: v.moves.map(san => ({ san })) }));
-    c.lines = c.baseLines.concat(mine);
-    c._pos = null; c._comments = null; c._tree = null;
-  }
-}
-applyCustomLines();
-function coursePosMoves(c) {
-  if (c._pos) return c._pos;
-  c._pos = new Map();
-  for (const l of c.lines) {
-    const b = new Chess();
-    for (const m of l.moves) { const k = posKey(b.fen()); if (!c._pos.has(k)) c._pos.set(k, new Set()); c._pos.get(k).add(m.san); b.move(m.san, { sloppy: true }); }
-  }
-  return c._pos;
-}
-
-// which of my games went into each course, and where they left it (by position, so move-order transpositions count)
-for (const c of COURSES) {
-  const pos = coursePosMoves(c);
-  c.games = [];
-  for (const g of GAMES) {
-    if (g.color !== c.side) continue;
-    let k = 0; const b = new Chess();
-    while (k < g.plies.length && pos.get(posKey(b.fen()))?.has(g.plies[k].san)) { b.move(g.plies[k].san, { sloppy: true }); k++; }
-    if (k < 2) continue;
-    const bookMoves = [...(pos.get(posKey(b.fen())) || [])];
-    const moveNo = `${Math.floor(k / 2) + 1}${k % 2 === 0 ? '.' : '...'}`;
-    let dev, mine = false;
-    if (!bookMoves.length) dev = `Followed the course all the way (${Math.ceil(k / 2)} moves)`;
-    else if (k >= g.plies.length) dev = 'Game ended inside the course';
-    else if (isMine(g, k)) { mine = true; dev = `You left the course at ${moveNo} ${g.plies[k].san}; the course plays ${bookMoves.join(' or ')}`; }
-    else dev = `Opponent left the course at ${moveNo} ${g.plies[k].san}`;
-    // the first moment to train: where you left the course, or else your first engine-flagged mistake in the opening
-    let target = null;
-    if (mine) target = { ply: k, want: bookMoves, why: 'course' };
-    else for (let i = k; i < Math.min(g.plies.length, 30); i++) {
-      const p = g.plies[i];
-      if (isMine(g, i) && ['blunder', 'mistake', 'inaccuracy'].includes(p.lab) && p.best) { target = { ply: i, want: [p.best], why: 'engine' }; break; }
-    }
-    c.games.push({ g, k, dev, mine, target, id: `${c.id}/${g.url.split('/').pop()}` });
-  }
-  c.games.reverse();
-}
-
-function lineReach(c, l) {
-  const b = new Chess(); let p = 1, known = false;
-  for (let i = 0; i < l.moves.length; i++) {
-    if ((i % 2 === 0) !== (c.side === 'white')) {
-      const s = statsAt(b.fen()), m = s?.m.find(x => x[0] === l.moves[i].san);
-      if (s && m) { p *= m[1] / s.n; known = true; } else if (s) p *= 0.02;
-    }
-    if (!b.move(l.moves[i].san, { sloppy: true })) break;
-  }
-  return known ? p : null;
-}
-function renderOpeningsHome() {
-  const card = c => {
-    const known = c.lines.filter(l => progress.lines[lineKey(c, l)]).length;
-    const due = dueLines(c).length;
-    const pts = courseScore(c);
-    const gs = c.games.map(x => x.g), sc = gs.length ? Math.round(gs.reduce((s, g) => s + (g.result === 'win' ? 1 : g.result === 'draw' ? .5 : 0), 0) / gs.length * 100) : null;
-    return `<button class="card course-card" data-course="${c.id}">
-      <div class="top-row"><h3>${esc(c.title)}</h3><span class="side-chip ${c.side}">as ${c.side}</span></div>
-      <div class="sub2">${esc(c.sub)}</div>
-      <div class="progress"><span style="width:${known / c.lines.length * 100}%"></span></div>
-      <div class="meta"><span><b>${known}/${c.lines.length}</b> lines learned</span>${medalsHtml(c)}${due ? `<span style="color:var(--mistake)"><b style="color:inherit">${due}</b> due</span>` : ''}${gs.length ? `<span><b>${gs.length}</b> of your games · ${sc}%</span>` : ''}${pts.total ? `<span><b>${pts.total}</b> points${pts.streak > 1 ? ` · ${pts.streak}-day streak` : ''}</span>` : ''}</div>
-    </button>`;
-  };
-  $('#op-yours').innerHTML = COURSES.filter(c => c.kind === 'yours').map(card).join('');
-  $('#op-suggested').innerHTML = COURSES.filter(c => c.kind !== 'yours').map(card).join('');
-  const wk = courseScore(null);
-  $('#op-week').innerHTML = wk.total ? `<span><b>${wk.week}</b> opening points this week</span><span><b>${wk.today}</b> today</span>${wk.streak ? `<span><b>${wk.streak}</b>-day opening streak</span>` : ''}` : '';
-  const q = dailyQueue();
-  const b = $('#op-due'); b.hidden = !q.n;
-  if (q.n) { const parts = [q.lines.length && `${q.lines.length} line${q.lines.length > 1 ? 's' : ''}`, q.nCards && `${q.nCards} position${q.nCards > 1 ? 's' : ''}`].filter(Boolean).join(' + ');
-    b.innerHTML = `<div><span class="eyebrow">Daily review · all courses</span><h3 style="margin-top:4px">${parts} due today</h3><p>One session, about ${q.mins} minute${q.mins > 1 ? 's' : ''}. Whatever you get wrong comes back sooner.</p></div><button class="btn primary" id="op-due-go">Start daily review</button>`; $('#op-due-go').onclick = startDaily; }
-  else {
-    // nothing due: suggest the next new line of your own repertoire (then of the suggested courses)
-    const order = [...COURSES.filter(c => c.kind === 'yours'), ...COURSES.filter(c => c.kind !== 'yours')];
-    const c = order.find(c => c.lines.some(l => !progress.lines[lineKey(c, l)]));
-    const l = c?.lines.find(l => !progress.lines[lineKey(c, l)]);
-    b.hidden = !l;
-    if (l) { b.innerHTML = `<div><span class="eyebrow">Recommended · nothing due today</span><h3 style="margin-top:4px">Learn a new line: ${esc(l.title)}</h3><p>${esc(c.title)}, as ${c.side}. It takes a few minutes and joins your reviews afterwards.</p></div><button class="btn primary" id="op-due-go">Learn this line</button>`; $('#op-due-go').onclick = () => { curCourse = c; startLearn(c, l); }; }
-  }
-}
-document.querySelectorAll('#op-yours, #op-suggested').forEach(el => el.onclick = e => { const b = e.target.closest('[data-course]'); if (b) openCourse(COURSES.find(c => c.id === b.dataset.course)); });
-
-let curCourse = null;
-function opShow(which, keepScroll = false) { for (const w of ['home', 'course', 'game', 'player']) $('#op-' + w).hidden = w !== which; if (!keepScroll) window.scrollTo({ top: 0 }); if (which === 'player') requestAnimationFrame(() => openCg?.redrawAll()); }
-document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => {
-  if (b.dataset.back === 'home') { renderOpeningsHome(); opShow('home'); } else if (curCourse) openCourse(curCourse); else opShow('home');
-});
-function openCourse(c, keepScroll = false) {
-  curCourse = c;
-  $('#oc-eyebrow').textContent = `${c.kind === 'yours' ? 'Your repertoire' : 'Suggested'} · as ${c.side}`;
-  $('#oc-title').textContent = c.title;
-  $('#oc-why').textContent = c.why;
-  const due = dueLines(c);
-  $('#oc-review').textContent = due.length ? `Review ${due.length} due line${due.length > 1 ? 's' : ''}` : 'Practise all lines';
-  $('#oc-review').onclick = () => startReview(due.length ? due : c.lines.map(l => ({ c, l })));
-  $('#oc-ideas').hidden = !c.ideas?.items?.length;
-  $('#oc-ideas').onclick = () => startIdeas(c);
-  $('#oc-tree').onclick = () => startTree(c);
-  const sc = courseScore(c), lv = courseLevels(c), mastery = Math.round(c.lines.reduce((s, l) => s + lineLevel(c, l), 0) / (4 * c.lines.length) * 100);
-  $('#oc-score').innerHTML = `<span><b>${mastery}%</b> mastered</span><span><b>${sc.total}</b> points</span><span><b>${sc.week}</b> this week</span><span><b>${sc.streak}</b>-day streak${sc.streak && !sc.today ? ' (train today to keep it)' : ''}</span>`;
-  const nextUp = c.lines.find(l => lineState(c, l).s === 'due') || c.lines.find(l => !progress.lines[lineKey(c, l)]);
-  $('#oc-lines').innerHTML = `<div class="map-sum">${[4, 3, 2, 1, 0].map(i => `<span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;background:${LEVEL_COLOR[i]}"></i><b>${lv[i]}</b> ${LEVEL_NAME[i].toLowerCase()}</span>`).join('')}
-    <div class="map-bar" title="${mastery}% mastered">${[4, 3, 2, 1].map(i => `<i style="width:${lv[i] / c.lines.length * 100}%;background:${LEVEL_COLOR[i]}"></i>`).join('')}</div></div>
-    <ol class="map">${c.lines.map(l => { const st = lineState(c, l), r = lineReach(c, l), v = lineLevel(c, l);
-      const label = st.s === 'due' ? st.label : v >= 2 ? `${LEVEL_NAME[v]} · ${st.label.replace(/^Known · r/, 'r')}` : st.label;
-      return `<li class="lv${v}${l === nextUp ? ' next' : ''}">${medalDot(v)}<button class="line-row" data-line="${l.id}"><span class="t">${l === nextUp ? '<span class="eyebrow" style="color:var(--accent)">Next up · </span>' : ''}${l.mine ? 'Your line: ' : ''}${esc(l.title)}</span><span class="status ${st.s === 'due' ? 'due' : v >= 2 ? 'lvl' + v : st.s}">${esc(label)}</span><span class="mv">${esc(sanLine(l.moves, 12))}${l.moves.length > 12 ? ' …' : ''}</span>${r != null ? `<span class="freq">You meet this in about ${r < 0.01 ? 'under 1' : Math.round(r * 100)}% of games at your level</span>` : ''}</button></li>`; }).join('')}</ol>`;
-  ocSection(c, store.get('ocsec.' + c.id, 'lines'));
-  $('#oc-lines').onclick = e => { const b = e.target.closest('[data-line]'); if (b) startLearn(c, c.lines.find(l => l.id === b.dataset.line)); };
-  const mineDev = c.games.filter(x => x.mine).length;
-  $('#oc-games-sub').textContent = c.games.length ? `${c.games.length} of your rapid games reached this course. In ${mineDev} of them you were the one who left it. Click a game to see where it went off track, or train them all.` : 'None of your analysed games reached these lines yet. That is what the suggested courses are for.';
-  $('#oc-games').innerHTML = c.games.slice(0, 40).map(({ g, dev, mine, id, target }) => `<div class="yg-row" data-url="${esc(g.url)}"><span class="pill ${g.result}">${g.result === 'win' ? 'W' : g.result === 'loss' ? 'L' : 'D'}</span><span>${esc(g.opp)} <span class="muted num">(${g.oppRating})</span>${progress.og[id]?.ok ? ' <span class="ok" title="Trained">✓</span>' : ''}</span><span class="small muted num">${fmtDate(g.end)}</span><span class="d" style="${mine ? 'color:var(--mistake)' : ''}">${esc(dev)}${target && !mine ? ' · then a mistake to fix' : ''}</span></div>`).join('');
-  $('#oc-games').onclick = e => { const r = e.target.closest('[data-url]'); if (!r) return; openGameReview(c, c.games.find(y => y.g.url === r.dataset.url)); };
-  const toFix = c.games.filter(x => x.target), open = toFix.filter(x => !progress.og[x.id]?.ok);
-  $('#oc-fixgames').hidden = !toFix.length;
-  $('#oc-fixgames').textContent = open.length ? `Fix my mistakes in these games (${open.length} to go)` : `Practise my games again (${toFix.length})`;
-  $('#oc-fixgames').onclick = () => startGameDrills(c, open.length ? open : toFix);
-  opShow('course', keepScroll);
-}
-
-/* the line player: learn (with notes and questions), review (from memory), ideas (find the plan move) */
-const op = { mode: null, queue: [], c: null, l: null, chess: null, ply: 0, wrong: 0, errors: 0, busy: false, flipped: false, idea: null, gen: 0, tryTok: 0, daily: null, noteShapes: [], liveShapes: null };
 // the last move actually played on this board (undefined for a position set up from scratch), so an old highlight never lingers
 const lastMoveOf = chess => { const h = chess.history({ verbose: true }); const m = h[h.length - 1]; return m ? [m.from, m.to] : undefined; };
-// moving back and forth: op.view = how many moves in the position shown (null = the live position)
-function posAtPly(n) {
-  const h = op.chess.history({ verbose: true }), undone = [];
-  while (op.chess.history().length > n) undone.push(op.chess.undo());
-  const v = { fen: op.chess.fen(), check: op.chess.in_check(), turn: op.chess.turn(), lastMove: n ? [h[n - 1].from, h[n - 1].to] : undefined };
-  while (undone.length) { const m = undone.pop(); op.chess.move({ from: m.from, to: m.to, promotion: m.promotion }); }
-  return v;
-}
-function opStep(d) {
-  if (!op.chess) return;
-  if (op.custom?.step) return op.custom.step(d);
-  const len = op.chess.history().length, v = Math.max(0, Math.min(len, (op.view ?? len) + d));
-  op.view = v === len ? null : v; boardSet();
-}
-function opNav() {
-  if (op.custom?.nav) return op.custom.nav();
-  const len = op.chess.history().length, at = op.view ?? len;
-  $('#op-back').disabled = at === 0; $('#op-fwd').disabled = op.view == null;
-  const h = op.chess.history();
-  $('#op-navinfo').textContent = op.view == null ? '' : `${at ? `After ${at % 2 ? Math.ceil(at / 2) + '.' : at / 2 + '...'}${h[at - 1]}` : 'Start position'} · ▶ to come back`;
-}
-$('#op-back').onclick = () => opStep(-1);
-$('#op-fwd').onclick = () => opStep(1);
-// Stockfish evaluation under the board, on request; remembered between visits
-let opEvalOn = store.get('opeval', false), opEvalTok = 0;
-const opEvals = new Map();
-function opEvalShow(fen) {
-  $('#op-evalbtn').innerHTML = `Stockfish eval: ${opEvalOn ? 'on' : 'off'}<kbd>E</kbd>`;
-  $('#op-evalbar').hidden = $('#op-evaltext').hidden = !opEvalOn;
-  if (!opEvalOn) return;
-  if ($('#oboard').offsetHeight) $('#op-evalbar').style.height = $('#oboard').offsetHeight + 'px';
-  $('#op-evalbar').classList.toggle('flip', openCg?.state.orientation === 'black');
-  const tok = ++opEvalTok, put = e => {
-    if (tok !== opEvalTok) return;
-    $('#op-evalbar span').style.height = winPctWhite(e, 0) + '%';
-    const t = e.m !== undefined ? (e.m > 0 ? 'White mates in ' : 'Black mates in ') + Math.abs(e.m)
-      : `${e.cp > 0 ? '+' : ''}${(e.cp / 100).toFixed(1)} · ${Math.abs(e.cp) < 50 ? 'about equal' : `${Math.abs(e.cp) < 150 ? 'slightly better' : Math.abs(e.cp) < 400 ? 'better' : 'winning'} for ${e.cp > 0 ? 'White' : 'Black'}`}`;
-    $('#op-evaltext').textContent = 'Stockfish: ' + t;
-  };
-  const c = new Chess(fen);
-  if (c.in_checkmate()) return put({ m: c.turn() === 'w' ? -1 : 1 }), $('#op-evaltext').textContent = 'Checkmate';
-  if (c.game_over()) return put({ cp: 0 });
-  if (opEvals.has(fen)) return put(opEvals.get(fen));
-  $('#op-evaltext').textContent = 'Stockfish: thinking…';
-  setTimeout(async () => {
-    if (tok !== opEvalTok) return;
-    const r = await engine.go(fen, { movetime: 700, skill: 20, polite: true }).catch(() => null);
-    if (!r?.score) return;
-    const sign = fen.split(' ')[1] === 'w' ? 1 : -1;
-    const e = r.score.mate !== undefined ? { m: r.score.mate * sign } : { cp: r.score.cp * sign };
-    opEvals.set(fen, e); put(e);
-  }, 250);
-}
-$('#op-evalbtn').onclick = () => { opEvalOn = !opEvalOn; store.set('opeval', opEvalOn); if (op.chess) boardSet(); else opEvalShow(''); };
-function boardSet(extra = {}) {
-  if (op.viewOf !== op.chess) { op.view = null; op.viewOf = op.chess; }
-  if (op.view != null && op.view >= op.chess.history().length) op.view = null;
-  const orientation = op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side;
-  if (op.view != null) {        // looking back: show that position, nothing can move
-    const v = posAtPly(op.view);
-    openCg.set({ fen: v.fen, turnColor: v.turn === 'w' ? 'white' : 'black', check: v.check, orientation, lastMove: v.lastMove,
-      movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: op.noteShapes[op.view - 1] || [] } });
-    document.querySelectorAll('#op-notes .note').forEach(n => n.classList.toggle('on', +n.dataset.ply === op.view - 1));
-    opNav(); opEvalShow(v.fen); return;
-  }
-  const color = op.chess.turn() === 'w' ? 'white' : 'black';
-  const myTurn = op.custom ? !op.busy && op.custom.canMove() : !op.busy && color === op.c.side && (op.mode === 'ideas' ? !op.ideaDone : op.ply < op.l.moves.length);
-  const opts = { fen: op.chess.fen(), turnColor: color, check: op.chess.in_check(), orientation: op.flipped ? (op.c.side === 'white' ? 'black' : 'white') : op.c.side,
-    movable: { free: false, color: myTurn ? (op.custom?.color === 'both' ? 'both' : op.c.side) : undefined, dests: myTurn ? toDests(op.chess) : new Map(), showDests: true, events: { after: onOpMove } },
-    drawable: { autoShapes: liveShapes() }, animation: { duration: 200 }, coordinates: true, lastMove: lastMoveOf(op.chess), ...extra };
-  if (!openCg) openCg = Chessground($('#oboard'), opts); else openCg.set(opts);
-  document.querySelectorAll('#op-notes .note.on').forEach(n => n.classList.remove('on'));
-  $('#op-tree').hidden = op.mode !== 'tree';
-  for (const b of ['op-hint', 'op-showmove']) $('#' + b).hidden = op.mode === 'tree';
-  if (op.mode === 'tree') $('#op-restart').hidden = true;
-  opNav(); opEvalShow(op.chess.fen());
-}
-// the arrows of the last note stay up through your opponent's reply, then go
-function liveShapes() {
-  if (op.custom) return op.custom.shapes?.() || [];
-  const s = op.liveShapes;
-  return s && op.ply - 1 - s.ply <= 1 ? s.shapes : [];
-}
-function feedback(html, cls = '') { const f = $('#op-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
-function addNote(m, i) {
-  if (!m.c || (op.mode !== 'learn' && op.mode !== 'game')) return;
-  $('#op-notes').prepend(el('div', { class: 'note', 'data-ply': i, title: 'Show this position' }, `<b>${i % 2 === 0 ? `${i / 2 + 1}.` : `${Math.floor(i / 2) + 1}...`}${esc(m.san)}</b>${esc(m.c)}`));
-}
-$('#op-notes').onclick = e => {
-  const n = e.target.closest('.note[data-ply]'); if (!n || !op.chess) return;
-  const v = +n.dataset.ply + 1;
-  op.view = v >= op.chess.history().length ? null : v; boardSet();
-  if (op.view == null) n.classList.add('on');
-};
-function startLearn(c, l) { op.mode = 'learn'; op.queue = []; op.daily = null; loadLine(c, l); }
-function startReview(items, daily = false) { op.mode = 'review'; if (!daily) op.daily = null; op.queue = items.slice(); if (!op.queue.length) return; const n = op.queue.shift(); loadLine(n.c, n.l); }
-function loadLine(c, l) {
-  op.gen++;
-  Object.assign(op, { c, l, chess: new Chess(), ply: 0, wrong: 0, errors: 0, busy: false, idea: null, custom: null, noteShapes: [], liveShapes: null });
-  $('#op-mode').textContent = `${op.daily ? 'Daily review · ' : ''}${c.title} · ${op.mode === 'learn' ? 'Learn' : op.mode === 'game' ? 'Train your game' : 'Review from memory'}${op.queue.length ? ` · ${op.queue.length} more after this` : ''}`;
-  $('#op-title').textContent = l.title;
-  $('#op-intro').textContent = op.mode === 'review' ? 'Play the course moves from memory. Notes come back if you go wrong.' : l.intro;
-  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
-  for (const b of ['op-hint', 'op-showmove', 'op-restart']) $('#' + b).hidden = false;
-  feedback(`<span class="muted">${c.side === 'white' ? 'You have White.' : 'You have Black; White moves first.'} Make the course moves on the board.</span>`);
-  opShow('player'); boardSet(); advance();
-}
-function progressBar() { $('#op-progress').style.width = (op.mode === 'ideas' ? (op.ideaIdx / op.c.ideas.items.length) : (op.ply / op.l.moves.length)) * 100 + '%'; }
-function applyMove(m) {
-  const mv = op.chess.move(m.san, { sloppy: true });
-  if (!mv) return null;
-  op.ply++;
-  sfx.play(mv.captured ? 'capture' : 'move');
-  if (m.c && (op.mode === 'learn' || op.mode === 'game')) {
-    const sh = commentShapes(m, op.chess, mv);
-    op.noteShapes[op.ply - 1] = sh;
-    if (sh.length) op.liveShapes = { ply: op.ply - 1, shapes: sh };
-  }
-  boardSet({ lastMove: [mv.from, mv.to] });
-  addNote(m, op.ply - 1);
-  progressBar();
-  return m.quiz && op.mode === 'learn' ? m.quiz : null;
-}
-function advance() {
-  progressBar();
-  if (op.ply >= op.l.moves.length) return finishLine();
-  const m = op.l.moves[op.ply];
-  const theirs = (op.ply % 2 === 0) !== (op.c.side === 'white') || !!m.auto;
-  if (theirs) {
-    op.busy = true; boardSet();
-    const g = op.gen;
-    const st = statsAt(op.chess.fen()), hit = st?.m.find(x => x[0] === m.san);
-    // the other replies this course prepares you for in the same position (the branches of the move tree)
-    const before = op.chess.fen();
-    const others = op.mode === 'learn' ? [...(coursePosMoves(op.c).get(posKey(before)) || [])].filter(s => s !== m.san) : [];
-    const lastNote = op.liveShapes && op.liveShapes.ply === op.ply - 1;   // time to look at the arrows of your move's note
-    setTimeout(() => { if (g !== op.gen) return; op.busy = false; const q = applyMove(m);
-      const branch = others.length ? `<div class="small muted" style="margin-top:4px">The course also covers ${others.map(s => `<strong>${esc(s)}</strong>`).join(', ')} here, in other lines. <button class="gl" id="op-totree">See them in the move tree</button></div>` : '';
-      if (hit && (op.mode === 'learn' || op.mode === 'review')) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>: ${pct(hit[1] / st.n)} of players rated 1200-1600 choose it here.</span>${branch}`);
-      else if (branch) feedback(`<span class="muted">Your opponent played <strong>${esc(m.san)}</strong>.</span>${branch}`);
-      document.getElementById('op-totree')?.addEventListener('click', () => startTree(op.c, treeNodeAt(op.c, before)));
-      if (q) askQuiz(q); else advance(); }, lastNote ? 1300 : 450);
-  } else {
-    op.wrong = 0; boardSet();
-    if (op.mode === 'game' && op.ply === op.l.moves.length - 1)   // the moment the game went wrong
-      feedback(`<span class="big">Key moment: your move ${esc(op.l.moveNo)}</span><div class="small">In the game you played <strong>${esc(op.l.playedSan)}</strong> here. ${op.l.game.target.why === 'course' ? 'What does the course play?' : 'Find a better move.'}</div>`);
-  }
-}
-function onOpMove(orig, dest) {
-  if (op.custom) return op.custom.onMove(orig, dest);
-  if (op.mode === 'ideas') return onIdeaMove(orig, dest);
-  const test = new Chess(op.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
-  let want = op.l.moves[op.ply];
-  if (mv && (mv.san === want.san || want.alt?.includes(mv.san))) {
-    if (mv.san !== want.san) want = { ...want, san: mv.san };
-    feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>`, 'right');
-    op.tryTok++; sfx.play('right');
-    const q = applyMove(want); if (q) askQuiz(q); else advance();
-  } else if (mv && coursePosMoves(op.c).get(posKey(op.chess.fen()))?.has(mv.san)) {
-    // the same position comes up in another line of this course, where this move is the recommendation
-    boardSet({ drawable: { autoShapes: hintShape(true) } });
-    feedback(`<span class="big" style="font-size:18px">${esc(mv.san)} is also a course move</span><div class="small">Another line of this course plays it here. This line continues with the arrow move instead.</div>`);
-  } else {
-    op.wrong++; op.errors++; op.tryTok++;
-    sfx.play('wrong');
-    boardSet();
-    if (op.wrong >= 2) openCg.set({ drawable: { autoShapes: hintShape(true) } });
-    const fen = op.chess.fen();
-    feedback(`<span class="big" style="font-size:18px">${mv ? esc(mv.san) : 'That move'} isn't the course move</span><div class="small">${op.wrong >= 2 ? 'The arrow shows it.' : 'Try again, or press Hint.'}</div>${op.mode === 'review' && want.c ? `<div class="small muted" style="margin-top:6px">${esc(want.c)}</div>` : ''}${mv ? '<div class="why-box" id="op-why"><span class="muted">Asking Stockfish what goes wrong after it…</span></div>' : ''}`, 'wrong');
-    if (mv) explainWrong(fen, mv, want);
-  }
-}
-function hintShape(full) {
-  if (op.custom) return op.custom.hint ? op.custom.hint(full) : [];
-  if (op.mode !== 'ideas' && (!op.l || op.ply >= op.l.moves.length)) return [];
-  const c = new Chess(op.chess.fen()), m = c.move(op.mode === 'ideas' ? op.idea.ok[0] : op.l.moves[op.ply].san, { sloppy: true });
-  if (!m) return [];
-  return full ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [{ orig: m.from, brush: 'yellow' }];
-}
-$('#op-hint').onclick = () => { if (!op.chess) return; op.errors++; openCg.set({ drawable: { autoShapes: hintShape(false) } }); feedback('<span class="muted">The circled piece moves.</span>'); };
-$('#op-showmove').onclick = () => { if (!op.chess) return; op.errors++; op.wrong = 2; openCg.set({ drawable: { autoShapes: hintShape(true) } }); feedback('<span class="muted">Play the arrow move on the board.</span>'); };
-$('#op-restart').onclick = () => { if (op.custom) op.custom.restart?.(); else if (op.mode === 'ideas') loadIdea(); else if (op.l) loadLine(op.c, op.l); };
-$('#op-flip').onclick = () => { op.flipped = !op.flipped; if (op.chess) boardSet(); };
-
-function askQuiz(q) {
-  op.busy = true; boardSet();
-  const box = $('#op-quiz'); box.hidden = false;
-  box.innerHTML = `<div class="eyebrow">Question</div><h3 style="margin:6px 0 0;font-size:18px">${esc(q.q)}</h3><div class="quiz-opts">${q.options.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join('')}</div><div id="quiz-exp"></div>`;
-  box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  box.querySelector('.quiz-opts').onclick = e => {
-    const b = e.target.closest('button[data-i]'); if (!b || b.disabled) return;
-    const i = +b.dataset.i, right = i === q.answer;
-    b.classList.add(right ? 'right' : 'wrong');
-    if (!right) return;   // let them try again until they find it
-    box.querySelectorAll('.quiz-opts button').forEach(x => x.disabled = true);
-    record('quiz', `${lineKey(op.c, op.l)}/${op.ply - 1}`, { ok: 1 });
-    sfx.play('right'); award(op.c, 1);
-    $('#quiz-exp').innerHTML = `<p style="margin:10px 0">${esc(q.explain)}</p><button class="btn primary" id="quiz-go">Continue</button>`;
-    $('#quiz-go').onclick = () => { box.hidden = true; op.busy = false; advance(); };
-  };
-}
-
-/* ---- the move tree: the whole course on one board, with a branch wherever the course covers more than one move */
-function courseTree(c) {
-  if (c._tree) return c._tree;
-  const root = { id: 0, ply: 0, kids: [], lines: [] }, nodes = [root];
-  for (const l of c.lines) {
-    let n = root; const b = new Chess();
-    for (const m of l.moves) {
-      if (m.ext) break;   // the "how games usually go on" tails stay out of the tree
-      b.move(m.san, { sloppy: true });
-      let k = n.kids.find(x => x.san === m.san);
-      if (!k) { k = { id: nodes.length, san: m.san, ply: n.ply + 1, parent: n, kids: [], lines: [], key: posKey(b.fen()) }; nodes.push(k); n.kids.push(k); }
-      if (!k.m || (m.c && !k.m.c)) k.m = m;
-      if (!k.lines.includes(l)) k.lines.push(l);
-      n = k;
-    }
-  }
-  return (c._tree = { root, nodes });
-}
-// the tree node of a position (found by position, so another move order still lands on it)
-function treeNodeAt(c, fen) { const T = courseTree(c), k = posKey(fen); return T.nodes.find(n => n.key === k) || T.root; }
-// main line inline, the other moves as indented branches right after the move they replace
-function treeHtml(n, cur) {
-  let h = '', num = true;
-  while (n) {
-    const label = n.ply % 2 === 1 ? `${(n.ply + 1) / 2}.` : num ? `${n.ply / 2}...` : '';
-    h += `<button class="tm${n.m?.c ? ' c' : ''}${n === cur ? ' cur' : ''}" data-n="${n.id}">${label}${esc(n.san)}</button> `;
-    num = false;
-    const sib = n.parent.kids;
-    if (sib[0] === n && sib.length > 1) { h += sib.slice(1).map(s => `<div class="tv">${treeHtml(s, cur)}</div>`).join(''); num = true; }
-    n = n.kids[0];
-  }
-  return h;
-}
-function startTree(c, at = null) {
-  curCourse = c; op.mode = 'tree'; op.c = c; op.l = null; op.daily = null; op.queue = []; op.gen++;
-  const T = courseTree(c);
-  let cur = at || T.root;
-  const go = (n, note = '') => {
-    cur = n; op.chess = new Chess();
-    const path = []; for (let x = n; x.parent; x = x.parent) path.unshift(x.san);
-    path.forEach(s => op.chess.move(s, { sloppy: true }));
-    op.busy = false; boardSet(); render(note);
-  };
-  const render = note => {
-    $('#op-mode').textContent = `${c.title} · Move tree`;
-    $('#op-title').textContent = cur.parent ? `After ${plyLabel(cur.ply - 1)}${cur.san}` : 'Start position';
-    $('#op-intro').textContent = 'Click a move in the tree, step with ◀ ▶, or play a move on the board. Blue arrows show where the course goes from here.';
-    $('#op-progress').style.width = (cur.ply ? Math.min(100, cur.ply / 20 * 100) : 0) + '%';
-    const st = statsAt(op.chess.fen());
-    const next = cur.kids.map(k => { const s = st?.m.find(x => x[0] === k.san); return `<button class="btn" data-n="${k.id}">${plyLabel(cur.ply)}${esc(k.san)}${s ? ` <span class="muted small">${pct(s[1] / st.n)}</span>` : ''}</button>`; }).join('');
-    const lines = cur.parent ? cur.lines : [];
-    feedback(`${note}${cur.m?.c ? `<div>${esc(cur.m.c)}</div>` : `<span class="muted">${cur.parent ? 'No note on this move.' : 'The starting position.'}</span>`}
-      ${cur.kids.length ? `<div class="small muted" style="margin-top:10px">${cur.kids.length > 1 ? `The course covers ${cur.kids.length} moves here` : 'The course continues with'}${st ? ' (how often players at your level choose each)' : ''}:</div><div class="tree-next">${next}</div>` : '<div class="small muted" style="margin-top:10px">The course line ends here.</div>'}
-      ${lines.length ? `<div class="small muted" style="margin-top:10px">Part of ${lines.length === 1 ? 'the line' : `${lines.length} lines`}: ${lines.slice(0, 4).map(l => `<button class="gl" data-learn="${esc(l.id)}">${esc(l.title)}</button>`).join(', ')}${lines.length > 4 ? ' …' : ''}</div>` : ''}`);
-    const tr = $('#op-tree'); tr.hidden = false;
-    tr.innerHTML = `<div class="eyebrow" style="margin-bottom:6px">Move tree · ${T.nodes.length - 1} moves · <span style="color:var(--accent)">•</span> has a note</div><div class="tree">${T.root.kids.length ? treeHtml(T.root.kids[0], cur) : ''}</div>`;
-    const box = tr.querySelector('.tree'), b = box.querySelector('.cur');
-    if (b) box.scrollTop = b.offsetTop - box.clientHeight / 2;
-  };
-  const pick = e => {
-    const n = e.target.closest('[data-n]'); if (n) return go(T.nodes[+n.dataset.n]);
-    const l = e.target.closest('[data-learn]'); if (l) startLearn(c, c.lines.find(x => x.id === l.dataset.learn));
-  };
-  $('#op-tree').onclick = pick;
-  $('#op-feedback').onclick = e => { if (op.mode === 'tree') pick(e); };
-  op.custom = {
-    color: 'both',
-    canMove: () => true,
-    onMove(orig, dest) {
-      const mv = new Chess(op.chess.fen()).move({ from: orig, to: dest, promotion: 'q' });
-      const k = mv && cur.kids.find(x => x.san === mv.san);
-      if (k) { sfx.play(mv.captured ? 'capture' : 'move'); return go(k); }
-      sfx.play('wrong');
-      go(cur, `<div class="why-box" style="margin:0 0 10px">${mv ? `<strong>${esc(mv.san)}</strong> isn't in this course.` : ''} ${cur.kids.length ? 'The course moves are below and on the board.' : ''}</div>`);
-    },
-    step(d) { if (d < 0 && cur.parent) go(cur.parent); else if (d > 0 && cur.kids[0]) go(cur.kids[0]); },
-    nav() { $('#op-back').disabled = !cur.parent; $('#op-fwd').disabled = !cur.kids.length; $('#op-navinfo').textContent = cur.kids.length > 1 ? `${cur.kids.length} branches here: ▶ follows the main one` : ''; },
-    shapes() {
-      const h = op.chess.history({ verbose: true }), sh = cur.m ? commentShapes(cur.m, op.chess, h[h.length - 1]) : [];
-      const next = cur.kids.map((k, i) => { const m = new Chess(op.chess.fen()).move(k.san, { sloppy: true }); return m && { orig: m.from, dest: m.to, brush: i === 0 ? 'blue' : 'paleBlue' }; }).filter(Boolean);
-      return [...sh, ...next];
-    },
-  };
-  $('#op-quiz').hidden = true; $('#op-notes').innerHTML = '';
-  opShow('player'); go(cur);
-}
-
-/* ---- why a wrong move is wrong: Stockfish's answer to it, drawn on the board, next to what the course move keeps */
-const PIECE_NAME = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
-async function explainWrong(fen, mv, want) {
-  const tok = ++op.tryTok, g = op.gen, live = () => tok === op.tryTok && g === op.gen && document.getElementById('op-why');
-  const after = new Chess(fen); after.move(mv.san);
-  const wantMv = new Chess(fen).move(want.san, { sloppy: true });
-  if (after.game_over() || !wantMv) return document.getElementById('op-why')?.remove();
-  const r = await engine.go(after.fen(), { movetime: 500, skill: 20 }).catch(() => null);
-  const rc = r && await engine.go(fen, { movetime: 500, skill: 20, searchmoves: wantMv.from + wantMv.to + (wantMv.promotion || '') }).catch(() => null);
-  if (!live()) return;
-  if (!r || !rc) return document.getElementById('op-why').remove();
-  const sc = s => s.mate !== undefined ? (s.mate > 0 ? 10000 - s.mate : -10000 - s.mate) : s.cp;
-  const mine = -sc(r.score), course = sc(rc.score), loss = course - mine;   // both from your side of the board
-  const words = s => s.mate !== undefined ? standWords(0, s.mate) : standWords(s.cp);
-  const myWords = r.score.mate !== undefined ? standWords(0, -r.score.mate) : standWords(-r.score.cp);
-  const box = document.getElementById('op-why');
-  if (loss < 40) {
-    box.innerHTML = `Stockfish says <strong>${esc(mv.san)}</strong> is about as good here. It's fine to play, but this course is built around <strong>${esc(want.san)}</strong>, so that's the one to learn.`;
-    return;
-  }
-  const rep = after.move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
-  if (!rep) return box.remove();
-  const what = rep.captured ? ` and takes your ${PIECE_NAME[rep.captured]} on ${rep.to}` : rep.san.includes('+') ? ', with check' : '';
-  const cost = Math.abs(mine) > 5000 ? 'It loses by force.' : `That costs you about ${(loss / 100).toFixed(1)} pawn${loss >= 150 ? 's' : ''} of advantage.`;
-  const arrows = [{ orig: mv.from, dest: mv.to, brush: 'paleRed' }, { orig: rep.from, dest: rep.to, brush: 'red' }];
-  box.innerHTML = `<strong>Why not ${esc(mv.san)}?</strong> Your opponent answers <strong>${esc(rep.san)}</strong>${what}. After that you'd be ${myWords}; with <strong>${esc(want.san)}</strong> you'd be ${words(rc.score)}. ${cost}
-    <div class="controls" style="margin-top:8px"><button class="btn" id="op-whyshow">Show it on the board</button></div>`;
-  const withHint = () => [...arrows, ...(op.wrong >= 2 ? hintShape(true) : [])];
-  openCg.set({ drawable: { autoShapes: withHint() } });
-  let shown = false;
-  $('#op-whyshow').onclick = () => {
-    shown = !shown;
-    if (shown) openCg.set({ fen: after.fen(), lastMove: [rep.from, rep.to], check: after.in_check(), movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: [{ orig: mv.from, dest: mv.to, brush: 'paleRed' }] } });
-    else { boardSet(); openCg.set({ drawable: { autoShapes: withHint() } }); }
-    $('#op-whyshow').textContent = shown ? 'Back to the position' : 'Show it on the board';
-  };
-}
-
-/* ---- mastery: every line climbs New → Learning → Bronze → Silver → Gold as reviews keep going right */
-const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
-const LEVEL_COLOR = ['var(--line)', 'var(--accent)', '#b0713f', '#8f9aa3', '#c99a1e'];
-function lineLevel(c, l) { const b = progress.lines[lineKey(c, l)]?.box || 0; return b >= 5 ? 4 : b >= 4 ? 3 : b >= 3 ? 2 : b ? 1 : 0; }
-const MEDAL_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>';
-const medalDot = lv => `<span class="medal-dot">${lv >= 2 ? MEDAL_SVG : lv === 1 ? '…' : ''}</span>`;
-function courseLevels(c) { const n = [0, 0, 0, 0, 0]; c.lines.forEach(l => n[lineLevel(c, l)]++); return n; }
-const medalsHtml = c => { const n = courseLevels(c); return `<span class="medals">${[4, 3, 2].filter(i => n[i]).map(i => `<span title="${LEVEL_NAME[i]}"><i style="background:${LEVEL_COLOR[i]}"></i><b>${n[i]}</b></span>`).join('')}</span>`; };
-
-/* ---- points and streaks per course: learning a line 10, a perfect review 5, a review with slips 2,
-   a position card or quiz question 1, a fixed game 5. Stored per course per day so phone and laptop add up. */
-function award(c, n) {
-  if (!c || !n) return;
-  const k = `${c.id}/${dayKey()}`;
-  record('opx', k, { n: (progress.opx[k]?.n || 0) + n });
-  const t = el('div', { class: 'pts-toast', role: 'status' }, `+${n}`);
-  document.body.append(t); setTimeout(() => t.remove(), 1400);
-}
-function courseScore(c) {
-  const days = Object.entries(progress.opx).filter(([k]) => !c || k.startsWith(c.id + '/')).map(([k, v]) => [k.split('/')[1], v.n || 0]);
-  const by = new Map(); for (const [d, n] of days) by.set(d, (by.get(d) || 0) + n);
-  const total = [...by.values()].reduce((s, n) => s + n, 0);
-  const d = new Date(); let week = 0;
-  for (let i = 0; i < 7; i++) { week += by.get(dayKey(d)) || 0; d.setDate(d.getDate() - 1); }
-  let streak = 0; const s = new Date();
-  if (!by.has(dayKey(s))) s.setDate(s.getDate() - 1);
-  while (by.has(dayKey(s))) { streak++; s.setDate(s.getDate() - 1); }
-  return { total, week, streak, today: by.get(dayKey()) || 0 };
-}
-
 /* ---- sounds, made on the spot (no files, so they work offline too); the switch is remembered */
 const sfx = {
   on: store.get('sound', true), ctx: null,
@@ -2355,9 +1695,6 @@ const sfx = {
     } catch {}
   },
 };
-const soundLabel = () => { $('#op-sound').textContent = `Sound: ${sfx.on ? 'on' : 'off'}`; };
-$('#op-sound').onclick = () => { sfx.on = !sfx.on; store.set('sound', sfx.on); soundLabel(); if (sfx.on) sfx.play('right'); };
-soundLabel();
 function confetti() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const box = el('div', { class: 'confetti', 'aria-hidden': 'true' });
@@ -2369,625 +1706,18 @@ function confetti() {
   }
   document.body.append(box); setTimeout(() => box.remove(), 2300);
 }
-
-/* ---- one daily review across all courses: due lines first, then due position cards, course by course */
-function dailyQueue() {
-  const lines = COURSES.flatMap(dueLines);
-  const cards = COURSES.map(c => ({ c, due: cardDue(c).due.slice(0, 25) })).filter(x => x.due.length);
-  const nCards = cards.reduce((s, x) => s + x.due.length, 0);
-  return { lines, cards, nCards, n: lines.length + nCards, mins: Math.max(1, Math.round(lines.length * 1 + nCards / 5)) };
-}
-function startDaily() {
-  const q = dailyQueue();
-  if (!q.n) return;
-  op.daily = { segs: [...(q.lines.length ? [{ lines: q.lines }] : []), ...q.cards.map(x => ({ c: x.c, cards: x.due }))], total: q.n };
-  dailyNext();
-}
-function dailyNext() {
-  const d = op.daily, s = d?.segs.shift();
-  if (!s) return dailyDone();
-  if (s.lines) startReview(s.lines, true); else startCards(s.c, s.cards, 'drill', true);
-}
-const dailyLeft = () => op.daily ? op.daily.segs.reduce((s, x) => s + (x.lines || x.cards).length, 0) : 0;
-const dailyBtn = () => op.daily ? `<button class="btn primary" id="daily-go">${op.daily.segs.length ? `Continue daily review (${dailyLeft()} left)` : 'Finish daily review'}</button>` : '';
-const dailyHook = () => document.getElementById('daily-go')?.addEventListener('click', dailyNext);
-function dailyDone() {
-  const total = op.daily?.total || 0; op.daily = null;
-  op.busy = true; boardSet();
-  $('#op-mode').textContent = 'Daily review · all courses'; $('#op-title').textContent = 'All done for today'; $('#op-intro').textContent = '';
-  sfx.play('done'); confetti();
-  $('#op-progress').style.width = '100%';
-  const sc = courseScore(null);
-  feedback(`<span class="big">Daily review done</span><div class="small">All ${total} due item${total === 1 ? '' : 's'} reviewed. ${sc.today ? `${sc.today} opening points today.` : ''} Whatever you missed comes back tomorrow.</div>
-    <div class="controls" style="margin-top:10px"><button class="btn primary" id="daily-home">Back to openings</button></div>`, 'right');
-  $('#daily-home').onclick = () => { renderOpeningsHome(); opShow('home'); };
-}
-
-/* ---- out of book: a recent game where you left one of your courses, ready to fix in a minute */
+const agoWords = t => { const d = Math.floor((startOfDay() / 1000 - t) / 86400) + 1; return t * 1000 >= startOfDay() ? 'today' : d <= 1 ? 'yesterday' : `${d} days ago`; };
+/* ---- out of book: a recent game where you left one of your courses with a move the course does not accept (O2.stats) */
 function bookAlerts() {
   const since = Date.now() / 1000 - 7 * 86400;
-  return COURSES.flatMap(c => c.games.filter(x => x.mine && x.target && x.g.end > since && !progress.og[x.id]?.ok).map(x => ({ c, x })))
-    .sort((a, b) => b.x.g.end - a.x.g.end);
+  if (!O2.stats) return [];
+  return O2.courses().flatMap(c => O2.stats.analyse(c).games.filter(x => x.dev && x.dev.by === 'me' && !x.dev.fine && x.pg.end > since && !progress.o2g[`${c.id}/${x.pg.id}`]).map(x => ({ c, x })))
+    .sort((a, b) => b.x.pg.end - a.x.pg.end);
 }
-const agoWords = t => { const d = Math.floor((startOfDay() / 1000 - t) / 86400) + 1; return t * 1000 >= startOfDay() ? 'today' : d <= 1 ? 'yesterday' : `${d} days ago`; };
+const plyLabel = ply => `${Math.ceil(ply / 2)}${ply % 2 ? '.' : '...'}`;
+// games of one course (for Stats and Watch): analysis.json games that entered it
+const courseGames = id => { const c = O2.courses().find(x => x.id === id); return c && O2.stats ? O2.stats.analyse(c).games.map(x => x.pg.g) : []; };
 
-function finishLine() {
-  if (op.mode === 'game') return finishGameDrill();
-  const k = lineKey(op.c, op.l), p = progress.lines[k];
-  let box, msg, due;
-  if (op.mode === 'learn') { box = Math.max(1, p?.box || 0); msg = 'Line learned.'; due = Date.now() + INTERVALS[box] * DAY; }
-  else if (op.errors === 0) { box = Math.min(5, (p?.box || 0) + 1); msg = 'Perfect from memory.'; due = Date.now() + INTERVALS[box] * DAY; }
-  else { box = 1; msg = `Done, with ${op.errors} slip${op.errors > 1 ? 's' : ''}.`; due = Date.now() + DAY; op.queue.push({ c: op.c, l: op.l }); }
-  const before = lineLevel(op.c, op.l);
-  record('lines', k, { box, due });
-  const after = lineLevel(op.c, op.l);
-  award(op.c, op.mode === 'learn' ? 10 : op.errors === 0 ? 5 : 2);
-  sfx.play(op.errors === 0 || op.mode === 'learn' ? 'done' : 'right');
-  if (op.mode === 'learn' || after > before || (op.errors === 0 && !op.queue.length)) confetti();
-  const levelUp = after > before && after >= 2 ? `<div class="levelup lv${after}">${medalDot(after)}<div><strong>${LEVEL_NAME[after]}!</strong><div class="small muted">This line moved up to ${LEVEL_NAME[after].toLowerCase()}.${after < 4 ? ` Next: ${LEVEL_NAME[after + 1].toLowerCase()}.` : ' Top level.'}</div></div></div>` : '';
-  const nextBtn = op.queue.length ? `<button class="btn primary" id="op-next">Next line (${op.queue.length} left)</button>` : dailyBtn();
-  const learnNext = op.mode === 'learn' ? op.c.lines.find(l => !progress.lines[lineKey(op.c, l)]) : null;
-  feedback(`<span class="big">${msg}</span><div class="small">${op.errors && op.mode === 'review' ? 'It comes back at the end of this session and again tomorrow.' : `Next review ${fmtIn(due)}.`}</div>${levelUp}
-    <div class="controls" style="margin-top:10px">${nextBtn}${learnNext ? `<button class="btn primary" id="op-learnnext">Learn next: ${esc(learnNext.title)}</button>` : ''}<button class="btn" id="op-spar">Play on against Stockfish</button><button class="btn" id="op-tocourse">Back to course</button></div>`, 'right');
-  $('#op-spar').onclick = () => playOnFromLine(op.c, op.l);
-  $('#op-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
-  $('#op-learnnext')?.addEventListener('click', () => startLearn(op.c, learnNext));
-  dailyHook();
-  $('#op-tocourse').onclick = () => openCourse(op.c);
-}
-
-/* your games in this opening: review, then replay the game and fix the moment it went wrong */
-const moveLabel = i => `${Math.floor(i / 2) + 1}${i % 2 === 0 ? '.' : '...'}`;
-function openingMistakes(x) {
-  const g = x.g;
-  return g.plies.map((p, i) => ({ p, i })).filter(({ p, i }) => i < 30 && isMine(g, i) && ['blunder', 'mistake', 'inaccuracy'].includes(p.lab));
-}
-function openGameReview(c, x) {
-  const g = x.g, t = x.target;
-  $('#og-eyebrow').textContent = `${c.title} · your game · ${fmtDate(g.end)}`;
-  $('#og-title').textContent = `vs ${g.opp} (${g.oppRating}) · ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'draw'}`;
-  const bookN = Math.ceil(x.k / 2);
-  let sum = `You followed the course for ${bookN} move${bookN === 1 ? '' : 's'}. `;
-  if (x.mine) sum += `At ${moveLabel(x.k)} you played <strong>${esc(g.plies[x.k].san)}</strong>; the course plays <strong>${esc(t.want.join(' or '))}</strong>.`;
-  else if (x.k < g.plies.length && !x.dev.startsWith('Followed')) sum += `Then your opponent left the course with ${moveLabel(x.k)} ${esc(g.plies[x.k].san)}, a move the course doesn't cover yet.`;
-  else sum += 'The game stayed inside the course.';
-  if (t && t.why === 'engine') sum += ` Your first slip after that: <strong>${moveLabel(t.ply)} ${esc(g.plies[t.ply].san)}</strong>, where ${esc(t.want[0])} was better.`;
-  if (!t) sum += ' You made no clear mistakes in the opening of this game. Well played.';
-  $('#og-summary').innerHTML = sum;
-  const mis = new Set(openingMistakes(x).map(m => m.i));
-  const last = Math.min(g.plies.length, Math.max(x.k + 2, (t?.ply ?? 0) + 2, 16), 30);
-  $('#og-moves').innerHTML = g.plies.slice(0, last).map((p, i) => {
-    const cls = i < x.k ? 'book' : i === x.k ? 'dev' : mis.has(i) ? 'mis' : '';
-    return `<span class="og-mv ${cls}${isMine(g, i) ? '' : ' theirs'}" title="${isMine(g, i) ? 'your move' : "opponent's move"}">${moveLabel(i)} ${esc(p.san)}</span>`;
-  }).join('');
-  const ms = openingMistakes(x);
-  $('#og-mistakes').innerHTML = ms.length ? `<div class="eyebrow" style="margin-top:16px">Your mistakes in the first 15 moves</div><div class="og-mis">${ms.map(({ p, i }) =>
-    `<div><strong>${moveLabel(i)} ${esc(p.san)}</strong> (${p.lab}): better was <strong>${esc(p.best)}</strong>. <span class="muted">You lost ${Math.round(p.loss)}% winning chance.</span></div>`).join('')}</div>` : '';
-  $('#og-train').hidden = !t;
-  $('#og-train').textContent = progress.og[x.id]?.ok ? 'Train this game again' : 'Train this game';
-  $('#og-train').onclick = () => startGameDrills(c, [x]);
-  $('#og-full').onclick = () => { show('games'); openGame(g); goto(Math.min((t?.ply ?? x.k) + 1, g.plies.length)); };
-  opShow('game');
-}
-// the course's own comments, looked up by the moves leading to them
-function courseComments(c) {
-  if (c._comments) return c._comments;
-  c._comments = new Map();
-  for (const l of c.lines) { const b = new Chess(); for (const m of l.moves) { b.move(m.san, { sloppy: true }); if (m.c) c._comments.set(posKey(b.fen()), m.c); } }
-  return c._comments;
-}
-function gameDrillLine(c, x) {
-  const g = x.g, t = x.target, com = courseComments(c), b = new Chess();
-  const moves = g.plies.slice(0, t.ply).map((p, i) => ({
-    san: p.san,
-    c: (b.move(p.san, { sloppy: true }), i < x.k ? com.get(posKey(b.fen())) : undefined),
-    auto: i >= x.k,      // outside the course: replayed for you, so you only have to find the key move
-  }));
-  const played = g.plies[t.ply];
-  moves.push({ san: t.want[0], alt: t.want, c: t.why === 'course'
-    ? `The course move. In the game you played ${played.san} here and left the course.`
-    : `The engine's choice. In the game you played ${played.san} (${played.lab}) and lost ${Math.round(played.loss)}% winning chance.${played.pv ? ' Best line: ' + played.pv : ''}` });
-  return { id: x.id, title: `Your game vs ${g.opp}`, game: x, playedSan: played.san, moveNo: moveLabel(t.ply),
-    intro: t.why === 'course' ? `Replay your game. Play the course moves; at ${moveLabel(t.ply)} you went your own way. Find the course move this time.`
-      : `Replay your game. The moves after your opponent left the course are played for you. At ${moveLabel(t.ply)} you made a mistake: find the better move.`,
-    moves };
-}
-function startGameDrills(c, xs) {
-  op.mode = 'game'; op.daily = null;
-  op.queue = xs.slice(1).map(x => ({ c, l: gameDrillLine(c, x) }));
-  loadLine(c, gameDrillLine(c, xs[0]));
-}
-
-function finishGameDrill() {
-  const x = op.l.game, ok = op.errors === 0;
-  record('og', x.id, { ok: ok ? 1 : (progress.og[x.id]?.ok || 0) });
-  award(op.c, ok ? 5 : 2); sfx.play(ok ? 'done' : 'right'); if (ok) confetti();
-  if (!ok) op.queue.push({ c: op.c, l: op.l });   // try it once more at the end
-  feedback(`<span class="big">${ok ? 'Fixed! That is how the game should have gone.' : `Done, with ${op.errors} slip${op.errors > 1 ? 's' : ''}. It comes back at the end.`}</span>
-    <div class="controls" style="margin-top:10px">${op.queue.length ? `<button class="btn primary" id="og-next">Next game (${op.queue.length} left)</button>` : ''}<button class="btn" id="og-spar">Play on against Stockfish</button><button class="btn" id="og-tocourse">Back to course</button></div>`, 'right');
-  $('#og-next')?.addEventListener('click', () => { const n = op.queue.shift(); loadLine(n.c, n.l); });
-  $('#og-spar').onclick = () => playOnFromLine(op.c, op.l);
-  $('#og-tocourse').onclick = () => openCourse(op.c);
-}
-
-function playOnFromLine(c, l) {
-  const chess = new Chess(); for (const m of l.moves) chess.move(m.san, { sloppy: true });
-  const engineFirst = (chess.turn() === 'w') !== (c.side === 'white');
-  launchFrom('openings'); show('middle', 'openings'); mgShowPlayer();
-  loadPlay({ id: `${c.id}/${l.id}`, fen: chess.fen(), store: null, goal: 'spar', engineFirst, from: 'openings',
-    mode: `${c.title} · Play on`, title: `Play the middlegame: ${l.title}`,
-    sub: `The position at the end of this course line. The plan: ${l.moves[l.moves.length - 1].c || 'develop, castle, and look for your pawn break.'}`,
-    intro: 'Free practice against Stockfish: no pass or fail. Stop whenever you like.', onNext: () => { show('openings'); openCourse(c); } });
-}
-/* ================= opening hub: sections of one course ================= */
-// what a move costs in centipawns: best move vs. this move, both searched from the same position
-async function moveCost(fen, uci, movetime = 600) {
-  const sc = r => r.score.mate !== undefined ? (r.score.mate > 0 ? 10000 - r.score.mate : -10000 - r.score.mate) : r.score.cp;
-  const best = await engine.go(fen, { movetime, skill: 20 }).catch(() => null);
-  if (!best) return null;
-  if (best.best === uci) return { loss: 0, best: best.best, score: sc(best) };
-  const mine = await engine.go(fen, { movetime, skill: 20, searchmoves: uci }).catch(() => null);
-  if (!mine) return null;
-  return { loss: Math.max(0, sc(best) - sc(mine)), best: best.best, score: sc(mine) };
-}
-const SECS = ['lines', 'drill', 'speed', 'spar', 'traps', 'plans', 'models', 'games', 'report', 'mine'];
-let miniCgs = [];
-$('#oc-tabs').onclick = e => { const b = e.target.closest('[data-sec]'); if (b && curCourse) ocSection(curCourse, b.dataset.sec); };
-function ocSection(c, sec) {
-  if (!SECS.includes(sec)) sec = 'lines';
-  store.set('ocsec.' + c.id, sec);
-  document.querySelectorAll('#oc-tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.sec === sec));
-  $('#oc-sec-lines').hidden = sec !== 'lines'; $('#oc-sec-games').hidden = sec !== 'games';
-  const box = $('#oc-sec-other'); box.hidden = sec === 'lines' || sec === 'games';
-  miniCgs.forEach(cg => cg.destroy?.()); miniCgs = [];
-  if (!box.hidden) box.innerHTML = '<div class="card">' + ({ drill: hubDrill, speed: hubSpeed, spar: hubSpar, traps: hubTraps, plans: hubPlans, models: hubModels, report: hubReport, mine: hubMine }[sec](c)) + '</div>';
-  if (sec === 'plans') drawMiniBoards(c);
-  box.querySelectorAll('[data-act]').forEach(b => b.onclick = () => HUB_ACTIONS[b.dataset.act](c, b.dataset));
-}
-const HUB_ACTIONS = {};
-const posId = (c, card) => `${c.id}/${card.id}`;
-
-// ---- cards: every position in the course where it is your move
-function customCards(c) {
-  const out = [];
-  for (const l of c.lines.filter(l => l.mine)) {
-    const b = new Chess(); const path = [];
-    l.moves.forEach((m, i) => {
-      if ((b.turn() === 'w') === (c.side === 'white')) out.push({ id: 'my' + l.id.slice(3) + '-' + i, key: posKey(b.fen()), path: path.slice(), want: [m.san], alts: [], line: l.id, ply: i });
-      b.move(m.san, { sloppy: true }); path.push(m.san);
-    });
-  }
-  return out;
-}
-const cardsOf = c => (OPEN[c.id]?.cards || []).concat(customCards(c));
-function cardAccept(c, card) {
-  const mine = progress.rep[posId(c, card)]?.san;
-  const course = [...(coursePosMoves(c).get(card.key) || []), ...card.want];
-  const expected = mine || card.want[0];
-  return { expected, ok: new Set([expected, ...course, ...card.alts.map(a => a.san)]) };
-}
-function cardDue(c) {
-  const now = endOfToday(), cards = cardsOf(c);
-  const due = cards.filter(cd => progress.pos[posId(c, cd)] && progress.pos[posId(c, cd)].due <= now);
-  const fresh = cards.filter(cd => !progress.pos[posId(c, cd)]).sort((a, b) => a.ply - b.ply);
-  return { cards, due, fresh };
-}
-function hubDrill(c) {
-  const { cards, due, fresh } = cardDue(c);
-  const known = cards.filter(cd => (progress.pos[posId(c, cd)]?.box || 0) >= 4).length;
-  return `<div class="hub-head"><div><h3>Drill by position</h3><p class="muted">Every position in this course where it is your move is a card. Cards you know come back rarely; the exact spots you forget come back soon. Faster than replaying whole lines.</p></div>
-    <button class="btn primary" data-act="drill">${due.length ? `Drill ${due.length} due${fresh.length ? ' + new' : ''}` : fresh.length ? 'Start with new cards' : 'Practise anyway'}</button></div>
-    <div class="hub-stats"><span><b>${cards.length}</b>cards</span><span><b>${due.length}</b>due</span><span><b>${known}</b>known well</span><span><b>${fresh.length}</b>not seen yet</span></div>`;
-}
-HUB_ACTIONS.drill = c => {
-  const { cards, due, fresh } = cardDue(c);
-  let list = due.slice(0, 20).concat(fresh.slice(0, Math.max(5, 15 - due.length)));
-  if (!list.length) list = cards.slice().sort(() => Math.random() - .5).slice(0, 15);
-  startCards(c, list, 'drill');
-};
-function hubSpeed(c) {
-  const best = progress.spd[c.id]?.best;
-  return `<div class="hub-head"><div><h3>Speed round</h3><p class="muted">20 positions from this course, 5 seconds each. Instant recall saves clock time and lets you think where it matters.</p></div><button class="btn primary" data-act="speed">Start speed round</button></div>
-    <div class="hub-stats"><span><b>${best != null ? best + '/20' : '–'}</b>your best</span><span><b>${cardsOf(c).length}</b>positions in the pool</span></div>`;
-}
-HUB_ACTIONS.speed = c => startCards(c, cardsOf(c).slice().sort(() => Math.random() - .5).slice(0, 20), 'speed');
-
-function startCards(c, list, kind, daily = false) {
-  if (!list.length) return;
-  if (!daily) op.daily = null;
-  curCourse = c; op.mode = 'cards'; op.c = c;
-  const st = { kind, queue: list.slice(), total: list.length, right: 0, done: 0, failed: new Set(), timer: null, t0: 0 };
-  const stopTimer = () => { clearInterval(st.timer); st.timer = null; };
-  const load = () => {
-    op.gen++; stopTimer();
-    const card = st.queue[0];
-    if (!card) return finish();
-    const { expected } = cardAccept(c, card);
-    st.card = card; st.expected = expected; st.missed = false;
-    op.chess = new Chess(); card.path.forEach(m => op.chess.move(m, { sloppy: true }));
-    op.busy = false; op.wrong = 0;
-    $('#op-mode').textContent = `${op.daily ? 'Daily review · ' : ''}${c.title} · ${kind === 'speed' ? 'Speed round' : 'Drill'} · ${st.done + 1} of ${kind === 'speed' ? st.total : st.total + st.failed.size}`;
-    $('#op-title').textContent = 'Your move';
-    $('#op-intro').textContent = card.path.length ? `After ${sanLine(card.path.map(san => ({ san })), card.path.length).split(' ').slice(-6).join(' ')}` : 'The starting position.';
-    $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
-    $('#op-restart').hidden = true;
-    feedback(kind === 'speed' ? '<span class="muted">Quick: what do you play here?</span><div class="timer"><span id="spd-bar"></span></div>' : '<span class="muted">Play your repertoire move.</span>');
-    opShow('player'); boardSet();
-    $('#op-progress').style.width = (st.done / st.total * 100) + '%';
-    if (kind === 'speed') {
-      st.t0 = Date.now();
-      st.timer = setInterval(() => { const left = 1 - (Date.now() - st.t0) / 5000; const bar = document.getElementById('spd-bar'); if (bar) bar.style.width = Math.max(0, left * 100) + '%'; if (left <= 0) { stopTimer(); miss(null, 'Time is up.'); } }, 100);
-    }
-  };
-  const next = (delay) => { const g = op.gen; setTimeout(() => { if (g === op.gen) load(); }, delay); };
-  const miss = (san, why) => {
-    const card = st.card; st.missed = true;
-    sfx.play('wrong');
-    const shape = (() => { const m = new Chess(op.chess.fen()).move(st.expected, { sloppy: true }); return m ? [{ orig: m.from, dest: m.to, brush: 'green' }] : []; })();
-    op.busy = true; boardSet({ drawable: { autoShapes: shape } });
-    if (kind === 'drill') { record('pos', posId(c, card), { box: 1, due: Date.now() + DAY }); if (!st.failed.has(card.id)) { st.failed.add(card.id); st.queue.push(card); } }
-    st.queue.shift(); st.done++;
-    feedback(`<span class="big" style="font-size:18px">${why || `${esc(san)} isn't your move here`}</span><div class="small">The move is <strong>${esc(st.expected)}</strong> (arrow).</div><div class="controls" style="margin-top:8px"><button class="btn primary" id="card-next">Next</button></div>`, 'wrong');
-    $('#card-next').onclick = load;
-  };
-  op.custom = {
-    canMove: () => !!st.card && (op.chess.turn() === 'w') === (c.side === 'white'),
-    onMove(orig, dest) {
-      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
-      if (!mv) return boardSet();
-      stopTimer();
-      const { ok } = cardAccept(c, st.card);
-      if (!ok.has(mv.san)) return miss(mv.san);
-      op.chess.move(mv.san); op.busy = true; boardSet({ lastMove: [orig, dest] });
-      sfx.play('right'); if (kind === 'drill' && !st.failed.has(st.card.id)) award(c, 1);
-      const card = st.card;
-      if (kind === 'drill' && !st.failed.has(card.id)) { const box = Math.min(5, (progress.pos[posId(c, card)]?.box || 0) + 1); record('pos', posId(c, card), { box, due: Date.now() + INTERVALS[box] * DAY }); }
-      st.right++; st.queue.shift(); st.done++;
-      const alt = mv.san !== st.expected;
-      feedback(`<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>${alt ? `<div class="small muted">Good too. Your repertoire move here is ${esc(st.expected)}.</div>` : ''}`, 'right');
-      next(kind === 'speed' ? 450 : alt ? 1600 : 800);
-    },
-    hint: full => { const m = new Chess(op.chess.fen()).move(st.expected, { sloppy: true }); st.missed = true; return m ? (full ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [{ orig: m.from, brush: 'yellow' }]) : []; },
-  };
-  const finish = () => {
-    stopTimer(); op.busy = true; boardSet();
-    if (kind === 'speed') { const prev = progress.spd[c.id]?.best ?? -1; if (st.right > prev) record('spd', c.id, { best: st.right }); award(c, st.right); }
-    if (!op.daily) { sfx.play('done'); if (st.failed.size === 0 || kind === 'speed') confetti(); }
-    $('#op-progress').style.width = '100%';
-    feedback(`<span class="big">${kind === 'speed' ? `${st.right} of ${st.total} in time` : `Drill done: ${st.total - st.failed.size} of ${st.total} right first time`}</span>
-      <div class="small">${kind === 'drill' ? 'Cards you missed come back tomorrow; the rest come back later and later as you keep getting them right.' : (progress.spd[c.id]?.best === st.right ? 'A new best for this course.' : `Your best is ${progress.spd[c.id]?.best}/20.`)}</div>
-      <div class="controls" style="margin-top:10px">${dailyBtn()}<button class="btn${op.daily ? '' : ' primary'}" id="cards-again">${kind === 'speed' ? 'Another round' : 'More cards'}</button><button class="btn" id="cards-back">Back to course</button></div>`, 'right');
-    dailyHook();
-    $('#cards-again').onclick = () => HUB_ACTIONS[kind](c);
-    $('#cards-back').onclick = () => openCourse(c);
-  };
-  load();
-}
-
-// ---- single positions (traps): find the right move in one position
-function startPositions(c, items, label) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.daily = null;
-  let i = 0, right = 0, cur = null, missed = false;
-  const load = () => {
-    op.gen++;
-    cur = items[i];
-    if (!cur) {
-      op.busy = true; boardSet();
-      feedback(`<span class="big">${right} of ${items.length} right</span><div class="controls" style="margin-top:10px"><button class="btn primary" id="pos-again">Again</button><button class="btn" id="pos-back">Back to course</button></div>`, 'right');
-      $('#pos-again').onclick = () => startPositions(c, items, label); $('#pos-back').onclick = () => openCourse(c);
-      return;
-    }
-    missed = false;
-    op.chess = new Chess(cur.fen); if (cur.pre) op.chess.move(cur.pre, { sloppy: true });
-    op.busy = false;
-    $('#op-mode').textContent = `${c.title} · ${label} · ${i + 1} of ${items.length}`;
-    $('#op-title').textContent = cur.title; $('#op-intro').textContent = cur.intro || '';
-    $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = true;
-    feedback('<span class="muted">Find the move.</span>');
-    opShow('player'); boardSet(); $('#op-progress').style.width = (i / items.length * 100) + '%';
-  };
-  op.custom = {
-    canMove: () => !!cur,
-    onMove(orig, dest) {
-      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
-      if (!mv) return boardSet();
-      if (cur.want.includes(mv.san)) {
-        if (!missed) { right++; if (cur.id) record('trp', cur.id, { ok: 1 }); }
-        op.chess.move(mv.san); op.busy = true; boardSet({ lastMove: [orig, dest] });
-        feedback(`<span class="big" style="color:var(--good)">${esc(mv.san)} ✓</span><p style="margin:6px 0 8px">${esc(cur.explain || '')}</p><button class="btn primary" id="pos-next">Next</button>`, 'right');
-        $('#pos-next').onclick = () => { i++; load(); };
-      } else {
-        missed = true; boardSet();
-        feedback(`<span class="big" style="font-size:18px">${mv.san === cur.bad ? `${esc(mv.san)} is exactly the common mistake` : `${esc(mv.san)} isn't it`}</span><div class="small">${mv.san === cur.bad ? esc(cur.badWhy || '') : 'Try again, or use Hint.'}</div>`, 'wrong');
-      }
-    },
-    hint: full => { missed = true; const m = new Chess(op.chess.fen()).move(cur.want[0], { sloppy: true }); return m ? (full ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [{ orig: m.from, brush: 'yellow' }]) : []; },
-  };
-  load();
-}
-function trapItems(c) {
-  return (XP.courses?.[c.id]?.traps || []).filter(t => t.kind === 'set' ? t.reply : t.better).map((t, j) => {
-    const fen = t.fen + ' 0 1';
-    const pawns = (t.loss / 100).toFixed(1);
-    if (t.kind === 'set') return { id: `${c.id}/t${j}-${t.move}`, kind: 'set', fen, pre: t.move, want: [t.reply],
-      title: `They often play ${t.move}? here. Punish it.`, intro: `${pct(t.share)} of players rated 1200-1600 play ${t.move} in this position. It loses about ${pawns} pawns.`,
-      explain: `After ${t.move}, ${t.reply} wins. Remember this pattern: at your level it comes up again and again.` };
-    const course = [...(coursePosMoves(c).get(t.fen) || [])];
-    return { id: `${c.id}/a${j}-${t.move}`, kind: 'avoid', fen, want: [...new Set([t.better, ...course])], bad: t.move,
-      title: 'A common mistake happens here. Find a good move.', intro: `${pct(t.share)} of players at your level go wrong in this position.`,
-      badWhy: `${pct(t.share)} of players at your level play ${t.move} here, and it loses about ${pawns} pawns. ${t.better} is better.`,
-      explain: `The trap: ${t.move} looks natural but loses about ${pawns} pawns. ${t.better} keeps everything under control.` };
-  });
-}
-function hubTraps(c) {
-  const items = trapItems(c);
-  if (!items.length) return `<h3>Traps</h3><p class="muted">The trap finder needs the weekly Lichess statistics. They will appear here after the next update.</p>`;
-  const done = items.filter(t => progress.trp[t.id]?.ok).length;
-  return `<div class="hub-head"><div><h3>Traps at your level</h3><p class="muted">Found in real games of players rated 1200-1600 in this opening and checked by Stockfish: mistakes your opponents make often (punish them) and mistakes that catch your side (avoid them).</p></div><button class="btn primary" data-act="traps">Train all ${items.length}</button></div>
-    <div class="hub-stats" style="margin-bottom:12px"><span><b>${done}/${items.length}</b>solved</span></div>
-    <div class="hub-list">${items.map((t, j) => `<div class="hub-item"><span class="t">${t.kind === 'set' ? '🎯 Set it: ' : '⚠️ Avoid it: '}${esc(t.kind === 'set' ? t.pre + '?' : t.bad + '?')}</span><button class="btn" data-act="trap" data-i="${j}">${progress.trp[t.id]?.ok ? 'Again' : 'Train'}</button><span class="d">${esc(t.intro)}</span></div>`).join('')}</div>`;
-}
-HUB_ACTIONS.traps = c => startPositions(c, trapItems(c), 'Traps');
-HUB_ACTIONS.trap = (c, d) => startPositions(c, [trapItems(c)[+d.i]], 'Traps');
-
-// ---- sparring: an opponent that plays like a 1200-1600 player, then Stockfish takes over
-function hubSpar(c) {
-  const has = Object.keys(XP.stats || {}).length > 0;
-  return `<div class="hub-head"><div><h3>Spar in this opening</h3><p class="muted">Play the opening against an opponent who chooses moves the way players rated 1200-1600 really do${has ? '' : ' (once the weekly statistics are in; until then Stockfish at club strength plays)'}. When the statistics run out, Stockfish at club strength takes over. After 15 moves you get a report: where you left the course and your biggest slip.</p></div><button class="btn primary" data-act="spar">Start sparring</button></div>`;
-}
-HUB_ACTIONS.spar = c => startSpar(c);
-function startSpar(c) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
-  const g = op.gen, me = c.side[0];
-  const st = { evals: [], left: null, done: false };
-  op.chess = new Chess(); op.busy = false;
-  $('#op-mode').textContent = `${c.title} · Sparring`;
-  $('#op-title').textContent = 'Play your opening';
-  $('#op-intro').textContent = 'Your opponent plays like players rated 1200-1600. Play your course moves; after 15 moves you get a report.';
-  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = false;
-  opShow('player');
-  const myTurn = () => op.chess.turn() === me;
-  const oppMove = async () => {
-    op.busy = true; boardSet();
-    const s = statsAt(op.chess.fen());
-    let san = null, why = '';
-    if (s && op.chess.history().length < 26) {
-      let r = Math.random() * s.m.reduce((a, m) => a + m[1], 0);
-      const pick = s.m.find(m => (r -= m[1]) < 0) || s.m[0];
-      san = pick[0]; why = `${pct(pick[1] / s.n)} of players at your level play this`;
-    } else {
-      const r = await engine.go(op.chess.fen(), { movetime: 600, skill: 6 }).catch(() => null);
-      if (g !== op.gen) return;
-      if (!r) return feedback('<span class="big">The engine could not start.</span>', 'wrong');
-      const mv = new Chess(op.chess.fen()).move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
-      san = mv?.san; why = 'Stockfish at club strength';
-    }
-    await new Promise(r => setTimeout(r, 350));
-    if (g !== op.gen || !san) return;
-    const mv = op.chess.move(san, { sloppy: true });
-    op.busy = false; boardSet({ lastMove: [mv.from, mv.to] });
-    if (op.chess.game_over()) return report();
-    feedback(`<span class="muted">Opponent: <strong>${esc(san)}</strong> (${why}). Your move.</span>`);
-  };
-  const report = () => {
-    st.done = true; op.busy = true; boardSet();
-    const worst = st.evals.reduce((w, e) => (!w || e.drop > w.drop ? e : w), null);
-    const lines = [];
-    lines.push(st.left ? `You left the course at <strong>${esc(st.left.label)} ${esc(st.left.san)}</strong>; the course plays ${esc(st.left.course.join(' or '))}.` : 'You stayed in the course as long as it went. Well played.');
-    if (worst && worst.drop >= 80) lines.push(`Biggest slip: <strong>${esc(worst.label)} ${esc(worst.san)}</strong> cost about ${(worst.drop / 100).toFixed(1)} pawns.`);
-    const last = st.evals[st.evals.length - 1];
-    if (last) lines.push(`${youWords(last.after)} after 15 moves.`);
-    feedback(`<span class="big">Sparring report</span><div class="small" style="display:grid;gap:4px;margin-top:4px">${lines.map(x => `<div>${x}</div>`).join('')}</div>
-      <div class="controls" style="margin-top:10px"><button class="btn primary" id="spar-on">Play on against Stockfish</button><button class="btn" id="spar-again">Spar again</button><button class="btn" id="spar-back">Back to course</button></div>`, 'right');
-    $('#spar-on').onclick = () => playOnFromLine(c, { id: 'spar', title: 'Sparring', moves: op.chess.history().map(san => ({ san })) });
-    $('#spar-again').onclick = () => startSpar(c); $('#spar-back').onclick = () => openCourse(c);
-  };
-  op.custom = {
-    canMove: () => !st.done && myTurn(),
-    async onMove(orig, dest) {
-      const before = op.chess.fen(), mv = op.chess.move({ from: orig, to: dest, promotion: 'q' });
-      if (!mv) return boardSet();
-      const ply = op.chess.history().length - 1, label = plyLabel(ply);
-      const course = [...(coursePosMoves(c).get(posKey(before)) || [])];
-      if (!st.left && course.length && !course.includes(mv.san)) st.left = { san: mv.san, label, course };
-      op.busy = true; boardSet({ lastMove: [orig, dest] });
-      feedback('<span class="muted">Thinking…</span>');
-      const r = await moveCost(before, orig + dest + (mv.promotion || ''), 450); if (g !== op.gen) return;
-      if (r) st.evals.push({ san: mv.san, label, drop: r.loss, after: r.score });
-      if (op.chess.game_over() || op.chess.history().length >= 30) return report();
-      oppMove();
-    },
-    restart: () => startSpar(c),
-  };
-  boardSet();
-  engine.start().then(() => { if (g !== op.gen) return; if (!myTurn()) oppMove(); else feedback('<span class="muted">Your move.</span>'); });
-}
-
-// ---- plans: pawn structures with example positions, plus the typical-plans quiz
-function hubPlans(c) {
-  const items = STRUCT[c.id] || [];
-  return `<div class="hub-head"><div><h3>Plans and pawn structures</h3><p class="muted">What to do after the opening: the typical structure, the good squares, and the pawn breaks.</p></div>${c.ideas?.items?.length ? '<button class="btn primary" data-act="ideas">Quiz: typical plans</button>' : ''}</div>
-    <div class="hub-list">${items.map((it, j) => `<div class="struct card" style="background:var(--bg)"><div class="mini-board" id="mini-${j}"></div><div><h3>${esc(it.title)}</h3><p style="margin:6px 0 0">${esc(it.text)}</p><ul>${it.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`).join('') || '<p class="muted">No structure lessons for this course yet.</p>'}</div>`;
-}
-HUB_ACTIONS.ideas = c => startIdeas(c);
-function drawMiniBoards(c) {
-  (STRUCT[c.id] || []).forEach((it, j) => {
-    const b = new Chess(); it.path.split(' ').forEach(m => b.move(m, { sloppy: true }));
-    const node = document.getElementById('mini-' + j); if (!node) return;
-    miniCgs.push(Chessground(node, { fen: b.fen(), orientation: c.side, viewOnly: true, coordinates: false, lastMove: lastMoveOf(b) }));
-  });
-}
-
-// ---- model games: guess the winner's moves
-function hubModels(c) {
-  const ms = XP.courses?.[c.id]?.models || [];
-  if (!ms.length) return `<h3>Model games</h3><p class="muted">Model games come from the weekly Lichess update (strong players' wins in this opening). They will appear here after it runs.</p>`;
-  return `<div class="hub-head"><div><h3>Model games: guess the move</h3><p class="muted">Strong players winning with your side of this opening. Guess each of their moves: you score for the move they played or one Stockfish rates as just as good. It shows how the middlegame should flow.</p></div></div>
-    <div class="hub-list">${ms.map((m, j) => { const best = progress.mg[`${c.id}/${m.id}`]?.best; return `<div class="hub-item"><span class="t">${esc(m.white)}${m.wr ? ` (${m.wr})` : ''} – ${esc(m.black)}${m.br ? ` (${m.br})` : ''}, ${m.year || ''} · ${m.result}</span><button class="btn primary" data-act="model" data-i="${j}">${best != null ? 'Again' : 'Guess the moves'}</button><span class="d">${best != null ? `Your best: ${best}% of moves matched.` : `${Math.ceil(m.moves.length / 2)} moves.`}</span></div>`; }).join('')}</div>`;
-}
-HUB_ACTIONS.model = (c, d) => startModel(c, XP.courses[c.id].models[+d.i]);
-function startModel(c, m) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
-  const g = op.gen, me = c.side[0];
-  let ply = 0, asked = 0, hits = 0, done = false;
-  op.chess = new Chess(); op.busy = false;
-  $('#op-mode').textContent = `${c.title} · Model game`;
-  $('#op-title').textContent = `${m.white} – ${m.black}, ${m.year || ''}`;
-  $('#op-intro').textContent = `Guess ${c.side === 'white' ? 'White' : 'Black'}'s moves. The first moves play themselves.`;
-  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = true;
-  opShow('player');
-  const step = () => {
-    if (g !== op.gen) return;
-    $('#op-progress').style.width = (ply / m.moves.length * 100) + '%';
-    if (ply >= m.moves.length) {
-      done = true; op.busy = true; boardSet();
-      const score = asked ? Math.round(hits / asked * 100) : 0;
-      if (score > (progress.mg[`${c.id}/${m.id}`]?.best ?? -1)) record('mg', `${c.id}/${m.id}`, { best: score });
-      return feedback(`<span class="big">You matched ${hits} of ${asked} moves (${score}%)</span><div class="small">Play through it again in a few days: the plans start to feel natural.</div><div class="controls" style="margin-top:10px"><button class="btn" id="mg-tocourse">Back to course</button></div>`, 'right'),
-        ($('#mg-tocourse').onclick = () => openCourse(c));
-    }
-    const mine = (op.chess.turn() === me) && m.ok[ply];
-    if (!mine) {
-      op.busy = true; boardSet();
-      setTimeout(() => { if (g !== op.gen) return; const mv = op.chess.move(m.moves[ply], { sloppy: true }); ply++; op.busy = false; boardSet({ lastMove: [mv.from, mv.to] }); step(); }, ply < 4 ? 250 : 550);
-    } else { op.busy = false; boardSet(); feedback(`<span class="muted">Your guess for ${plyLabel(ply)}</span><div class="small muted">${hits}/${asked} so far</div>`); }
-  };
-  op.custom = {
-    canMove: () => !done && op.chess.turn() === me && !!m.ok[ply],
-    onMove(orig, dest) {
-      const t = new Chess(op.chess.fen()), mv = t.move({ from: orig, to: dest, promotion: 'q' });
-      if (!mv) return boardSet();
-      asked++;
-      const played = m.moves[ply], good = m.ok[ply].includes(mv.san);
-      if (good) hits++;
-      const real = op.chess.move(played, { sloppy: true }); ply++;
-      op.busy = true; boardSet({ lastMove: [real.from, real.to] });
-      feedback(good ? `<span class="big" style="font-size:18px;color:var(--good)">${esc(mv.san)} ✓</span>${mv.san !== played ? `<div class="small muted">Good too. The game went ${esc(played)}.</div>` : ''}` : `<span class="big" style="font-size:18px">The game went ${esc(played)}</span><div class="small muted">Your ${esc(mv.san)} was not as strong here.</div>`, good ? 'right' : '');
-      setTimeout(step, good && mv.san === played ? 600 : 1500);
-    },
-    hint: full => { const mv = new Chess(op.chess.fen()).move(m.moves[ply], { sloppy: true }); return mv ? (full ? [{ orig: mv.from, dest: mv.to, brush: 'green' }] : [{ orig: mv.from, brush: 'yellow' }]) : []; },
-  };
-  step();
-}
-
-// ---- report: how this opening goes in your games
-function hubReport(c) {
-  const gs = c.games;
-  if (!gs.length) return `<h3>Report</h3><p class="muted">None of your analysed games reached this course yet.</p>`;
-  const score = arr => arr.length ? Math.round(arr.reduce((s, x) => s + (x.g.result === 'win' ? 1 : x.g.result === 'draw' ? .5 : 0), 0) / arr.length * 100) : 0;
-  const avg = (arr, f) => { const v = arr.map(f).filter(x => x != null && !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
-  // which line each game followed longest
-  const byLine = {};
-  for (const x of gs) {
-    const b = new Chess(); x.g.plies.slice(0, x.k).forEach(p => b.move(p.san, { sloppy: true }));
-    const k = posKey(b.fen());
-    const line = c.lines.find(l => { const lb = new Chess(); return l.moves.some(m => { lb.move(m.san, { sloppy: true }); return posKey(lb.fen()) === k; }); });
-    (byLine[line?.title || 'Other'] ||= []).push(x);
-  }
-  const w10 = avg(gs, x => x.g.myWin[Math.min(20, x.g.myWin.length - 1)]), w15 = avg(gs, x => x.g.myWin[Math.min(30, x.g.myWin.length - 1)]);
-  const t10 = avg(gs, x => { const i = x.g.plies.findIndex((p, j) => j >= 18 && isMine(x.g, j) && p.clk != null); return i >= 0 ? +x.g.tc.split('+')[0] - x.g.plies[i].clk : null; });
-  const devs = {};
-  gs.filter(x => !x.mine && x.k < x.g.plies.length).forEach(x => { const lab = `${plyLabel(x.k)} ${x.g.plies[x.k].san}`; devs[lab] = (devs[lab] || 0) + 1; });
-  const months = {};
-  gs.forEach(x => { const d = new Date(x.g.end * 1000); const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; (months[k] ||= []).push(x); });
-  const mk = Object.keys(months).sort().slice(-6);
-  return `<h3>Report: ${esc(c.title)} in your games</h3>
-    <div class="hub-stats" style="margin:10px 0 16px"><span><b>${gs.length}</b>games</span><span><b>${score(gs)}%</b>score</span><span><b>${w10 != null ? Math.round(w10) + '%' : '–'}</b>win chance after move 10</span><span><b>${w15 != null ? Math.round(w15) + '%' : '–'}</b>after move 15</span><span><b>${t10 != null ? Math.round(t10) + 's' : '–'}</b>clock used for 10 moves</span></div>
-    <div class="grid2" style="margin-top:0">
-      <div><div class="eyebrow" style="margin-bottom:6px">Score by line</div><div class="bars-mini">${Object.entries(byLine).sort((a, b) => b[1].length - a[1].length).map(([t, arr]) => `<div><span title="${esc(t)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t)}</span><i style="width:${score(arr)}%"></i><span class="num">${score(arr)}% · ${arr.length}</span></div>`).join('')}</div></div>
-      <div><div class="eyebrow" style="margin-bottom:6px">Score by month</div><div class="bars-mini">${mk.map(k => `<div><span>${k}</span><i style="width:${score(months[k])}%"></i><span class="num">${score(months[k])}% · ${months[k].length}</span></div>`).join('')}</div>
-        <div class="eyebrow" style="margin:14px 0 6px">Where your opponents left the course</div><div class="small">${Object.entries(devs).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, n]) => `${esc(k)} <span class="muted">×${n}</span>`).join(' · ') || 'Nowhere yet.'}</div></div>
-    </div>`;
-}
-
-// ---- my moves: choose between equally good moves, and add your own lines
-function hubMine(c) {
-  const choices = cardsOf(c).filter(cd => cd.alts.length && cd.ply <= 16).sort((a, b) => a.ply - b.ply).slice(0, 24);
-  const mine = c.lines.filter(l => l.mine);
-  return `<div class="hub-head"><div><h3>My moves</h3><p class="muted">Where Stockfish rates other moves as just as good, pick the one you like. Drills and speed rounds then expect your choice. You can also add your own lines.</p></div><button class="btn primary" data-act="build">Add your own line</button></div>
-    ${mine.length ? `<div class="eyebrow" style="margin:6px 0">Your lines</div><div class="hub-list" style="margin-bottom:16px">${mine.map(l => `<div class="hub-item"><span class="t">${esc(l.title)}</span><button class="btn" data-act="dropline" data-id="${esc(l.id.slice(3))}">Remove</button><span class="mv">${esc(sanLine(l.moves))}</span></div>`).join('')}</div>` : ''}
-    <div class="eyebrow" style="margin:6px 0">Choose your moves</div>
-    <div class="hub-list">${choices.map(cd => { const chosen = progress.rep[posId(c, cd)]?.san || cd.want[0]; const opts = [...new Set([...cd.want, ...cd.alts.map(a => a.san)])]; return `<div class="hub-item"><span class="t">After ${esc(cd.path.length ? sanLine(cd.path.map(san => ({ san }))).split(' ').slice(-4).join(' ') : 'the start')}</span><span class="d"><div class="choice-row">${opts.map(o => `<button data-act="choose" data-card="${cd.id}" data-san="${esc(o)}" aria-pressed="${o === chosen}">${esc(o)}${cd.want.includes(o) ? ' · course' : ''}</button>`).join('')}</div></span></div>`; }).join('') || '<p class="muted">No equal alternatives in this course.</p>'}</div>`;
-}
-HUB_ACTIONS.choose = (c, d) => { const cd = cardsOf(c).find(x => x.id === d.card); if (!cd) return; record('rep', posId(c, cd), { san: d.san }); ocSection(c, 'mine'); };
-HUB_ACTIONS.dropline = (c, d) => { record('cl', d.id, { ...progress.cl[d.id], deleted: true }); applyCustomLines(); ocSection(c, 'mine'); };
-HUB_ACTIONS.build = c => startBuilder(c);
-function startBuilder(c) {
-  curCourse = c; op.mode = 'cards'; op.c = c; op.gen++; op.daily = null;
-  const g = op.gen, me = c.side[0];
-  op.chess = new Chess(); op.busy = false;
-  $('#op-mode').textContent = `${c.title} · Your own line`;
-  $('#op-title').textContent = 'Build a line';
-  $('#op-intro').textContent = "Play both sides. Stockfish checks each of your moves; for your opponent, tap one of the popular replies or play any move.";
-  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true; $('#op-restart').hidden = false;
-  opShow('player');
-  const panel = async (note = '') => {
-    const h = op.chess.history(), s = statsAt(op.chess.fen());
-    const pop = op.chess.turn() !== me && s ? `<div class="choice-row">${s.m.slice(0, 5).map(m => `<button data-pop="${esc(m[0])}">${esc(m[0])} · ${pct(m[1] / s.n)}</button>`).join('')}</div>` : '';
-    feedback(`${note}<div class="small muted">${h.length ? esc(sanLine(h.map(san => ({ san })))) : 'Start position.'}</div>${op.chess.turn() !== me ? `<div class="small" style="margin-top:6px">Opponent's move${s ? ' (popular at your level):' : ':'}</div>${pop}` : '<div class="small" style="margin-top:6px">Your move.</div>'}
-      <div class="controls" style="margin-top:10px"><button class="btn" id="bl-undo"${h.length ? '' : ' disabled'}>Undo</button><button class="btn primary" id="bl-save"${h.length >= 4 ? '' : ' disabled'}>Save line</button></div>`);
-    document.querySelectorAll('[data-pop]').forEach(b => b.onclick = () => { const mv = op.chess.move(b.dataset.pop, { sloppy: true }); if (mv) { boardSet({ lastMove: [mv.from, mv.to] }); panel(); } });
-    $('#bl-undo').onclick = () => { op.chess.undo(); boardSet(); panel(); };
-    $('#bl-save').onclick = () => {
-      const moves = op.chess.history(), id = Date.now().toString(36);
-      record('cl', id, { course: c.id, title: sanLine(moves.map(san => ({ san }))).split(' ').slice(0, 8).join(' ') + (moves.length > 8 ? ' …' : ''), moves });
-      applyCustomLines();
-      feedback('<span class="big">Line saved.</span><div class="small">It is in your Lines list and its positions join your drill cards.</div><div class="controls" style="margin-top:10px"><button class="btn" id="bl-back">Back to course</button></div>', 'right');
-      $('#bl-back').onclick = () => { openCourse(c); ocSection(c, 'lines'); };
-    };
-  };
-  op.custom = {
-    color: 'both',
-    canMove: () => true,
-    async onMove(orig, dest) {
-      const before = op.chess.fen(), wasMine = op.chess.turn() === me;
-      const mv = op.chess.move({ from: orig, to: dest, promotion: 'q' });
-      if (!mv) return boardSet();
-      boardSet({ lastMove: [orig, dest] });
-      if (!wasMine) return panel();
-      panel('<span class="muted">Stockfish is checking your move…</span>');
-      const r = await moveCost(before, orig + dest + (mv.promotion || ''));
-      if (g !== op.gen || !r) return panel();
-      const loss = r.loss;
-      const best = new Chess(before).move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' })?.san;
-      panel(loss > 60 ? `<span class="big" style="font-size:16px;color:var(--mistake)">${esc(mv.san)} costs about ${(loss / 100).toFixed(1)} pawns</span><div class="small">Stockfish prefers ${esc(best)}. Undo, or keep it if you like it anyway.</div>` : `<span style="color:var(--good);font-weight:700">${esc(mv.san)} ✓ Stockfish approves.</span>`);
-    },
-    restart: () => startBuilder(c),
-  };
-  boardSet(); panel();
-}
-
-function startIdeas(c) { op.mode = 'ideas'; op.daily = null; op.c = c; op.l = null; op.ideaIdx = 0; loadIdea(); }
-function loadIdea() {
-  op.gen++; op.custom = null;
-  const c = op.c, it = c.ideas.items[op.ideaIdx];
-  op.idea = it; op.ideaDone = false; op.wrong = 0; op.errors = 0; op.busy = false;
-  op.chess = new Chess(); for (const s of it.line) op.chess.move(s, { sloppy: true });
-  const last = op.chess.history({ verbose: true }).pop();
-  $('#op-mode').textContent = `${c.title} · Plans quiz · ${op.ideaIdx + 1} of ${c.ideas.items.length}`;
-  $('#op-title').textContent = it.prompt;
-  $('#op-intro').textContent = `Position after ${sanLine(it.line.map(san => ({ san })))}`;
-  $('#op-notes').innerHTML = ''; $('#op-quiz').hidden = true;
-  $('#op-restart').hidden = true;
-  feedback(`<span class="muted">Find the move on the board.</span>`);
-  opShow('player'); progressBar(); boardSet({ lastMove: last ? [last.from, last.to] : undefined });
-}
-function onIdeaMove(orig, dest) {
-  const it = op.idea, test = new Chess(op.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
-  if (mv && it.ok.includes(mv.san)) {
-    op.chess.move(mv.san); op.ideaDone = true; boardSet({ lastMove: [orig, dest] });
-    record('ideas', `${op.c.id}/${op.ideaIdx}`, { ok: op.errors ? 0 : 1 });
-    const more = op.ideaIdx + 1 < op.c.ideas.items.length;
-    feedback(`<span class="big">${esc(mv.san)} ✓</span><p style="margin:6px 0 10px">${esc(it.explain)}</p><div class="controls">${more ? '<button class="btn primary" id="idea-next">Next position</button>' : ''}<button class="btn" id="idea-back">Back to course</button></div>`, 'right');
-    $('#idea-next')?.addEventListener('click', () => { op.ideaIdx++; loadIdea(); });
-    $('#idea-back').onclick = () => openCourse(op.c);
-    $('#op-progress').style.width = ((op.ideaIdx + 1) / op.c.ideas.items.length * 100) + '%';
-  } else {
-    op.wrong++; op.errors++; boardSet();
-    if (op.wrong >= 2) openCg.set({ drawable: { autoShapes: hintShape(false) } });
-    feedback(`<span class="big" style="font-size:18px">${mv ? esc(mv.san) : 'That'} isn't it</span><div class="small">${op.wrong >= 2 ? 'The circled piece makes the plan move.' : 'Think about the plan, then try again.'}</div>`, 'wrong');
-  }
-}
 /* ---------- tactics ---------- */
 let tacCg = null;
 const myWhy = {};
@@ -3374,7 +2104,6 @@ $('#mg-home').onclick = e => { const b = e.target.closest('[data-mg]'); if (!b) 
 $('#mg-kinds').onclick = e => { const b = e.target.closest('[data-kind]'); if (b) { e.stopPropagation(); launchFrom('middle'); startTech(b.dataset.kind); } };
 $('#mg-back').onclick = () => {
   const to = backView; mgHome(); window.scrollTo({ top: 0 });
-  if (to === 'openings') { show('openings'); return curCourse ? openCourse(curCourse) : opShow('home'); }
   if (to === 'tactics') tacShow('home');
   show(to);
 };
@@ -3640,7 +2369,7 @@ function renderCoachNotes() {
   let oppBl = 0, notPunished = 0;
   for (const g of GAMES) g.plies.forEach((p, i) => { if (!isMine(g, i) && p.lab === 'blunder' && i + 1 < g.plies.length) { oppBl++; if (g.plies[i + 1].loss >= 10) notPunished++; } });
   // 5. openings
-  const courseStat = id => { const c = COURSES.find(x => x.id === id); if (!c || !c.games.length) return null; const gs = c.games.map(x => x.g);
+  const courseStat = id => { const gs = courseGames(id); if (!gs.length) return null;
     const sc = pct(gs.reduce((s, g) => s + (g.result === 'win' ? 1 : g.result === 'draw' ? .5 : 0), 0), gs.length);
     const w10 = gs.reduce((s, g) => s + g.myWin[Math.min(20, g.myWin.length - 1)], 0) / gs.length; return { n: gs.length, sc, w10 }; };
   const jb = courseStat('jobava'), ck = courseStat('caro');
@@ -3686,14 +2415,14 @@ function resumeLast(last) {
 }
 function todayTasks() {
   const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
-  const due = dailyQueue().n;
-  const reviewedToday = today('lines').length + today('pos').length;
+  const o2 = O2.dueSummary(), due = o2.n;
+  const reviewedToday = today('o2c').length;
   const tactics = today('puz').length + today('pun').length + today('solved').length;
   const checks = today('chk').length;
   const played = today('cv').length + today('eg').length + today('eo').length + today('tq').length;
   const tasks = [
-    { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && reviewedToday > 0 || !due && Object.keys(progress.lines).length > 0,
-      go: () => { show('openings'); if (due) startDaily(); else { renderOpeningsHome(); opShow('home'); } } },
+    { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due · about ${o2.mins} min` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && (reviewedToday > 0 || Object.keys(progress.o2c).length > 0),
+      go: () => { show('openings'); if (due) O2.startDaily(); else O2.show('home'); } },
     { nm: '10 tactics', ct: `${Math.min(tactics, 10)}/10 puzzles, punish or mistake positions`, done: tactics >= 10, go: () => { launchFrom('today'); show('tactics'); startPuzzles(null); } },
     { nm: '5 blunder checks', ct: `${Math.min(checks, 5)}/5 · the habit that saves games`, done: checks >= 5, go: () => { launchFrom('today'); show('tactics'); startCheck(); } },
     { nm: 'Play out a winning position', ct: played ? `${played} done today` : 'Convert a win against Stockfish', done: played > 0,
@@ -3724,9 +2453,9 @@ function renderToday() {
   const alerts = bookAlerts(), ba = $('#today-book');
   ba.hidden = !alerts.length;
   if (alerts.length) {
-    const { c, x } = alerts[0], g = x.g;
-    ba.innerHTML = `<div><span class="eyebrow" style="color:var(--mistake)">Out of book · ${agoWords(g.end)}</span><h3 style="margin-top:4px">You left your ${esc(c.title)} course at ${moveLabel(x.k)}${esc(g.plies[x.k].san)}</h3><p class="small" style="margin:4px 0 0">Against ${esc(g.opp)} (${g.oppRating}), ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'a draw'}. The course plays <strong>${esc(x.target.want.join(' or '))}</strong>. Replay the game and play it right: about a minute.${alerts.length > 1 ? ` <span class="muted">${alerts.length - 1} more game${alerts.length > 2 ? 's' : ''} after this one.</span>` : ''}</p></div><button class="btn primary" id="today-book-go">Fix it now</button>`;
-    $('#today-book-go').onclick = () => { show('openings'); curCourse = c; startGameDrills(c, alerts.filter(a => a.c === c).map(a => a.x)); };
+    const { c, x } = alerts[0], g = x.pg.g, d = x.dev;
+    ba.innerHTML = `<div><span class="eyebrow" style="color:var(--mistake)">Out of book · ${agoWords(g.end)}</span><h3 style="margin-top:4px">You left your ${esc(c.title)} course at ${plyLabel(d.ply)}${esc(d.san)}</h3><p class="small" style="margin:4px 0 0">Against ${esc(g.opp)} (${g.oppRating}), ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'a draw'}. The course plays <strong>${esc(d.courseSans.join(' or '))}</strong>. Open Your games and use Fix it: about a minute.${alerts.length > 1 ? ` <span class="muted">${alerts.length - 1} more game${alerts.length > 2 ? 's' : ''} after this one.</span>` : ''}</p></div><button class="btn primary" id="today-book-go">Fix it now</button>`;
+    $('#today-book-go').onclick = () => { store.set('o2tab.' + c.id, 'games'); show('openings'); O2.show('course', c.id); };
   }
   // pick up where you left off
   const last = store.get('last', null);
@@ -3832,14 +2561,14 @@ function renderWatch() {
     list.forEach(v => used.add(v.id));
     h += shelf(n.title, esc(n.why), list, n.topic);
   }
-  const courses = COURSES.map(c => ({ c, n: c.games?.length || 0 })).sort((a, b) => b.n - a.n);
+  const courses = O2.courses().map(c => ({ c, n: courseGames(c.id).length })).sort((a, b) => b.n - a.n);
   for (const { c, n } of courses) {
     const list = vidPick(v => v.op.includes(c.id));
     h += shelf(`Your ${c.title}`, n ? `You played it in ${n} games. Videos that fit your course.` : 'Videos that fit your course.', list, 'op:' + c.id);
   }
   // everything, by topic
   const topics = Object.entries(TUBE.topics || {});
-  const chips = [['', 'All topics'], ...topics, ...COURSES.map(c => ['op:' + c.id, c.title])];
+  const chips = [['', 'All topics'], ...topics, ...O2.courses().map(c => ['op:' + c.id, c.title])];
   if (watch.topic.startsWith('ch:')) chips.push([watch.topic, watch.topic.slice(3)]);
   const test = !watch.topic ? () => true : watch.topic.startsWith('op:') ? v => v.op.includes(watch.topic.slice(3))
     : watch.topic.startsWith('ch:') ? v => v.ch === watch.topic.slice(3) : v => v.top.includes(watch.topic);
@@ -3964,19 +2693,14 @@ function renderTodayWatch() {
   box.onclick = () => openVideo(pick.id);
 }
 
-let clSig = JSON.stringify(progress.cl);
 onProgressChanged = () => {
-  // your own lines arrive with the synced progress: join them to the courses before anything counts what is due
-  const sig = JSON.stringify(progress.cl);
-  if (sig !== clSig) { clSig = sig; applyCustomLines(); }
   if (!$('#view-today').hidden) renderToday();
   if (!$('#view-watch').hidden && $('#player').hidden) renderWatch();
   if (!$('#view-endgame').hidden) renderEndgameHome();
   if (!$('#view-report').hidden) renderCoachNotes();
   if (!$('#mg-home').hidden && !$('#view-middle').hidden) renderMiddleHome();
-  if (!$('#op-home').hidden) renderOpeningsHome();
+  if (!$('#view-openings').hidden && $('#o2-player').hidden) O2.refresh();
   if (!$('#tac-home').hidden && !$('#view-tactics').hidden) renderTacticsHome();
-  if (!$('#view-openings').hidden && !$('#op-course').hidden && curCourse) { applyCustomLines(); openCourse(curCourse, true); }
   updateScore();
 };
 
@@ -3988,9 +2712,11 @@ $('#account').onclick = e => { if (e.target.id === 'account') $('#account').hidd
 $('#acc-file').onchange = e => { const f = e.target.files[0]; if (f) accountImport(f); e.target.value = ''; };
 
 /* ---------- boot ---------- */
-renderReport(); renderCoachNotes(); setupFilters(); renderList(); renderOpeningsHome(); sync.start();
+O2.init({ root: $('#o2'), data: O2_DATA, hooks: { Chessground, record, progress, store, sfx, confetti, statsAt, games: GAMES, engine,
+  onChange: () => { if (!$('#view-today').hidden) renderToday(); } } });
+renderReport(); renderCoachNotes(); setupFilters(); renderList(); sync.start();
 // the app opens on Today (a #view in the address still opens that page)
 const startView = location.hash.slice(1);
 show(views.includes(startView) ? startView : 'today');
-if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, op, COURSES, OPEN, engine, get game() { return gameCg; }, get explore() { return explore; }, get tac() { return tacCg; }, get mgb() { return mgCg; }, playOn: (c, l) => { const C = COURSES.find(x => x.id === c); playOnFromLine(C, C.lines.find(x => x.id === l)); } };   // local testing only
+if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, O2, engine, get game() { return gameCg; }, get explore() { return explore; }, get tac() { return tacCg; }, get mgb() { return mgCg; } };   // local testing only
 </script>

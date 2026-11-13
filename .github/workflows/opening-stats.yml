@@ -1,4 +1,5 @@
-# Weekly (and on demand): fetch what 1200-1600 players play in your openings from Lichess, find traps,
+# Weekly (and on demand): fetch what 1200-1600 players play in the Openings 2 courses (data/courses2.json, committed;
+# if it is missing the step does nothing) from Lichess, plus masters model games for each chapter, find traps,
 # extra branches, longer lines and model games, rebuild the drill cards and publish the app.
 # Needs the repository secret LICHESS_TOKEN (a Lichess key with no permissions ticked).
 name: Opening statistics
@@ -30,12 +31,12 @@ jobs:
           mkdir -p engine
           curl -sL https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz | tar -xz -C engine
           find engine -type f -name 'stockfish*' -exec chmod +x {} \;
-      - name: Opening statistics, traps, extra lines, model games
+      - name: Opening statistics and masters model games (reads data/courses2.json, stops after 85 min, resumes next run)
         env:
           LICHESS_TOKEN: ${{ secrets.LICHESS_TOKEN }}
         run: python build_explorer.py
-      - name: Drill cards (include the extra lines)
-        run: python build_openings.py
+      - name: Recompile the courses (adds newly fetched masters model games; lines were engine-verified locally)
+        run: python openings2/tools/compile_courses2.py --no-engine --report-dir /tmp/o2reports --quiet
       - name: Rebuild the app
         run: python build.py --skip-drills
       - name: Publish if anything changed

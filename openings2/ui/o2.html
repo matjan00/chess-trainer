@@ -1,0 +1,27 @@
+<!-- Openings 2 tab (inlined into #view-openings by build.py at the O2_HTML placeholder); filled by O2.init() in o2core.js -->
+<div id="o2" class="o2">
+  <div id="o2-home"></div>
+  <div id="o2-course" hidden></div>
+  <div id="o2-player" class="play" hidden>
+    <div class="backrow o2-backrow"><button class="btn" data-act="back">← Back</button><span class="o2-kind draft" id="o2-draft" hidden>Draft</span></div>
+    <div class="viewer o2-viewer">
+      <div class="board-col">
+        <div class="o2-head">
+          <div class="eyebrow" id="o2-mode"></div>
+          <h3 id="o2-title"></h3>
+          <div class="progress"><span id="o2-bar"></span></div>
+        </div>
+        <div class="board-shell" id="o2-shell"><div class="evalbar" id="o2-evalbar" hidden><span style="height:50%"></span></div><div class="board" id="o2board"></div></div>
+        <div class="o2-chips" id="o2-chips" aria-label="Moves so far (tap to look back)"></div>
+        <div class="controls actionbar" id="o2-actions"></div>
+      </div>
+      <div class="side">
+        <div class="card o2-fb" id="o2-fb" aria-live="polite"></div>
+        <div id="o2-panel"></div>
+        <details class="o2-noteswrap" id="o2-notes-wrap" hidden><summary>Notes so far</summary><div class="o2-notes" id="o2-notes"></div></details>
+      </div>
+    </div>
+    <div class="o2-menu card" id="o2-menu" role="menu" hidden></div>
+  </div>
+  <div class="o2-toast" id="o2-toast" role="status" aria-live="polite"></div>
+</div>

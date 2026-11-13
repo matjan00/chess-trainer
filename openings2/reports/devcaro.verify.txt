@@ -1,0 +1,17 @@
+Q17 FAIL devcaro/adv-main: main line has 1 plan note(s); need at least 2
+Q18 FAIL devcaro/adv-main ply 10 c5: jargon 'pawn chain' is not explained in its sentence
+Q19 FAIL devcaro/adv-main ply 10 c5: variation '((5...Nc6 6.O-O))': 'Nc6' is not legal here
+Q17 FAIL devcaro/adv-main ply 16 Ng6: new move of ours without a comment
+Q17 FAIL devcaro/cl-main: main line has 1 plan note(s); need at least 2
+Q17 FAIL devcaro/cl-main ply 16 Bh7: new move of ours without a comment
+Q17 FAIL devcaro/cl-exch ply 12 Bg4: new move of ours without a comment
+Q8 FAIL devcaro/cl-exch ply 12 Bg4: 12 plies; side lines need 16-28 (or end with '=> lineid')
+Q19 WARN devcaro/cl-main ply 14 Nd7: move 'Ne5' named outside (( )); write variations as ((...))
+Q16 INFO devcaro: 3 lines, 0 traps, 18 cards (target 220-320). adv: main 1; cl: main 1, side 1
+
+line                  kind    plies  new   final  worst ours  worst opp   reach
+adv-main              main       16    8     n/a         n/a       0 cp    0.3%
+cl-main               main       16    6     n/a         n/a       0 cp    2.2%
+cl-exch               side       12    4     n/a         n/a       0 cp    0.6%
+
+8 FAIL, 1 WARN

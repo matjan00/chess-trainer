@@ -1,0 +1,26 @@
+# COURSE fx | Fixture London | white
+sub: Three-line test course for the openings2 tools
+why: Small course used by the test-suite; every line is engine-checked at the real depths.
+idea: The Nb5 jump | The knight on b5 eyes c7 and makes Black choose between development and safety. [g:b5-c7] [r:c7] | fen=rnbqkb1r/ppp2ppp/4pn2/1N1p4/3P1B2/8/PPP1PPPP/R2QKBNR b KQkq - 1 4
+structure: iqp-free | Quiet centre | fen=r1bq1rk1/pp1bbppp/n1p1pn2/3p4/3P1B2/2NBPN2/PPP2PPP/R2Q1RK1 b - - 0 9 | White keeps a solid pawn on d4. Both sides develop and wait. [g:e3-d4]
+skip: 1.d4 d5 2.Nc3 Nf6 3.Bf4 h6 | rare and harmless: play 4.e3 and continue as usual
+
+## CHAPTER e6 | Black plays the solid 3...e6
+> The most common reply. Meet it with a quick Nb5 and develop calmly.
+
+### LINE e6-c6 | Main line: 4.Nb5 Na6 5.e3 c6 | main
+> Black develops the knight to a6, which is offside. Remember: Nb5 first, e3 next.
+1. d4 {Claim the centre and open the road for the bishop. [g:d2-d4]} d5 2. Nc3 {Prepares the Jobava ideas with the knight. [g:b1-c3]} Nf6 3. Bf4 {Develops the bishop outside the pawns. [g:c1-f4]} e6 4. Nb5! {The knight jumps in before Black gets ...Bb4. It eyes the c7 square. [g:b5-c7]} Na6 5. e3 {Opens the road for the bishop on f1 and guards d4. [g:f1-d3]} c6 6. Nc3 {The knight has done its job: it made Black put the knight on a6. Now it goes back. [r:a6]} Bd7 7. Nf3 {Develops with a purpose: this knight will go to e5. [g:f3-e5]} {P: Your plan: 1. Take on a6 when it doubles the pawns. 2. Castle and put a rook on e1. 3. Meet ...c5 with Bxa6 or dxc5. [g:f1-a6]} c5 8. Bxa6 {Takes the offside knight and breaks up Black's pawns. [g:f1-a6]} bxa6 9. O-O {Castle: the king is safe, the rook is ready. [g:g1]} Rc8 10. Ne5 {The knight jumps to the strong square in the middle and hits the bishop. [g:e5-d7]} {P: Your plan: 1. dxc5 to open the d-file. 2. Re1 and e4 once your pieces are ready. 3. Keep the bishop on f4 outside the pawns. [g:f4-c7]}
+
+## CHAPTER c5 | Black hits the centre: 3...c5
+> Black attacks d4 at once. Take back with the e-pawn and develop quickly.
+
+### LINE c5-main | Main line: 4...cxd4 5.exd4 a6 | side
+> Black takes on d4 and stops Nb5 with ...a6. Remember: recapture towards the centre.
+1. d4 d5 2. Nc3 Nf6 3. Bf4 c5 4. e3 {Solid first. The d4 pawn stays guarded. [g:e3-d4]} cxd4 5. exd4 {Recapture towards the centre and open the bishop on f1. [g:f1-d3]} a6 6. Nf3 {Develops and keeps an eye on e5. [g:f3-e5]} Nc6 7. Be2 {A calm square for the bishop that prepares castling. [g:e2-g4]} Bf5 8. O-O {The king is safe now. [g:g1]} e6 9. Na4 {The knight heads for c5 and b6. [g:a4-c5]} {P: Your plan: 1. Ne5 to challenge the bishop. 2. Re1 and Bd3. 3. Keep the pawn on d4 as the anchor. [g:f3-e5]}
+
+### LINE c5-nc6 | The Nb5 trick: 4...Nc6? | punish | classic
+> Black develops the knight too fast. Remember: Nb5 hits c7 and d6.
+1. d4 d5 2. Nc3 Nf6 3. Bf4 c5 4. e3 Nc6? {It looks natural but leaves d4 and c7 weak. [r:c6]} 5. Nb5! {Threatens Nc7 with a fork on the king and the rook. [g:b5-c7]} e5 6. dxe5 {Takes the pawn and opens the d-file. [g:d4-e5]} Qa5+ 7. Qd2 {Blocks the check and offers the queen trade. [g:d1-d2]} Qxd2+ 8. Kxd2 {Recapture with the king; it is safe here. [g:e1-d2]} {P: Your plan: 1. Nc3 or Nc7 depending on the knight. 2. Bd3 and Rhe1. 3. Keep the extra pawn safe. [g:b5-c7]}
+
+## MODELS

@@ -23,11 +23,11 @@ Personal chess training app for Janczu00, published at https://claude.ai/artifac
 | File | What it is |
 |---|---|
 | `app.html` | The web page (all sections) |
-| `courses.txt` | Opening courses; `compile_courses.py` checks every move with Stockfish |
+| `openings2/courses/<id>.txt` | Opening courses (Openings tab); `openings2/tools/compile_courses2.py` checks every move with Stockfish (`verify_course.py`) and writes `data/courses2.json`. Rebuild one course: `python openings2/tools/compile_courses2.py <id>`, then `python build.py --skip-drills`. See `openings2/BLUEPRINT.md` and `openings2/tools/README.md` |
+| `openings2/ui/` | The Openings tab: `o2core.js`, `o2stats.js`, `o2.css`, `o2.html`, inlined into the page by `build.py` (placeholders `/*O2_JS*/`, `/*O2_CSS*/`, `<!--O2_HTML-->` in `app.html`); `dev.html` is a test page for it |
 | `data/essentials.json` | Essential endgame lessons |
 | `analyze.py`, `build*.py` | Game analysis and exercise builders |
 | `update.py` / `update.bat` | Pull new games and rebuild everything |
-| `build_openings.py` | Drill cards for every course position where it is your move, with Stockfish-approved alternatives (`data/openings.json`) |
+| `courses.txt`, `compile_courses.py`, `build_openings.py`, `data/structures.json` | The old Openings tab (replaced by `openings2/`); no longer used by the page or `build.py` |
 | `build_explorer.py` | What 1200-1600 players play (Lichess), traps, extra lines, longer lines, model games (`data/explorer.json`); runs weekly in the GitHub job "Opening statistics" with the `LICHESS_TOKEN` secret |
-| `data/structures.json` | Pawn-structure lessons shown under Plans in each course |
 | Coach's notes | Worked out by the page from `data/analysis.json` (no manual editing needed) |

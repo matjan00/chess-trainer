@@ -1,0 +1,12 @@
+Q19 WARN fx/e6-c6 ply 7 Nb5: move 'Bb4' named outside (( )); write variations as ((...))
+Q11 WARN fx/c5-main ply 17 Na4: final position is -0.12 for us; below +0.00
+Q6 WARN fx/c5-nc6 ply 8 Nc6: not in the engine top 3 and no statistics (engine: cxd4); justify or replace
+Q19 WARN fx/c5-nc6 ply 9 Nb5: move 'Nc7' named outside (( )); write variations as ((...))
+Q16 INFO fx: 3 lines, 0 traps, 20 cards (target 220-320). e6: main 1; c5: side 1, punish 1
+
+line                  kind    plies  new   final  worst ours  worst opp   reach
+e6-c6                 main       19   10   +0.10       16 cp       9 cp    1.4%
+c5-main               side       17    6   -0.12       16 cp       9 cp    1.0%
+c5-nc6                punish     15    4   +2.69       16 cp     230 cp    1.0%
+
+0 FAIL, 4 WARN
