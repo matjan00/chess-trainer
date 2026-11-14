@@ -41,7 +41,7 @@
       for (const p of g.plies) {
         const fen = b.fen(), mine = (b.turn() === 'w') === white, mv = b.move(p.san, { sloppy: true });
         if (!mv) break;
-        steps.push({ key: posKey(fen), fen, san: mv.san, mine, loss: p.loss, best: p.best });
+        steps.push({ key: posKey(fen), after: posKey(b.fen()), fen, san: mv.san, mine, loss: p.loss, best: p.best });
       }
       list.push({ g, id: gid(g), color: g.color, res: g.result, end: +g.end || 0, steps });
     }
@@ -77,6 +77,7 @@
 
   /* ---------------------------------------------------------------- per course: where each game left the course */
   const AN = new Map();
+  const afterKeys = c => c._afterKeys || (c._afterKeys = new Set(Object.values(c.seq).flatMap(q => q.map(x => posKey(x.after)))));
   function analyse(cOrId) {
     const c = typeof cOrId === 'string' ? O2.courses().find(x => x.id === cOrId) : cOrId;
     parsed();
@@ -84,19 +85,20 @@
     const games = [], total = parsed().filter(p => p.color === c.side).length;
     for (const pg of parsed()) {
       if (pg.color !== c.side) continue;
-      let depth = 0, dev = null, state = 'over';
+      // in-course = the position AFTER the move is a course position (same rule as tools/game_probe.py), so transpositions count
+      let last = -1, dev = null, state = 'over';
       for (let i = 0; i < pg.steps.length; i++) {
         const s = pg.steps[i], kids = c.children.get(s.key);
-        if (!kids) { state = 'end'; break; }
-        if (!kids.some(id => norm(c.nodes[id].san) === norm(s.san))) {
-          const nx = pg.steps[i + 1];
-          const sans = [...new Set(kids.map(id => c.nodes[id].san))];
-          const fine = s.mine && kids.some(id => (c.nodes[id].alts || []).some(a => norm(a.san) === norm(s.san)));
-          dev = { i, ply: i + 1, by: s.mine ? 'me' : 'opp', san: s.san, key: s.key, fen: s.fen, kids, courseSans: sans, fine, loss: s.loss, next: nx?.san, nextBest: nx?.best };
-          state = 'dev'; break;
-        }
-        depth++;
+        if (afterKeys(c).has(s.after)) { last = i; continue; }
+        if (!kids) continue;                       // outside the course (may transpose back later)
+        const nx = pg.steps[i + 1];
+        const sans = [...new Set(kids.map(id => c.nodes[id].san))];
+        const fine = s.mine && kids.some(id => (c.nodes[id].alts || []).some(a => norm(a.san) === norm(s.san)));
+        dev = { i, ply: i + 1, by: s.mine ? 'me' : 'opp', san: s.san, key: s.key, fen: s.fen, kids, courseSans: sans, fine, loss: s.loss, next: nx?.san, nextBest: nx?.best };
+        state = 'dev'; break;
       }
+      if (!dev && last < pg.steps.length - 1) state = 'end';
+      const depth = last + 1;
       if (depth >= 1) games.push({ pg, depth, dev, state });
     }
     const an = { c, total, games };

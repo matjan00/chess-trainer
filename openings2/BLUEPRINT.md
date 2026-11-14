@@ -30,7 +30,7 @@ Known data limits (verified in the repo):
 ## 1. Quality rules and the verifier (`openings2/tools/verify_course.py`)
 
 ### 1.1 Engine protocol
-- Stockfish from `engine_path.find_engine(ROOT)`; `Threads 6`, `Hash 1024` (override with the environment variables `O2_THREADS` / `O2_HASH`). The cache is merged under a lock file on every save, so two tool runs no longer overwrite each other — still run only one engine-heavy job at a time.
+- Stockfish from `engine_path.find_engine(ROOT)`; `Threads 6`, `Hash 1024` (override with the environment variables `O2_THREADS` / `O2_HASH`). The cache is merged under a lock file on every save, so two tool runs no longer overwrite each other — still run only one engine-heavy job at a time. Every search has a time cap (`O2_MAXTIME`, default 300 s); if the depth is not reached in time the search is retried once with one thread (a multi-threaded multipv search can hang in promotion races).
 - Standard search: **depth 22** (`chess.engine.Limit(depth=22)`, no time cap). Final positions of lines: **depth 24**.
 - All scores in centipawns via `score.pov(side).score(mate_score=10000)`, clamped to ±1500 before any subtraction.
 - **Loss of a move** = `best − played`, both from the *same* position: `best` = top line of a multipv-3 search; `played` = `analyse(board, limit, root_moves=[move])` (skip the second search if the move is the multipv top). Mover's point of view.
@@ -45,7 +45,7 @@ Known data limits (verified in the repo):
 | class | definition | where allowed | notation |
 |---|---|---|---|
 | **sound** | loss ≤ 35 | anywhere | plain |
-| **common-ok** | loss 36-90 **and** one of: share ≥ 15%; YG ≥ 2; or, within the first 6 plies (a choice of defence), share ≥ 3% or YG ≥ 1 or the line tag `defence` (a named opening without stats in the repo) | main, side and punish lines; at most **two** per line | `?!` + comment saying why it is inaccurate and what we gain |
+| **common-ok** | loss 36-90 **and** one of: share ≥ 10% (was 15% until the Slav review, 2026-11-14: a reply met in one game in ten deserves a line); YG ≥ 2; or, within the first 6 plies (a choice of defence), share ≥ 3% or YG ≥ 1 or the line tag `defence` (a named opening without stats in the repo) | main, side and punish lines; at most **two** per line | `?!` + comment saying why it is inaccurate and what we gain |
 | **mistake** | loss > 90, with share ≥ 8% or YG ≥ 1 or line tag `classic` (a thematic trap) | only `punish` lines and traps | `?` + comment |
 | not allowed | anything else | nowhere | – |
 
@@ -68,7 +68,7 @@ Opponent moves
 Line shape
 - **Q7 FAIL** illegal or ambiguous SAN; **FAIL** line does not end on **our** move.
 - **Q8 FAIL** length: main/side lines 16-28 plies (8-14 moves); punish lines 6-20 plies. A line may be shorter only if it ends with a transposition marker `=> lineid` (§2).
-- **Q9 FAIL** fewer than 2 *new* cards (positions where we move that no earlier line contains); WARN fewer than 3.
+- **Q9** a line ending in `=>` with fewer than 2 new cards is a *signpost* (a move-order transposition, INFO only). Otherwise: **FAIL** fewer than 2 *new* cards (positions where we move that no earlier line contains); WARN fewer than 3.
 - **Q10 FAIL** **one move per position**: two different our-moves from the same `posKey` anywhere in the course (transpositions included).
 - **Q11 FAIL** final evaluation at depth 24, our point of view:
   - White main/side: < −0.15 (WARN < 0.00). Black main/side: < −0.50 (WARN < −0.35).

@@ -103,7 +103,8 @@ class Verifier:
                         self.add("Q8", "FAIL", f"final position does not occur in line {l.to} ('=>' target)", l.id, n, l.moves[-1].san)
             if l.section == "line":
                 new = sum(1 for nd in l.path if nd.owner == l.id and nd.mine)
-                if new < 2: self.add("Q9", "FAIL", f"only {new} new card(s); need at least 2", l.id)
+                if new < 2 and l.to: self.add("Q9", "INFO", f"signpost line ({new} new cards): a move-order transposition into {l.to}", l.id)
+                elif new < 2: self.add("Q9", "FAIL", f"only {new} new card(s); need at least 2", l.id)
                 elif new < 3: self.add("Q9", "WARN", f"only {new} new cards; aim for 3+", l.id)
         # Q10: one move per position (our moves), transpositions included
         by_pos = {}
@@ -309,7 +310,7 @@ class Verifier:
                 shtxt = "no stats" if share is None else f"share {share*100:.0f}%"
                 early = nd.ply <= 6
                 if loss <= 35: cls = "sound"
-                elif loss <= 90 and (sh >= .15 or ygn >= 2 or (early and (sh >= .03 or ygn >= 1 or "defence" in l.tags))): cls = "common-ok"
+                elif loss <= 90 and (sh >= .10 or ygn >= 2 or (early and (sh >= .03 or ygn >= 1 or "defence" in l.tags))): cls = "common-ok"
                 elif loss > 90 and (sh >= .08 or ygn >= 1 or "classic" in l.tags): cls = "mistake"
                 else: cls = "bad"
                 desc = f"loses {loss} cp ({cls}; {shtxt}, your games {ygn}; engine: {i['best_san']})"

@@ -22,3 +22,4 @@ tube/posts.json
 tube/candidates.json
 tube/collect_done.json
 tube/batches/
+openings2/cache/*.tmp

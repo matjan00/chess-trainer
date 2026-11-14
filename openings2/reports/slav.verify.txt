@@ -1,0 +1,62 @@
+Q11 WARN slav/krause ply 24 e6: final position is -0.36 for us; below -0.35
+Q9 WARN slav/slow-qb3: only 2 new cards; aim for 3+
+Q6 WARN slav/reti ply 3 c4: not in the engine top 3 and no statistics (engine: d4); justify or replace
+Q1 WARN slav/reti ply 4 c6: loses 27 cp (26-35 is borderline; engine: d4)
+Q11 WARN slav/reti ply 16 Nbd7: final position is -0.36 for us; below -0.35
+Q9 WARN slav/english: only 2 new cards; aim for 3+
+Q6 WARN slav/pin-e4 ply 15 e4: not in the engine top 3 and no statistics (engine: O-O); justify or replace
+Q13 WARN slav/ne4 ply 13 Ne4: mover is 2 points down after the 6-ply principal variation and the move loses 525 cp
+Q16 INFO slav: 48 lines, 0 traps, 272 cards (target 220-320). main: main 2, side 3; gambits: main 4, side 4; slow: main 2, side 6; nc3: main 2, side 6; exchange: main 1, side 3; systems: main 3, side 5; flank: main 2, side 1; punish: punish 3, side 1
+Q9 INFO slav/nc3-nf3: signpost line (0 new cards): a move-order transposition into dutch-main
+
+line                  kind    plies  new   final  worst ours  worst opp   reach
+dutch-main            main       24   12   +0.00       12 cp      11 cp    0.1%
+dutch-nh4             side       22    3   -0.21       12 cp      11 cp    0.1%
+dutch-h3              side       26    5   -0.14       19 cp      11 cp    0.1%
+krause                main       24    7   -0.36       12 cp      11 cp    0.1%
+nh4                   side       22    6   -0.14       12 cp      32 cp    0.1%
+e4-quiet              main       26    9   +0.00       12 cp      31 cp    0.0%
+e4-a4                 main       22    6   +0.00       14 cp      31 cp    0.0%
+e4-e5                 main       20    5   +0.33       17 cp      47 cp    0.1%
+e4-a3                 side       18    4   +0.26       12 cp      31 cp    0.0%
+e3-na2                main       22    7   +0.12       12 cp      37 cp    0.0%
+e3-nb1                side       24    6   +0.05       12 cp      37 cp    0.0%
+bg5                   side       22    8   +0.23        9 cp      48 cp    0.0%
+bg5-bxf6              side       20    6   +0.91       12 cp      83 cp    0.0%
+slow-nh4              main       18    6   -0.22        9 cp      11 cp    0.1%
+slow-bd3              main       22    6   -0.09        9 cp      12 cp    0.1%
+slow-be2              side       20    5   +0.00       14 cp      24 cp    0.1%
+slow-qb3              side       12    2   -0.17        9 cp      11 cp    0.0%
+slow-cxd5             side       18    5   -0.07       17 cp      11 cp    0.0%
+slow-bd3-early        side       22    5   -0.09        9 cp      11 cp    0.0%
+qc2                   side       18    6   -0.05        9 cp      12 cp    0.0%
+g3                    side       16    5   -0.10        9 cp      11 cp    0.1%
+nc3-a6-b3             main       20    8   -0.19       11 cp      14 cp    0.6%
+nc3-nf3               side        8    0   -0.26       12 cp      11 cp    1.7%
+nc3-a6-c5             side       20    5   -0.21       11 cp      11 cp    0.6%
+nc3-bg5               main       18    6   +0.50        9 cp      49 cp    0.4%
+nc3-bg5-e3            side       18    5   +0.10       25 cp      49 cp    0.3%
+nc3-bg5-bxf6          side       18    5   +1.03        9 cp      74 cp    0.2%
+nc3-bf4               side       18    6   +0.38        9 cp      51 cp    0.2%
+e3-bf5                side       10    3   -0.32       22 cp      19 cp    0.2%
+ex-main               main       20    8   -0.17        9 cp      16 cp    0.1%
+ex-rc1                side       22    5   -0.20        9 cp      16 cp    0.1%
+ex-bf4-early          side       18    5   -0.18       16 cp      16 cp    0.1%
+ex-quiet              side       20    7   -0.20       19 cp      17 cp    0.0%
+london-main           main       22   10   -0.25        9 cp      11 cp    0.3%
+jobava                main       22   10   -0.02        9 cp      16 cp    0.7%
+colle                 main       18    8   -0.02       24 cp      13 cp    0.9%
+london-nf3            side       12    3   -0.18       15 cp      14 cp    0.2%
+stonewall             side       16    7   +0.85       11 cp      69 cp    0.2%
+torre                 side       18    7   -0.04       20 cp      30 cp    0.0%
+bdg                   side       16    7   +0.43       21 cp      89 cp    0.6%
+veresov               side       16    6   +0.07        9 cp      16 cp    0.3%
+reti                  main       16    4   -0.36       27 cp      24 cp    2.5%
+kia-g3                main       18    8   -0.05        8 cp      14 cp    2.5%
+english               side        6    2   -0.31       15 cp      16 cp    2.7%
+pin-e4                punish     20    3   +1.87       12 cp     189 cp    0.1%
+bdg-qxf3              punish     16    4   +2.09        9 cp     102 cp    0.6%
+ne4                   punish     18    3   +5.52       12 cp     525 cp    0.0%
+e4-a4-e5              side       18    3   +0.67       12 cp      66 cp    0.0%
+
+0 FAIL, 8 WARN

@@ -77,3 +77,8 @@ Engine: Threads 6, Hash 1024. Cold: roughly 5-12 s per position at depth 22 / mu
 - **Q12**: the depth-14 vs depth-24 difference is not checked when both say we are >= +1.50.
 - **Threads/Hash**: `O2_THREADS`, `O2_HASH` environment variables.
 - **Cache**: `Evals.save()` takes `cache/evals.lock`, re-reads the file and merges before writing.
+
+## Changes by the lead (2026-11-14, Slav review)
+- **Q5**: common-ok share threshold 15% -> **10%**.
+- **Q9**: a `=>` line with fewer than 2 new cards is a signpost (INFO), not a FAIL.
+- **Engine**: `Evals._analyse` caps every search at `O2_MAXTIME` seconds (default 300) and retries once with 1 thread if the depth was not reached.

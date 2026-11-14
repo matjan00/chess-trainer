@@ -52,7 +52,6 @@ skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.e4 b5 6.a4 b4 7.Na2 Nxe4 8.Nxb4 | a
 skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.e3 b5 6.Be2 | answer Bb7 (engine choice), then ...e6 and ...a6
 skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.e3 b5 6.a4 b4 7.Ne2 | answer a5 (engine choice), then ...Ba6 and ...e6
 
-skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Nf3 | transposes to the main line (chapter main)
 skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.cxd5 | take back with cxd5: the Exchange Slav (chapter exchange)
 skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Bf4 dxc4 5.a4 | answer e6 (engine choice), then ...Bb4 and ...b5 if allowed
 skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Bg5 dxc4 5.a4 | answer e5 (engine choice): hit the centre while the bishop is far away
@@ -61,7 +60,12 @@ skip: 1.d4 d5 2.c4 c6 3.e3 Bf5 4.cxd5 | take back with cxd5, then ...e6 and ...N
 skip: 1.d4 d5 2.c4 c6 3.e3 Bf5 4.Nc3 e6 5.Bd3 | answer Bg6 (engine choice), then ...Nf6 and ...Nbd7
 skip: 1.d4 d5 2.c4 c6 3.e3 Bf5 4.Nc3 e6 5.a3 | answer Nd7 (engine choice), then ...Ngf6
 skip: 1.d4 d5 2.c4 c6 3.e3 Bf5 4.Nc3 e6 5.cxd5 | answer cxd5 (engine choice); against Qb3 play ...Qc7
-skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Bf4 | inaccurate (Nf3 is better): take with dxc4 and hold the pawn with ...b5, as in line nc3-bg5; after e3 add ...Qb6 and ...e6, after e4 play ...e6, ...Be7 and ...a5
+skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.e3 Bf5 5.Bd3 Bxd3 6.Qxd3 e6 7.c5 | answer Be7 (engine choice), then castle; later break the pawn chain with ...b6 or ...e5
+skip: 1.d4 d5 2.c4 c6 3.cxd5 cxd5 4.Nf3 Nf6 5.Bg5 | answer Ne4 (engine choice), as against 5.Bg5 with the knight on c3: hit the bishop and swap pieces
+skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Bf4 | take with dxc4 (engine choice) and keep the pawn with ...b5 or ...Nd5, the same idea as against 4.Bg5
+skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Bg5 dxc4 5.Nc3 | answer h6 (engine choice); after Bh4 hold the pawn with ...b5 and break the pin with ...g5, as in line nc3-bg5
+skip: 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Bg5 dxc4 5.e3 b5 6.Nc3 | answer h6 (engine choice); after Bxf6 take back with the e-pawn, then ...Bb4
+skip: 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Bf4 dxc4 5.e4 | answer b5 (engine choice), then ...e6, ...Be7 and ...a5 to hold the pawns
 
 skip: 1.Nf3 d5 2.d4 | the d4 systems: see chapter systems (Colle, London with Nf3, Torre)
 skip: 1.Nf3 d5 2.e3 | play Nf6, then ...Bf5 or ...Bg4 and ...e6
@@ -131,6 +135,14 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. e3 b5 6. a4 b4 7. Nb1 Ba6 {Guard c4 with the bishop and aim at White's f1-bishop. [g:a6-c4] [g:a6-f1]} 8. Nbd2 c3 {Push the pawn on with a gain of time. [g:c4-c3]} 9. bxc3 bxc3 {Take back. Now the pawn on c3 attacks the knight. [g:b4-c3]} 10. Nb1 Qa5 {Guard your pawn on c3. [g:a5-c3]} 11. Qb3 e6 {Open the road for your bishop. [g:f8-b4]} 12. Bxa6 Qxa6 {Take back. Your queen stops White from castling short for now. [g:a6-f1]} {P: Equal. 1. ...Nbd7 and ...Be7, then castle. 2. Your c3 pawn may fall, but it ties White's pieces down while you develop. 3. Use the open b-file for your rook. [g:b8-d7] [g:a8-b8]}
 
 
+### LINE bg5 | 3.Nf3 Nf6 4.Bg5?!: take on c4 and keep the pawn | side
+> White pins your knight before playing e3 or Nc3. Take on c4: the c1-bishop has left the queenside, so White cannot easily win the pawn back. Remember: ...b5 first, then ...h6 and ...e6.
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Bg5?! {This lets you take on c4 and keep the pawn: the bishop has left the queenside, where it would help to win the pawn back. Better is to guard c4 with the e-pawn or to develop the knight to c3 first. [g:d5-c4] [g:b7-b5]} dxc4 {Take the pawn. In about half of the games White now plays e3, and you hold the pawn with ...b5. [g:d5-c4] [g:b7-b5]} 5. e3 {White wants to take back on c4 with the bishop. [g:f1-c4]} b5 {Keep the pawn. [g:b5-c4]} 6. a4 {White hits the b5 pawn, the usual way to attack your queenside pawns. [g:a4-b5]} h6 {Ask the bishop first. If it takes on f6, your queen takes back and comes into play. [g:h6-g5]} 7. Bh4 e6 {Open the road for the f8-bishop. [g:f8-b4]} {P: Your plan: 1. ...Bb4 pins the knight when it comes to c3. 2. ...Bb7 and castle. 3. Keep the b5 and c4 pawns together. [g:f8-b4] [g:c8-b7]} 8. Nc3 Bb4 {Pin the knight on c3: now it cannot take on b5. [g:b4-c3] [g:c3-b5]} 9. Bxf6 Qxf6 {Take back with the queen. Your pawns stay healthy and the queen watches e5 and d4. [g:f6-d4]} 10. Ne5 {The knight jumps to the centre and eyes c6 and f7. [g:e5-c6] [g:e5-f7]} Bb7 {Guard the c6 pawn with the bishop, which also comes to the long diagonal. [g:b7-c6]} 11. Be2 Qe7 {Bring the queen back. It guards your pawns and lets you castle. [g:e8-g8]} {P: You are a pawn up for now. 1. Castle short, then ...Nd7 to challenge the e5 knight. 2. If White takes on b5, take back with the c-pawn and keep the queenside pawns together. 3. Later ...c5 opens the long diagonal for your bishop. [g:e8-g8] [g:b8-d7] [g:c6-c5]}
+
+### LINE bg5-bxf6 | 4.Bg5?! dxc4 5.Bxf6?!: two bishops for you | side
+> White gives up the bishop for your knight at once. Take back with the e-pawn: your bishops come out fast, and you have the two bishops and an extra pawn. The same idea as against 4.Bg5 with the knight on c3.
+1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Bg5?! dxc4 5. Bxf6?! {A common mistake: White gives you the bishop pair and still has not won the c4 pawn back. [g:f8-b4] [r:c4]} exf6 {Take with the e-pawn: both your bishops are free at once. [g:f8-b4] [g:c8-e6]} {X: gxf6 | ((5...gxf6 6.e3)) spoils the pawns around your king. The e-pawn is better.} 6. Nc3 {White develops and wants to play e4 or e3 next. [g:c3-e4]} Bb4 {Pin the knight, so it cannot jump to e4. [g:b4-c3] [r:e4]} 7. g3 {White puts the bishop on g2, aiming at your c6 pawn. [g:f1-g2]} Nd7 {The knight heads for b6, where it guards the c4 pawn. [g:d7-b6]} 8. Bg2 Nb6 {Hold the pawn on c4. [g:b6-c4]} {P: Your plan: 1. Castle short. 2. ...Be6 and a rook to e8. 3. Keep the knight on b6 and the bishop on e6 guarding c4. [g:e8-g8] [g:c8-e6]} 9. O-O O-O {Castle. Your king is safe. [g:e8-g8]} 10. a3 Be7 {The bishop steps back. Keep it: the two bishops are your trump. [g:b4-e7]} {P: You are a pawn up with the two bishops. 1. ...Re8 and ...Be6 to guard c4. 2. Later ...f5 frees your pieces and keeps White's knights out of e4. 3. Do not swap your bishops for knights without a reason. [g:f8-e8] [g:c8-e6] [g:f6-f5]}
+
 ## CHAPTER slow | Slow Slav: White plays e3 before Nc3
 > When White plays e3 early, the c1-bishop is shut in and the c4 pawn is already guarded by the f1-bishop. So you do not take on c4. Instead you bring the bishop out to f5 at once, then play ...e6, ...Nbd7 and a bishop to d6 or e7. This is your Caro-Kann set-up again.
 
@@ -166,13 +178,16 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 > White fianchettoes the bishop on g2. Your bishop comes to g4 instead of f5: there it pins the f3 knight. Then ...e6, ...Nbd7 and ...Be7.
 1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. g3 {White puts the bishop on g2, aiming at your d5 and the b7 pawn. [g:f1-g2]} Bg4 {Pin the knight. The bishop is active and does not get in the way of ...e6. [g:g4-f3]} 5. Bg2 e6 {Close the long diagonal and guard d5. [g:e6-d5]} 6. O-O Nbd7 {Develop and support ...e5 or ...c5. [g:b8-d7]} 7. cxd5 {White opens the c-file. [g:c4-d5]} exd5 {Take back with the e-pawn: your bishop on g4 is outside the pawns and the e-file opens for your rook. [g:e6-d5] [g:f8-e8]} 8. Nc3 Be7 {Get ready to castle. [g:e8-g8]} {P: Equal. 1. Castle short. If White's knight jumps to g5, kick it with ...h6. 2. Your bishop steps back to f5 when White plays f3 or h3. 3. A rook to e8 on the open e-file. [g:e8-g8] [g:f8-e8]}
 
-
 ## CHAPTER nc3 | 3.Nc3 and 3.e3: other move orders
 > 3.Nc3 is White's most common third move at your level. After 3...Nf6 4.Nf3 you are back in the main line. Against 4.e3 you play the little move ...a6 first, because ...Bf5 now runs into cxd5 and Qb3. Against an early Bf4 or Bg5, take on c4 and hold the pawn with ...b5.
 
 ### LINE nc3-a6-b3 | 3.Nc3 Nf6 4.e3 a6 5.Nf3 b5 6.b3 | main
 > White plays e3 before Nf3, so ...Bf5 is not safe. Play ...a6 and ...b5 instead, and put the bishop on g4. Remember: against 4.e3, ...a6 first.
 1. d4 d5 2. c4 c6 3. Nc3 {White develops the knight first. [g:c3-d5]} Nf6 {Develop and guard d5. If White now develops the other knight to f3, you are back in the main line. [g:f6-d5]} 4. e3 {White guards c4 but shuts in the c1-bishop. [r:c1]} a6! {A waiting move with a plan: next ...b5 hits c4. It also takes b5 away from White's pieces. [g:a6-b5] [g:b7-b5]} {X: Bf5 | ((4...Bf5 5.cxd5 cxd5 6.Qb3)) and White hits b7 and d5 at the same time.} 5. Nf3 b5 {Hit the c4 pawn. White must decide what to do with it. [g:b5-c4]} 6. b3 {White supports c4 with a pawn. [g:b3-c4]} Bg4 {Now the bishop comes out and pins the f3 knight. [g:g4-f3]} 7. a4 bxc4 {Take: the b-file opens for your rook. [g:b5-c4]} 8. bxc4 Nbd7 {Develop and support ...e5 or ...c5. [g:b8-d7]} {P: Equal. 1. ...e6, a bishop to e7 or d6, and castle. 2. Your rook comes to b8 on the open b-file. 3. If White pushes c5, break with ...e5. [g:e7-e6] [g:a8-b8]} 9. Be2 e6 {Open the road for the f8-bishop. [g:f8-e7]} 10. c5 a5 {Stop b4 and give your bishop the b4 square. [g:a5-b4] [g:f8-b4]} {P: Equal. 1. ...Be7 and castle. 2. Break with ...e5 to hit White's centre. 3. Your knight can come to b8-a6 or e4 later. [g:f8-e7] [g:e6-e5]}
+
+### LINE nc3-nf3 | Move order: 3.Nc3 Nf6 4.Nf3 | side
+> White's most common move order at your level: the queen's knight first, then the king's knight. It is the main line by another road: take on c4 and carry on as in the main chapter.
+1. d4 d5 2. c4 c6 3. Nc3 Nf6 4. Nf3 {Both white knights are out and White has not played e3: this is exactly the main-line position.} dxc4 {P: You are in the main line now. 1. Against a4, bring the bishop to f5, then ...e6 and ...Bb4. 2. Against e4 or e3, keep the pawn with ...b5. [g:c8-f5]} => dutch-main
 
 ### LINE nc3-a6-c5 | 3.Nc3 Nf6 4.e3 a6 5.Nf3 b5 6.c5 | side
 > White closes the queenside with c5. Then your bishop goes to g7 and you break in the middle with ...e5 later.
@@ -189,6 +204,10 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 ### LINE nc3-bg5-bxf6 | 3.Nc3 Nf6 4.Bg5 dxc4 5.Bxf6?! | side
 > White gives up the bishop for your knight. Take back with the e-pawn: your pieces come out fast and you have the two bishops and an extra pawn.
 1. d4 d5 2. c4 c6 3. Nc3 Nf6 4. Bg5?! dxc4 5. Bxf6?! {A common mistake: White gives you the bishop pair and does not win the c4 pawn back. [g:f8-d6] [g:c8-e6]} exf6 {Take with the e-pawn: both your bishops are free at once. [g:f8-d6] [g:c8-e6]} {X: gxf6 | ((5...gxf6 6.e3)) spoils the pawns around your king. The e-pawn is better.} 6. e3 Be6 {Guard the c4 pawn with the bishop. [g:e6-c4]} 7. Nge2 Bd6 {The bishop aims at h2. [g:d6-h2]} 8. g3 O-O {Castle. [g:e8-g8]} 9. Bg2 Nd7 {Develop. The knight can go to b6 to guard c4. [g:d7-b6]} {P: You are better: a pawn up with two bishops. 1. ...Nb6 to hold c4. 2. A rook to e8. 3. ...f5 later to free the bishop on e6. [g:d7-b6] [g:f8-e8]}
+
+### LINE nc3-bf4 | 3.Nc3 Nf6 4.Bf4?! dxc4 5.e3 | side
+> The London bishop comes out early. Take on c4 and hold the pawn with ...b5 and ...Qb6. Remember: the queen goes to b6 when a4 hits your b5 pawn.
+1. d4 d5 2. c4 c6 3. Nc3 Nf6 4. Bf4?! {This lets you take on c4 and keep the pawn: the bishop has left the queenside. White does better to develop the king's knight first. [g:d5-c4] [g:b7-b5]} dxc4 {Take the pawn. In your one game here you put the bishop on f5 and lost. Taking on c4 is more accurate, because White's bishop is no longer there to help win the pawn back. [g:d5-c4]} 5. e3 {The most common reply: White wants to take back with the bishop. [g:f1-c4]} b5 {Keep the pawn. [g:b5-c4]} 6. a4 {White hits the b5 pawn. [g:a4-b5]} Qb6! {Guard b5 with the queen. The queen also watches d4. [g:b6-b5] [g:b6-d4]} {X: e6 | ((6...e6 7.axb5 cxb5 8.Nxb5)) and White has won the pawn back.} 7. Nf3 e6 {Open the road for the f8-bishop. [g:f8-b4]} 8. Be2 a5 {If White now takes on b5, you take back with the c-pawn and your pawns stay together. Later ...b4 can kick the c3 knight. [g:b5-b4] [r:c3]} {P: You are a pawn up. 1. ...Nbd7, then the bishop to b4 or e7 and castle. 2. ...Bb7 on the long diagonal. 3. Kick the c3 knight with ...b4 when it helps. [g:b8-d7] [g:c8-b7]} 9. O-O Nbd7 {Develop the last knight. If White's knight jumps to e5, take it. [g:b8-d7] [g:d7-e5]} {P: You are a pawn up for now and the game is equal. 1. Against a knight on e5, swap it off with ...Nxe5. 2. ...Bb7 and ...Be7, then castle. 3. Keep the queen on b6, where it guards b5 and watches d4. [g:d7-e5] [g:c8-b7] [g:b6-d4]}
 
 ### LINE e3-bf5 | 3.e3 Bf5: the bishop first | side
 > White plays e3 at move three. Bring the bishop out at once, before ...Nf6 even. After Nc3 and Nf3 you are back in the Slow Slav.
@@ -247,7 +266,7 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 
 ### LINE veresov | Veresov: 2.Nc3 Nf6 3.Bg5 | side
 > White pins your knight with Nc3 and Bg5. Break the pin quickly with ...Nbd7 and ...h6, then play ...e6, ...Be7 and castle.
-1. d4 d5 2. Nc3 Nf6 3. Bg5 {The Veresov: the bishop pins your knight. [g:g5-d8]} Nbd7 {Support the f6 knight, so the pin does not hurt. [g:d7-f6]} 4. Nf3 h6 {Ask the bishop: take or step back. [g:h6-g5]} 5. Bh4 e6 {Develop and get ready for ...Be7. [g:f8-e7]} 6. e3 Be7 {Break the pin. [g:e7-f6]} 7. a4 a6 {Stop the knight jumping to b5. [g:a6-b5]} 8. a5 c5 {Hit the centre now that White's a-pawn has gone forward. [g:c5-d4]} {P: Equal. 1. Castle short. 2. If White takes on c5, take back with the knight or bishop. 3. If the bishop stays on h4, ...Ne4 can swap pieces. [g:e8-g8] [g:c7-c5]}
+1. d4 d5 2. Nc3 Nf6 3. Bg5 {The Veresov: the bishop pins your knight. [g:g5-d8]} Nbd7 {Support the f6 knight, so the pin does not hurt. [g:d7-f6]} 4. Nf3 h6 {Ask the bishop: take or step back. [g:h6-g5]} 5. Bh4 e6 {Develop and get ready to put the bishop on e7. [g:f8-e7]} 6. e3 Be7 {Break the pin. [g:e7-f6]} 7. a4 a6 {Stop the knight jumping to b5. [g:a6-b5]} 8. a5 c5 {Hit the centre now that White's a-pawn has gone forward. [g:c5-d4]} {P: Equal. 1. Castle short. 2. If White takes on c5, take back with the knight or bishop. 3. If the bishop stays on h4, ...Ne4 can swap pieces. [g:e8-g8] [g:c7-c5]}
 
 
 ## CHAPTER flank | 1.Nf3, 1.c4 and other first moves: one set-up
@@ -255,7 +274,7 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 
 ### LINE reti | Reti: 1.Nf3 d5 2.c4 c6 3.e3 | main
 > White keeps the d-pawn back for a while. Build the Slav triangle with ...c6 and ...Nf6, and against Nc3 and e3 play ...a6: when White pushes d4, you are in the 3.Nc3 chapter of the Slav, with ...b5 next.
-1. Nf3 d5 {Take the centre. [g:d5-e4]} 2. c4 c6 {Hold d5 with the c-pawn, the Slav way. Pushing past with ...d4 is also good, but ...c6 keeps you in positions you know. [g:c6-d5]} 3. e3 Nf6 {Develop and guard d5 again. [g:f6-d5]} 4. Nc3 a6 {The same waiting move as against 3.Nc3 Nf6 4.e3 in the Slav: next ...b5 hits c4. [g:a6-b5] [g:b7-b5]} {P: If White plays d4, you are in line nc3-a6-b3: answer with ...b5. If White plays b3, put the bishop on g4 or f5 and play ...e6. [g:b7-b5] [g:c8-g4]} 5. d4 b5 => nc3-a6-b3
+1. Nf3 d5 {Take the centre. [g:d5-e4]} 2. c4 c6 {Hold d5 with the c-pawn, the Slav way. Pushing past with ...d4 is also good, but ...c6 keeps you in positions you know. [g:c6-d5]} 3. e3 Nf6 {Develop and guard d5 again. [g:f6-d5]} {P: The Slav set-up is ready. 1. Against Nc3, play ...a6 and then ...b5. 2. Against b3, bring the bishop to f5 or g4 and play ...e6. 3. When White plays d4, you are back in the Slav chapters. [g:a7-a6] [g:c8-f5]} 4. Nc3 a6 {The same waiting move as in the Slav when White plays the knight to c3 and the pawn to e3: next ...b5 hits c4. [g:a6-b5] [g:b7-b5]} {P: If White plays d4, you are in line nc3-a6-b3: answer with ...b5. If White plays b3, put the bishop on g4 or f5 and play ...e6. [g:b7-b5] [g:c8-g4]} 5. d4 b5 6. b3 Bg4 7. a4 bxc4 8. bxc4 Nbd7 => nc3-a6-b3
 
 ### LINE kia-g3 | King's Indian Attack: 1.Nf3 d5 2.g3 | main
 > White puts the bishop on g2 and plays d3 and e4 later. Your bishop goes to g4, the knight to d7 and the pawn to e5: you grab the centre.
@@ -274,7 +293,7 @@ skip: 1.g3 | play d5, ...c6 and the bishop to g4, as in line kia-g3
 
 ### LINE bdg-qxf3 | Blackmar-Diemer: 5.Qxf3? Qxd4 | punish | classic | defence
 > In the Blackmar-Diemer, White should take back on f3 with the knight. If the queen takes, the d4 pawn has no guard: take it, and keep your queen safe with ...Qh4+ and ...Qg4.
-1. d4 d5 2. e4?! dxe4 3. Nc3 Nf6 4. f3 exf3 5. Qxf3? {The queen takes back, but now nothing guards d4. [r:d4]} Qxd4 {Take a second pawn. [g:d8-d4]} 6. Be3 {White attacks your queen and hopes to castle long with tempo. [g:e3-d4]} Qh4+ {Step away with a check, so White has no time for O-O-O. [g:h4-e1]} 7. g3 Qg4 {Offer the queen trade. With two extra pawns, every trade helps you. [g:g4-f3]} 8. Qf2 Qf5 {Keep the queens on for a moment, but out of danger, and cover b1 and c2. [g:f5-c2]} {P: You are two pawns up. 1. ...e6 or ...c6, then ...Be7 and castle short. 2. Do not grab more pawns: develop first. 3. Trade queens when White offers it. [g:e7-e6] [g:f8-e7]}
+1. d4 d5 2. e4?! dxe4 3. Nc3 Nf6 4. f3 exf3 5. Qxf3? {The queen takes back, but now nothing guards d4. [r:d4]} Qxd4 {Take a second pawn. [g:d8-d4]} 6. Be3 {White attacks your queen and hopes to castle long with tempo. [g:e3-d4]} Qh4+ {Step away with a check, so White has no time to castle long. [g:h4-e1]} 7. g3 Qg4 {Offer the queen trade. With two extra pawns, every trade helps you. [g:g4-f3]} 8. Qf2 Qf5 {Keep the queens on for a moment, but out of danger, and cover b1 and c2. [g:f5-c2]} {P: You are two pawns up. 1. ...e6 or ...c6, then ...Be7 and castle short. 2. Do not grab more pawns: develop first. 3. Trade queens when White offers it. [g:e7-e6] [g:f8-e7]}
 
 ### LINE ne4 | 5.e3 b5 6.a4 b4 7.Ne4?: the lost knight | punish | classic
 > After ...b4 the c3 knight must go back. If it jumps forward to e4, you simply take it: nothing guards e4.

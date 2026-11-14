@@ -214,14 +214,28 @@ class Evals:
     def _cp(info, turn):
         return info["score"].pov(turn).score(mate_score=10000)
 
+    def _analyse(self, board, depth, **kw):
+        """One search with a time cap.  A multi-threaded multipv search can fail to return in rare positions
+        (promotion races); if the cap is hit before the depth is reached, retry once with a single thread."""
+        cap = float(os.environ.get("O2_MAXTIME", 300))
+        eng = self._engine()
+        res = eng.analyse(board, chess.engine.Limit(depth=depth, time=cap), **kw)
+        first = res[0] if isinstance(res, list) else res
+        if first.get("depth", depth) >= depth or self.threads == 1:
+            return res
+        print(f"  [engine] depth {depth} not reached in {cap:.0f}s with {self.threads} threads; retrying with 1 thread: {board.fen()}", flush=True)
+        eng.configure({"Threads": 1})
+        try:
+            return eng.analyse(board, chess.engine.Limit(depth=depth, time=cap * 2), **kw)
+        finally:
+            eng.configure({"Threads": self.threads})
+
     def _search(self, board, depth, mpv, root):
         self.searches += 1
-        eng = self._engine()
-        lim = chess.engine.Limit(depth=depth)
         if root:
-            info = eng.analyse(board, lim, root_moves=[chess.Move.from_uci(root)])
+            info = self._analyse(board, depth, root_moves=[chess.Move.from_uci(root)])
             return {"cp": self._cp(info, board.turn), "pv": [m.uci() for m in info.get("pv", [])[:12]]}
-        infos = eng.analyse(board, lim, multipv=mpv)
+        infos = self._analyse(board, depth, multipv=mpv)
         if isinstance(infos, dict):
             infos = [infos]
         return [{"m": i["pv"][0].uci(), "cp": self._cp(i, board.turn), "pv": [m.uci() for m in i["pv"][:12]]} for i in infos if i.get("pv")]
