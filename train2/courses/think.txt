@@ -1,0 +1,175 @@
+# COURSE think | Think first
+sub: One short routine before every move, so that simple tactics stop costing you games.
+why: In your 175 analysed games, 31% of your mistakes were played in under 5 seconds. Your opponent's best answer to your mistake was a check 50 times, and you left a piece hanging 49 times. Most of these were easy to see: you did not look. This course builds one routine and trains it until it is automatic.
+
+## CHAPTER routine | The routine | theme=hanging
+> Six short lessons. Each one adds one question to ask before you move. The cards come from your own games.
+
+### LESSON check3 | The three questions
+goal: Stop leaving pieces where he can take them for free.
+rule: Before you let go of the piece, ask: after my move, what can he check, capture or threaten?
+> Most of your lost pieces were not deep tactics. Your opponent just took something, often with check. The cure is three quick questions about his next move, asked before you let go of the piece. Checks first, then captures, then threats. It takes ten seconds and you have ten minutes.
+
+#### EX check3-a | rnbqkbnr/pp2pppp/2p5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 3 | src=game:147711436772-5
+> Your game against amirrezan, 7 Jan 2026. You played ((3...Bg4)) here after 3 seconds.
+3... dxe4! {Ask the questions about ((3...Bg4)) first. Check? No. Capture? Yes: ((3...Bg4 4.Qxg4)) and the bishop is gone. So take the pawn instead. [r:g4]} 4. Nxe4 Nf6 {Now your knight challenges his knight. [g:g8-f6]} 5. Nxf6+ exf6 {Calm position, nothing hanging, and you still have both bishops.}
+key: Before moving a piece, look at every enemy piece that could take it on its new square.
+
+#### EX check3-b | rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/3B4/PPP2PPP/RNBQK1NR b KQkq - 2 4 | src=game:165558361418-7
+> Your game against edipeca, 5 Mar 2026. White has just put his bishop on d3. You played ((4...c5)) after 5 seconds.
+4... Bxd3! {His bishop attacks your bishop on f5, and nothing defends it. After ((4...c5 5.Bxf5)) your bishop is lost. The capture question would have saved it. [r:f5] [g:d3-f5]} 5. Qxd3 e6 {Your bishop is traded, not lost, and the position is level.}
+key: When he attacks a piece, the capture question has an answer: move it, defend it or trade it.
+
+#### JUDGE check3-j1 | r5nr/pp1nb3/2pk1q1p/3pN1pQ/3P1p1P/2P5/PP3PPB/RN2R1K1 b - - 1 17 | move=Nxe5 | verdict=blunder | src=game:146621057066-33
+refute: dxe5+ Qxe5 Rxe5 Kxe5
+why: His pawn takes back with check, and when your queen recaptures on e5, the rook on e1 takes it. A capture with check was the answer.
+
+#### JUDGE check3-j2 | r1nq1rk1/1b3p1p/p3pnp1/1p1p4/3P1N2/PPPB2N1/2Q1RPPP/R5K1 w - - 4 18 | move=Rxe6 | verdict=blunder | src=game:147338924606-34
+refute: fxe6 Nxe6 Qe7 Nxf8 Kxf8
+why: Your rook took only a pawn, and the pawn on f7 takes the rook back. In the end you have given a piece for two pawns.
+
+#### JUDGE check3-j3 | r3k2r/pp3ppp/1q3N2/4p3/3n4/3B4/PP3PPP/R2Q1RK1 b kq - 0 15 | move=Qxf6 | verdict=safe | src=game:186479451862-29
+why: Check? Capture? Threat? None of his answers hurts: your queen on f6 is safe and your knight on d4 is defended.
+
+#### JUDGE check3-j4 | r5k1/p1q1nNpp/1p2Q1b1/1B1p4/3P4/P1P5/2P2P1p/1R3R1K b - - 1 21 | move=Bxf7 | verdict=safe | src=game:186486819486-41
+why: Your bishop takes the knight and nothing of yours is left hanging. The three questions give no danger, so this move is fine.
+
+#### MINE chk | who=me | n=10
+
+### LESSON hismove | What does his move want?
+goal: Read his last move before you choose yours.
+rule: Every move changes something: what does it attack now, and what did it stop defending?
+> Your opponent's move is a message. Before you think about your plans, read it. Which piece moved? What does it attack from its new square? Which line did it open behind it? One look at his last move tells you most of his threats.
+
+#### EX hismove-a | r4r2/pp1NR1pk/1q5p/2nQ4/8/8/PPP2PPP/4R1K1 b - - 2 20 | src=game:172952181082-39 | side=white
+> Your game against TheQueenSlayer19, 13 Aug 2026. You are White. Black takes your knight.
+20... Nxd7 {His knight leaves c5. What did it stop blocking? The line from his queen on b6 to your pawn on f2. [g:b6-f2] [r:f2]} 21. R1e2! {Your rook guards f2 along the second rank. In the game you took back: ((21.Qxd7 Qxf2+ 22.Kh1 Qf1+ 23.Rxf1 Rxf1#)) and the game was over. [g:e1-e2]} Nf6 22. Qxb7 Qxb7 23. Rxb7 Rfb8 24. Rxb8 Rxb8 {The queens are off and f2 is safe. Reading his last move saved the game.}
+key: When his piece moves away, look behind it: which line did it just open?
+
+#### EX hismove-b | r4rk1/p1pn1pbp/1p1p2p1/3Pp3/1Pb1P3/2P1BPP1/P5BP/2KR2NR w - - 0 16 | src=game:169664713158-30 | side=black
+> Your game against jamindoStar, 3 Jun 2026. You are Black. White plays a quiet-looking bishop move.
+16. Bf1 {What does it attack? Your bishop on c4, which nothing defends. [g:f1-c4] [r:c4]} Bxf1! {Trade it off. In the game you grabbed a pawn with ((16...Bxa2 17.Kb2)) and your bishop was trapped on a2.} 17. Rxf1 b5 {Now your pawns hold his position and nothing of yours is loose.}
+key: Ask what his moved piece attacks from its new square before you start your own plan.
+
+#### JUDGE hismove-j1 | rnbqk2r/ppppppbp/6p1/7n/3PPB2/2N5/PPP2PPP/R2QKBNR w KQkq - 1 5 | move=Nge2 | verdict=blunder | src=game:187007445354-8
+refute: Nxf4 Nxf4
+why: His knight jumped to h5. What does it attack? Your bishop on f4. After your knight move it takes the bishop, and you lose your good bishop for a knight.
+
+#### JUDGE hismove-j2 | r4rk1/pp2bpp1/2q1p2p/3p1n2/3P4/2P2N1P/PP3PP1/R1BQ1RK1 b - - 1 15 | move=Nh4 | verdict=blunder | src=game:165106414218-29
+refute: Nxh4 Bxh4 Qg4
+why: His knight on f3 now covers h4. Your knight jumps into its reach, he takes it, and his queen comes to g4 with threats against your king.
+
+#### MINE thr | n=8
+
+### LESSON loose | Loose pieces drop off
+goal: Spot your undefended pieces before he does.
+rule: An undefended piece is a target for forks and double attacks: defend it or know why not.
+> A loose piece is one that nothing defends. On its own it is fine. But a fork or a check with a capture hits two things at once, and the loose one falls. Before you move, count your loose pieces. If one of them can be hit together with something else, fix that first.
+
+#### EX loose-a | r2qkb1r/1ppb1ppp/p1np1n2/4p3/B3P3/3P1N2/PPPN1PPP/R1BQK2R w KQkq - 2 7 | src=game:166323068860-12
+> Your game against marsialien2009, 23 Mar 2026. You played ((7.Nc4)) here after 2 seconds.
+7. c3! {Your bishop on a4 is loose. After ((7.Nc4 b5)) one pawn attacks the bishop and the knight, and one of them falls. Now the bishop has a safe square on c2. [r:a4] [g:c3-c2]} Ne7 8. Bb3 {The bishop steps back while it can, and nothing of yours is loose.}
+key: Two of your pieces on squares one pawn can hit together: move one before he pushes.
+
+#### EX loose-b | 6k1/5qp1/2n2p1p/p4Q2/4N3/7P/6P1/7K b - - 0 34 | src=game:164202216696-67
+> Your game against karpopovitch, 3 Feb 2026. You are a piece up, but your knight on c6 is loose. You played ((34...a4)).
+34... Qe8! {Your queen defends the knight. After ((34...a4 35.Qc8+ Kh7 36.Qxc6)) the check gave him a free move to take it. [g:e8-c6] [r:c6]} 35. Qd5+ Kh7 36. Qc4 {Every piece is defended and you are still a piece up.}
+key: A loose piece plus a possible check means trouble: defend the piece before he checks.
+
+#### JUDGE loose-j1 | 1k5r/1p2Rp2/p4Np1/4n2p/8/PP6/1P3PPP/1K6 b - - 3 28 | move=Rf8 | verdict=blunder | src=game:148531875900-55
+refute: Rxe5
+why: The rook on e7 attacks two things: your pawn on f7 and your loose knight on e5. You saved the pawn, and the knight fell.
+
+#### MINE fix | tags=hung piece | n=4
+
+#### MINE fix | tags=fork | n=4
+
+### LESSON checks | Never be surprised by a check
+goal: See his checks before you move a piece away from your king.
+rule: List his checks before you move a piece away from your king or open a line.
+> In 50 of your mistakes, his best answer was a check. You must answer a check, so he gets a free move: to take a loose piece, bring another attacker or win time. Before you move, name every check he could give after your move. It takes five seconds.
+
+#### EX checks-a | rn1qkbnr/pp2pppp/8/3P1b2/3p4/1N3N2/PPP2PPP/R1BQKB1R b KQkq - 3 6 | src=game:148531875900-11
+> Your game against NatalioCossi, 26 Jan 2026. You played ((6...e6)) here after 2 seconds.
+6... Qxd5! {Take the pawn back now. After ((6...e6 7.Bb5+ Nd7 8.dxe6)) his check gains the time he needs, and you end up a pawn down. [g:d8-d5]} 7. Nbxd4 Nf6 {Material is level and your pieces are coming out.}
+key: Before a pawn move, look for his checks: a check gives him a free move.
+
+#### EX checks-b | r1bqk2r/pp2bppp/2n2n2/1Bpp2B1/8/3P1N2/PPP2PPP/RN1QK2R w KQkq - 2 8 | src=game:166167260924-14
+> Your game against yanis4dja, 19 Mar 2026. You played ((8.Qe2)) here after 3 seconds.
+8. O-O! {Look at his checks first. After ((8.Qe2 Qa5+)) his queen checks your king and attacks your bishop on b5 at the same time. Castle, and that check is gone. [r:a5] [g:e1-g1]} O-O 9. Bxc6 bxc6 10. Re1 {Your king is safe and no check can hit two things.}
+key: A queen check that also attacks a loose piece is a fork: castle or defend before it comes.
+
+#### JUDGE checks-j1 | r2qkbnr/pp3ppp/4p3/3P1n2/8/2NQ3P/PP3PP1/R1B1KB1R b KQkq - 0 10 | move=Bb4 | verdict=blunder | src=game:147549122260-19
+refute: Qb5+ Kf8 Qxb4+
+why: Your bishop on b4 is loose. His queen checks from b5 and takes the bishop next move. A check plus a loose piece is a fork.
+
+#### JUDGE checks-j2 | 2rq1rk1/p4ppp/2pbp1b1/2pn4/2B3P1/2NP3P/PPPB1P2/R2QK2R w KQ - 2 14 | move=f4 | verdict=blunder | src=game:166040163292-26
+refute: Qh4+ Kf1 Bxf4
+why: The pawn move opens the road to your king. His queen checks on h4, your king must walk, and then he takes the pawn on f4 with a strong attack.
+
+#### JUDGE checks-j3 | r4r1k/pp4pp/1q3p2/1n2p3/PP6/1Q6/5PPP/2R1R1K1 b - - 0 22 | move=Nd4 | verdict=safe | src=game:186479451862-43
+why: After your knight move his only check is on g8, and your rook takes the queen there. A check that loses the queen is no danger.
+
+#### JUDGE checks-j4 | r3k2r/1p2bppp/pq2p3/3pP3/3P4/1N3Q1P/PP3PP1/R4RK1 b kq - 2 15 | move=O-O | verdict=safe | src=game:186121288844-29
+why: After you castle his only check is the queen taking on f7, and your rook takes the queen back. Your king is safer than before.
+
+#### MINE fix | tags=walked into check | n=8
+
+### LESSON gift | Is it a gift or a trap?
+goal: Punish his blunders, and do not fall for his bait.
+rule: When he leaves something, take ten seconds: usually it is a blunder, so punish it; sometimes it is bait.
+> Players at your level blunder often, so his mistakes are your best chance to win. When his move leaves something hanging, stop. Ask: can I take it, or hit two things at once? Then ask the three questions about your capture. If they come back clean, it was a gift: take it.
+
+#### EX gift-a | 4r1k1/p5p1/1p3qp1/3p1n2/8/P5RQ/2P2PK1/5R2 w - - 12 34 | src=game:186486819486-66 | side=black
+> Your game against hmzjml, 3 Nov 2026. You are Black and the game is level.
+34. Rf3? {His rook leaves g3 and stands next to his king. Is anything now loose? [r:f3]} Nh4+! {A knight check that also attacks the rook. In the game you played ((34...Qg5+)) after 3 seconds and went on to lose. [g:h4-g2] [g:h4-f3]} 35. Kh1 Nxf3 {You have won a whole rook.}
+key: When he moves a piece next to his king, look for a check that hits it too.
+
+#### JUDGE gift-j1 | 6k1/1R2bpp1/2p1p2p/3p4/r2P4/2P2N2/5PPP/6K1 w - - 0 25 | move=Rxe7 | verdict=blunder | src=game:186906719572-48
+refute: Ra1+ Ne1 Rxe1#
+why: He grabbed your bishop, but his back rank has no escape square. Your rook checks on a1 and the knight block does not help: mate on e1.
+
+#### JUDGE gift-j2 | r3k2r/pp3ppp/2q5/4p3/Q2n4/3B4/PP3PPP/R4RK1 w kq - 2 17 | move=Bb5 | verdict=blunder | src=game:186479451862-32
+refute: Nxb5
+why: His bishop attacks your queen, but your knight on d4 takes it. Always check whether his attacking piece can be captured.
+
+#### JUDGE gift-j3 | rn1qkb1r/1pp2ppp/p3pnb1/3p4/3P1B2/2NBPN2/PPP2PPP/R2Q1RK1 b kq - 1 7 | move=Bd6 | verdict=safe | src=game:186478283682-13
+why: His bishop on d6 can be taken, but his queen takes back. It is a fair trade offer, not a gift: nothing to punish here.
+
+#### MINE pun | n=8
+
+#### MINE chk | who=opp | n=8
+
+### LESSON clock | Where your time should go
+goal: Spend your thinking time on the moves that decide the game.
+rule: Spend time when the position changes: captures, checks, pawn breaks, and whenever you are winning.
+> In your games the median time on a mistake was 7.4 seconds, and on your other moves 4.5 seconds. So you play your mistakes almost as fast as your normal moves. Quick moves are fine when nothing has changed. After a capture, a check or a pawn break, or when you are winning, stop and run the three questions.
+
+#### EX clock-a | r3r1k1/2p3bp/1p1p2p1/pQ1q1pPP/4bP2/3BB3/PP6/R3K1R1 b Q - 0 24 | src=game:170619095640-47
+> Your game against Vincentvega98, 23 Jun 2026. You were winning, and you played ((24...Bxd3)) after 2 seconds.
+24... Qxd3! {His bishop has just captured on d3. Before you take back, look at his queen on b5: it attacks your queen. After ((24...Bxd3 25.Qxd5+)) your queen goes with check. [r:b5] [g:b5-d5]} 25. Qxd3 Bxd3 26. Kf2 gxh5 27. Rac1 {The queens are off and you are still a piece up.}
+key: A capture changes the position: before you take back, look at what his pieces attack now.
+
+#### JUDGE clock-j1 | r1bR4/pp3Npk/2p1p2p/5pb1/8/2P5/PPB3PP/5R1K b - - 0 22 | move=Bc1 | verdict=blunder | src=game:166470757312-43
+refute: Rxc1
+why: His rook had just landed on d8, and your bishop could take it. You moved the bishop to c1 in 1 second, where his rook on f1 takes it.
+
+#### JUDGE clock-j2 | 8/4k3/p4p1R/1p3P2/6P1/5K2/r7/8 w - - 0 56 | move=Kf4 | verdict=blunder | src=game:164969420132-110
+refute: Ra4+ Kg3 b4
+why: Played in 1 second. His rook checks from a4, and while your king steps back, his b-pawn starts to run. In a rook ending, count his checks first.
+
+#### JUDGE clock-j3 | r1bq1rk1/pp1nppbp/3p1npB/2pP4/4P3/2N5/PPPQBPPP/R3K1NR b KQ - 2 8 | move=Ne5 | verdict=blunder | src=game:187075020530-15
+refute: Bxg7 Kxg7 f4
+why: Played in 3 seconds. After the bishop trade his f-pawn attacks your knight on e5, and it has to go back. Taking on h6 yourself was better.
+
+#### JUDGE clock-j4 | 1rq3k1/4pnbp/1p4p1/pQ2P3/3P4/2P2R1P/PP4P1/5RK1 w - - 0 29 | move=Rxf7 | verdict=safe | src=game:186516071400-56
+why: Played in 2 seconds, and that is fine. You take a knight, and none of his checks or captures hurts you afterwards.
+
+#### JUDGE clock-j5 | r5k1/5rpp/p1q1pp1B/1p1p4/3P2Q1/bP1N3P/P1P2PP1/1n3RK1 w - - 0 23 | move=Rxb1 | verdict=safe | src=game:173164897190-44
+why: His knight took on b1, and you took it back at once. A fast move is fine when the answer is forced and safe.
+
+#### JUDGE clock-j6 | r3r1k1/2p3bp/1p1p2p1/P2P1p2/5B2/2P2BP1/1K5P/3R3R b - - 0 24 | move=Rxa5 | verdict=safe | src=game:169664713158-47
+why: He took on a5 and you took back in 2 seconds. Nothing of yours is loose afterwards, so the quick recapture is safe.
+
+#### MINE chk | who=me | verdict=blunder | n=6
+

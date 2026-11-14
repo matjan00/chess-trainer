@@ -1,0 +1,150 @@
+
+== Threat cards (what is the threat?) (20 total, first 10) ==
+thr/186536062566-10  rnbqk2r/pp2ppbp/3p1np1/2p5/3PPB2/2N5/PPPQ1PPP/R3KBNR w KQkq - 0 6
+    white to move; threat c5d4; ok ['d4c5']; he played Nf3; https://www.chess.com/game/live/186536062566
+    Your opponent threatened cxd4. Your best answer was dxc5. You played Nf3.
+thr/186518899356-41  2r2rk1/p4ppp/1pq1p3/3pP3/3P2P1/1P1Q3R/P5PP/5RK1 b - - 0 21
+    black to move; threat d3h7; ok ['c6c2']; he played g6; https://www.chess.com/game/live/186518899356
+    Your opponent threatened Qxh7#, which leads to checkmate. Your best answer was Qc2. You played g6.
+thr/184789756390-94  R7/5rk1/3q1p2/3p2pK/5pQ1/4P3/6PP/8 w - - 4 48
+    white to move; threat f4e3; ok ['g4f5']; he played Qc8; https://www.chess.com/game/live/184789756390
+    Your opponent threatened fxe3, which wins a pawn. Your best answer was Qf5. You played Qc8.
+thr/173749123966-39  2Q2bk1/p1pBrp1p/3p2p1/5P2/3q4/4r2P/PPP3P1/3R1RK1 b - - 2 20
+    black to move; threat d1d4; ok ['e3d3']; he played Qb6; https://www.chess.com/game/live/173749123966
+    Your opponent threatened Rxd4. Your best answer was Rd3+. You played Qb6.
+thr/173335385796-26  r2q1rk1/ppp2ppp/2n1pn2/3p2P1/3P1b2/2NQPP2/PPP1N2R/R3KB2 w Q - 0 14
+    white to move; threat f4h2; ok ['e2f4', 'e3f4']; he played gxf6; https://www.chess.com/game/live/173335385796
+    Your opponent threatened Bxh2, which wins a piece. Your best answer was Nxf4. You played gxf6.
+thr/173335385796-50  r2r4/2p2pkp/np2p3/p2p3q/P2P1P2/1QP1PN2/1P1KN2b/R4B2 w - - 3 26
+    white to move; threat h5f3; ok ['f1g2']; he played Ng5; https://www.chess.com/game/live/173335385796
+    Your opponent threatened Qxf3. Your best answer was Bg2. You played Ng5.
+thr/172952181082-40  r4r2/pp1nR1pk/1q5p/3Q4/8/8/PPP2PPP/4R1K1 w - - 0 21
+    white to move; threat b6f2; ok ['e1e2']; he played Qxd7; https://www.chess.com/game/live/172952181082
+    Your opponent threatened Qxf2+, which leads to checkmate. Your best answer was R1e2. You played Qxd7.
+thr/169664713158-31  r4rk1/p1pn1pbp/1p1p2p1/3Pp3/1Pb1P3/2P1BPP1/P6P/2KR1BNR b - - 1 16
+    black to move; threat f1c4; ok ['c4f1', 'b6b5']; he played Bxa2; https://www.chess.com/game/live/169664713158
+    Your opponent threatened Bxc4, which wins a piece. Your best answer was Bxf1. You played Bxa2.
+thr/166427192152-46  r5k1/6p1/p2b2qp/1pp5/6P1/1NP5/PP1Q1P2/R5K1 w - - 0 24
+    white to move; threat g6g4; ok ['d2d5']; he played Nxc5; https://www.chess.com/game/live/166427192152
+    Your opponent threatened Qxg4+, which wins a pawn. Your best answer was Qd5+. You played Nxc5.
+thr/166123922302-39  r4rk1/p2q3p/1p1p2p1/1npP1pB1/3bPN2/P4P2/6PP/1R1Q1R1K b - - 3 20
+    black to move; threat d1a4; ok ['b5c3']; he played Be5; https://www.chess.com/game/live/166123922302
+    Your opponent threatened Qa4. Your best answer was Nc3. You played Be5.
+
+== Decoys (safe moves) (453 total, first 10) ==
+chk/187114519440-38o  r3k1n1/p6r/b1p4p/3pBpp1/3Pp3/2P2P2/PP4PP/RN2R1K1 w - - 2 20
+    opp played fxe4 (f3e4); https://www.chess.com/game/live/187114519440
+chk/187114519440-49  r3k3/p6r/b7/3pBnpp/3Pp3/1PN3P1/P6P/R3R1K1 b - - 1 25
+    me played Rd8 (a8d8); https://www.chess.com/game/live/187114519440
+chk/187075020530-14o  r1bq1rk1/pp1nppbp/3p1np1/2pP4/4PB2/2N5/PPPQBPPP/R3K1NR w KQ - 1 8
+    opp played Bh6 (f4h6); https://www.chess.com/game/live/187075020530
+chk/187075020530-23  r2q1r2/pp1bppkp/3p1np1/2pPn3/4P1P1/2N2P2/PPPQB2P/2KR2NR b - - 0 12
+    me played b5 (b7b5); https://www.chess.com/game/live/187075020530
+chk/187075020530-30o  1r3r2/p2bppkp/3p1np1/q1pPn3/1p2P1PP/P4P2/1PPQB3/1NKR2NR w - - 1 16
+    opp played h5 (h4h5); https://www.chess.com/game/live/187075020530
+chk/187052807740-14  r2qk2r/pppb1pp1/n3pn1p/3p4/1b1P1B2/2N1PN2/PPP2PPP/R2QKB1R w KQkq - 4 8
+    me played Bxa6 (f1a6); https://www.chess.com/game/live/187052807740
+chk/187052807740-17o  r2qk2r/p1pb1pp1/p3pn1p/3p4/1b1P1B2/2N1PN2/PPP2PPP/R2Q1RK1 b kq - 1 9
+    opp played Bxc3 (b4c3); https://www.chess.com/game/live/187052807740
+chk/187007445354-15o  rnbq1rk1/ppp1ppbp/3p2p1/8/3PPNP1/2N2P2/PPP4P/R2QKB1R b KQ - 0 8
+    opp played Nc6 (b8c6); https://www.chess.com/game/live/187007445354
+chk/187007445354-47o  r4b1r/1ppq1k2/3p1p1P/p2Pp1p1/4Pp2/5P1R/PPP5/1K1N1Q1R b - - 2 24
+    opp played Kg6 (f7g6); https://www.chess.com/game/live/187007445354
+chk/186997260866-26o  2kr3r/pp3ppp/1qn1p3/2b1Pb2/8/P1Q2N1P/1PP2PP1/R1B2RK1 w - - 0 14
+    opp played Be3 (c1e3); https://www.chess.com/game/live/186997260866
+
+== fix cards (234 total, first 10) ==
+fix/187114519440-29  r3k1nr/p3bp1p/b1p3p1/3p2N1/3Pp3/2P2P2/PP4PP/RNB1R1K1 b - - 0 15
+    black to move; ok ['h7h6']; played Bxg5; https://www.chess.com/game/live/187114519440
+    The key is moving your pawn to h6. It is the only good move here. You played Bxg5. Your opponent answers Bxg5 and wins a piece.
+fix/187114519440-53  4k3/p2r3r/b7/3p1nBp/3Pp3/1PN3P1/P6P/R3R1K1 b - - 0 27
+    black to move; ok ['f5d4']; played h4; https://www.chess.com/game/live/187114519440
+    The key is taking the pawn on d4 with your knight. You win a knight for a pawn. You played h4. Your opponent answers Nxe4 and you are much worse.
+fix/187114519440-67  4k3/p7/b5r1/3NBnr1/3Pp3/1P6/P4K2/3R2R1 b - - 2 34
+    black to move; ok ['e4e3']; played Bb7; https://www.chess.com/game/live/187114519440
+    The key is moving your pawn to e3. It is the only good move here. You played Bb7. Your opponent answers Rxg5 and you are much worse.
+fix/187052807740-34  r4rk1/p4pp1/p3p2p/1b2N3/2pBn3/2P1P3/P1P2PPP/R3R1K1 w - - 2 18
+    white to move; ok ['f2f3']; played a4; https://www.chess.com/game/live/187052807740
+    The key is moving your pawn to f3. It is the only good move here. You played a4. Your opponent answers Be8 and you are much worse.
+fix/187052807740-36  r4rk1/p5p1/p3pp1p/1b2N3/P1pBn3/2P1P3/2P2PPP/R3R1K1 w - - 0 19
+    white to move; ok ['e5g6']; played axb5; https://www.chess.com/game/live/187052807740
+    The key is moving your knight to g6. You win a bishop. You played axb5. Your opponent answers fxe5 and wins a piece.
+fix/187052807740-52  r3r1k1/6p1/p6p/1p2p3/2p1P3/2n2P2/2P2BPP/R2R2K1 w - - 0 27
+    white to move; ok ['d1d7']; played Rd2; https://www.chess.com/game/live/187052807740
+    The key is moving your rook to d7. It is the only good move here. You played Rd2. Your opponent answers a5 and you are much worse.
+fix/187052807740-56  r3r1k1/6p1/p6p/1p2p3/n3P3/2p2P2/2PR1BPP/3R2K1 w - - 0 29
+    white to move; ok ['d2d7']; played Rd6; https://www.chess.com/game/live/187052807740
+    The key is moving your rook to d7. It is the only good move here. You played Rd6. Your opponent answers Nb2 and you are much worse.
+fix/187007445354-34  r1bq1rk1/1pp3b1/3p1pp1/p2Pp3/4Pp1P/2NQ1P2/PPP5/1K1R1B1R w - - 0 18
+    white to move; ok ['h4h5']; played Bh3; https://www.chess.com/game/live/187007445354
+    The key is moving your pawn to h5. It is the only good move here. You played Bh3. Your opponent answers Bxh3 and you are much worse.
+fix/187007445354-50  r4b2/1ppq4/3p1pkr/p2Pp1p1/4Pp2/5P1R/PPP2N2/1K3Q1R w - - 0 26
+    white to move; ok ['f2g4']; played Rxh6+; https://www.chess.com/game/live/187007445354
+    The key is moving your knight to g4. You win a rook for a knight. You played Rxh6+. Your opponent answers Bxh6 and wins a rook.
+fix/187007445354-62  5q1r/1pp3b1/3p2k1/p2Pp1p1/2P2pN1/5P2/PP5R/1K5Q w - - 1 32
+    white to move; ok ['h2h8']; played Kc2; https://www.chess.com/game/live/187007445354
+    The key is taking the rook on h8 with your rook. It is the only good move here. You played Kc2. Your opponent answers Rxh2+ and you are much worse.
+
+== pun cards (81 total, first 10) ==
+pun/187114519440-66  4k3/p7/b5r1/3NBnr1/3Pp3/1P6/P4K2/3R2R1 b - - 2 34
+    black to move; ok ['e4e3']; played Bb7; https://www.chess.com/game/live/187114519440
+    Your opponent just blundered with Rg1. The key is moving your pawn to e3. It is the only good move here.
+pun/187114519440-72  8/pb2k3/5N2/4Bnr1/3Pp3/1P6/P4K2/6R1 b - - 1 37
+    black to move; ok ['e4e3']; played e3+; https://www.chess.com/game/live/187114519440
+    Your opponent just blundered with Rg1. The key is moving your pawn to e3. You win a rook.
+pun/187052807740-35  r4rk1/p5p1/p3pp1p/1b2N3/P1pBn3/2P1P3/2P2PPP/R3R1K1 w - - 0 19
+    white to move; ok ['e5g6']; played axb5; https://www.chess.com/game/live/187052807740
+    Your opponent just blundered with f6. The key is moving your knight to g6. You win a bishop.
+pun/187007445354-49  r4b2/1ppq4/3p1pkr/p2Pp1p1/4Pp2/5P1R/PPP2N2/1K3Q1R w - - 0 26
+    white to move; ok ['f2g4']; played Rxh6+; https://www.chess.com/game/live/187007445354
+    Your opponent just blundered with Rxh6. The key is moving your knight to g4. You win a rook for a knight.
+pun/186997260866-18  2kr2nr/pp3ppp/1qn1p3/1BbpPb2/8/P1N2N1P/1PPQ1PP1/R1B1K2R b KQ - 3 10
+    black to move; ok ['d5d4']; played Nge7; https://www.chess.com/game/live/186997260866
+    Your opponent just blundered with Bb5. The key is moving your pawn to d4. It is the only good move here.
+pun/186997260866-20  2kr3r/pp2nppp/1qn1p3/1BbpPb2/8/P1N2N1P/1PPQ1PP1/R1B2RK1 b - - 5 11
+    black to move; ok ['d5d4']; played d4; https://www.chess.com/game/live/186997260866
+    Your opponent just blundered with O-O. The key is moving your pawn to d4. It is the only good move here.
+pun/186906719572-48  6k1/4Rpp1/2p1p2p/3p4/r2P4/2P2N2/5PPP/6K1 b - - 0 25
+    black to move; ok ['a4a1']; played Ra1+; https://www.chess.com/game/live/186906719572
+    Your opponent just blundered with Rxe7. Mate in 2: after your rook goes to a1, your rook mates on e1 whatever the reply.
+pun/186516071400-13  r1b1qrk1/pppnppbp/5np1/3p4/3P1B2/2N1PN2/PPP1BPPP/R2Q1RK1 w - - 7 8
+    white to move; ok ['c3b5']; played Bxc7; https://www.chess.com/game/live/186516071400
+    Your opponent just blundered with Qe8. The key is moving your knight to b5. You win a pawn.
+pun/186486819486-66  4r1k1/p5p1/1p3qp1/3p1n2/8/P4R1Q/2P2PK1/5R2 b - - 13 34
+    black to move; ok ['f5h4']; played Qg5+; https://www.chess.com/game/live/186486819486
+    Your opponent just blundered with Rf3. The key is moving your knight to h4. You win a rook.
+pun/186479451862-32  r3k2r/pp3ppp/2q5/1B2p3/Q2n4/8/PP3PPP/R4RK1 b kq - 3 17
+    black to move; ok ['d4b5', 'c6b5']; played Nxb5; https://www.chess.com/game/live/186479451862
+    Your opponent just blundered with Bb5. The key is taking the bishop on b5 with your knight. You win a bishop for a pawn.
+
+== tq cards (97 total, first 10) ==
+tq/187114519440-73  8/pb2k3/5N2/4Bnr1/3Pp3/1P6/P4K2/6R1 b - - 1 37
+    black to move; ok ['e4e3']; played e3+; https://www.chess.com/game/live/187114519440
+    The key is moving your pawn to e3. You win a rook. You found it.
+tq/187114519440-75  8/pb2k3/5N2/4Bnr1/3P4/1P2p3/P7/5KR1 b - - 1 38
+    black to move; ok ['b7a6']; played Ba6+; https://www.chess.com/game/live/187114519440
+    Mate in 2: after your bishop goes to a6, your rook mates on g1 whatever the reply. You found it.
+tq/187052807740-36  r4rk1/p5p1/p3pp1p/1b2N3/P1pBn3/2P1P3/2P2PPP/R3R1K1 w - - 0 19
+    white to move; ok ['e5g6']; played axb5; https://www.chess.com/game/live/187052807740
+    The key is moving your knight to g6. You win a bishop. You played axb5.
+tq/187007445354-50  r4b2/1ppq4/3p1pkr/p2Pp1p1/4Pp2/5P1R/PPP2N2/1K3Q1R w - - 0 26
+    white to move; ok ['f2g4']; played Rxh6+; https://www.chess.com/game/live/187007445354
+    The key is moving your knight to g4. You win a rook for a knight. You played Rxh6+.
+tq/186997260866-19  2kr2nr/pp3ppp/1qn1p3/1BbpPb2/8/P1N2N1P/1PPQ1PP1/R1B1K2R b KQ - 3 10
+    black to move; ok ['d5d4']; played Nge7; https://www.chess.com/game/live/186997260866
+    The key is moving your pawn to d4. It is the only good move here. You played Nge7.
+tq/186906719572-49  6k1/4Rpp1/2p1p2p/3p4/r2P4/2P2N2/5PPP/6K1 b - - 0 25
+    black to move; ok ['a4a1']; played Ra1+; https://www.chess.com/game/live/186906719572
+    Mate in 2: after your rook goes to a1, your rook mates on e1 whatever the reply. You found it.
+tq/186906719572-51  6k1/4Rpp1/2p1p2p/3p4/3P4/2P5/5PPP/r3N1K1 b - - 2 26
+    black to move; ok ['a1e1']; played Rxe1#; https://www.chess.com/game/live/186906719572
+    Checkmate: your rook goes to e1, the king is attacked and has no safe square. You found it.
+tq/186516071400-20  r1b1qrk1/p2nppbp/1p4p1/3N4/3P4/4PNn1/PPP1BPPP/R2Q1RK1 w - - 0 11
+    white to move; ok ['h2g3']; played fxg3; https://www.chess.com/game/live/186516071400
+    The key is taking the knight on g3 with your pawn. You win a knight. You played fxg3.
+tq/186486819486-67  4r1k1/p5p1/1p3qp1/3p1n2/8/P4R1Q/2P2PK1/5R2 b - - 13 34
+    black to move; ok ['f5h4']; played Qg5+; https://www.chess.com/game/live/186486819486
+    The key is moving your knight to h4. You win a rook. You played Qg5+.
+tq/186478283682-56  6k1/8/p2n1p2/1p1p2q1/3Nr1P1/2PQ3P/PP4K1/5R2 w - - 0 29
+    white to move; ok ['d4f5', 'd4f3']; played Nf5; https://www.chess.com/game/live/186478283682
+    The key is moving your knight to f5. It is one of the two good moves here. You found it.

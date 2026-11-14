@@ -23,3 +23,9 @@ tube/candidates.json
 tube/collect_done.json
 tube/batches/
 openings2/cache/*.tmp
+train2/cache/pool_raw.jsonl
+train2/cache/pool_fetch.state.json
+train2/cache/pz_evals.jsonl
+train2/cache/pz_accepted.json
+train2/cache/logs/
+train2/cache/*.tmp

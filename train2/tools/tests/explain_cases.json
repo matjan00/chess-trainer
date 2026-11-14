@@ -1,0 +1,450 @@
+[
+{
+"id": "hoFwx",
+"fen": "8/7k/2Q1p1pp/4P3/n1p5/4qP2/1p4PP/1R4K1 w - - 2 44",
+"moves": "g1h1 e3c1 b1c1 b2c1q",
+"themes": [
+"advancedPawn",
+"backRankMate",
+"endgame",
+"mate",
+"mateIn2",
+"promotion",
+"short"
+],
+"group": "backrank",
+"why": "Mate in 2: after your queen goes to c1, your queen mates on c1 whatever the reply."
+},
+{
+"id": "IAKrz",
+"fen": "8/pp3pk1/2pQ1n2/3n1P2/P2P4/8/1PB2Pr1/2KNr3 b - - 0 31",
+"moves": "g2f2 d6g3 f6g4 g3g4",
+"themes": [
+"advantage",
+"fork",
+"master",
+"middlegame",
+"short"
+],
+"group": "fork",
+"why": "The key is moving your queen to g3. You win a knight."
+},
+{
+"id": "OoRqC",
+"fen": "3Q1k2/p3np2/5p2/7P/4B1P1/1q2P1K1/8/8 b - - 1 40",
+"moves": "f8g7 h5h6 g7h6 d8h8 h6g5 h8h4",
+"themes": [
+"attraction",
+"endgame",
+"long",
+"master",
+"mate",
+"mateIn3"
+],
+"group": "deflection",
+"why": "Mate in 3: after your pawn goes to h6, your queen mates on h4 whatever the reply."
+},
+{
+"id": "xthKI",
+"fen": "r1bq1r1k/ppp1bppp/3p4/3Nn3/4P3/1B4B1/PPP2PPP/R2QR1K1 w - - 8 14",
+"moves": "d1h5 c8g4 h5e5 d6e5",
+"themes": [
+"advantage",
+"middlegame",
+"short",
+"trappedPiece"
+],
+"group": "trapped",
+"why": "Trapped piece: the queen on h5 has no safe square left, so you win it. You win a queen for a knight."
+},
+{
+"id": "bj08J",
+"fen": "8/8/5p2/p1p5/P1P1pkPK/1P6/4P3/8 w - - 0 41",
+"moves": "h4h3 f4e3 g4g5 f6g5",
+"themes": [
+"crushing",
+"endgame",
+"pawnEndgame",
+"short"
+],
+"group": "pawnEndgame",
+"why": "Pawn endgame: the key is moving your king to e3. You win a pawn."
+},
+{
+"id": "nH9jV",
+"fen": "8/8/5Kpp/5p1k/8/6PP/8/8 b - - 0 47",
+"moves": "g6g5 f6f5 g5g4 h3g4",
+"themes": [
+"capturingDefender",
+"endgame",
+"mate",
+"mateIn2",
+"pawnEndgame",
+"short",
+"zugzwang"
+],
+"group": "removal",
+"why": "Mate in 2: after your king goes to f5, your pawn mates on g4 whatever the reply."
+},
+{
+"id": "qNtHi",
+"fen": "8/5p2/5kp1/3Kn2p/4P2P/6P1/4B3/8 b - - 1 44",
+"moves": "e5g4 e2g4 h5g4 d5d6",
+"themes": [
+"crushing",
+"defensiveMove",
+"endgame",
+"short"
+],
+"group": "defend",
+"why": "The key is taking the knight on g4 with your bishop. It is the only good move here."
+},
+{
+"id": "0SEkf",
+"fen": "2kr1b1r/ppp3pp/2n2q2/4p1Q1/8/2n2N2/PPPN1PPP/R4RK1 w - - 0 14",
+"moves": "b2c3 f6g5 f3g5 d8d2",
+"themes": [
+"capturingDefender",
+"crushing",
+"middlegame",
+"short"
+],
+"group": "removal",
+"why": "Remove the defender: taking the queen on g5 leaves the knight on d2 without its protection. You win a knight."
+},
+{
+"id": "SXYxw",
+"fen": "8/2pk4/5K2/1P2P3/2P2pp1/8/6P1/8 w - - 1 39",
+"moves": "e5e6 d7e8 c4c5 f4f3",
+"themes": [
+"crushing",
+"defensiveMove",
+"endgame",
+"pawnEndgame",
+"short"
+],
+"group": "pawnEndgame",
+"why": "Defence: you are in check, and this is the only reply that keeps the position safe."
+},
+{
+"id": "HyoBh",
+"fen": "2r2rk1/1p4pp/p3pq2/3n1p2/1Q1Pp3/PN2P2P/1P3PP1/2R2RK1 w - - 6 22",
+"moves": "b4b7 c8b8 b7a6 b8b3",
+"themes": [
+"advantage",
+"middlegame",
+"short",
+"skewer"
+],
+"group": "skewer",
+"why": "Skewer: your rook on b8 attacks the queen on b7, and when it moves you take the knight on b3 behind it. You win a knight for a pawn."
+},
+{
+"id": "1AhVK",
+"fen": "3r1knr/p1p1ppbp/2B3p1/8/8/5N2/P1P1KPPP/1R1R4 b - - 6 17",
+"moves": "d8d1 b1b8 d1d8 b8d8",
+"themes": [
+"backRankMate",
+"mate",
+"mateIn2",
+"middlegame",
+"short"
+],
+"group": "backrank",
+"why": "Back-rank mate: the king is stuck behind its own pawns, so your rook checks on d8 and nothing can escape."
+},
+{
+"id": "4jJ7C",
+"fen": "5k2/5pp1/2rNp2p/8/2p5/3nPPKP/2R3P1/8 w - - 3 39",
+"moves": "c2c4 c6d6 c4c8 f8e7",
+"themes": [
+"crushing",
+"endgame",
+"hangingPiece",
+"short"
+],
+"group": "hanging",
+"why": "Free piece: the knight on d6 has no defender, so you take it for nothing. You win a knight."
+},
+{
+"id": "v5Hon",
+"fen": "8/R7/8/2r2PP1/8/1k3K2/p7/8 w - - 1 49",
+"moves": "f3g4 c5c4 g4h5 c4a4 a7e7 a2a1q",
+"themes": [
+"advancedPawn",
+"crushing",
+"endgame",
+"long",
+"master",
+"promotion",
+"rookEndgame"
+],
+"group": "rookEndgame",
+"why": "Rook endgame: the pawn reaches a1 and becomes a queen."
+},
+{
+"id": "mINb9",
+"fen": "8/1R6/1P4p1/1r3p2/7k/4PP2/8/6K1 w - - 0 38",
+"moves": "b7h7 h4g3 g1f1 g3f3 h7h3 f3g4",
+"themes": [
+"crushing",
+"endgame",
+"long",
+"rookEndgame"
+],
+"group": "rookEndgame",
+"why": "Rook endgame: the key is moving your king to g3. You win a pawn."
+},
+{
+"id": "bq5sp",
+"fen": "5Nk1/7p/p2PP3/1p2QpP1/8/5qPK/PP1r3P/7R w - - 1 37",
+"moves": "e5f4 f3g2 h3h4 g2h2 h1h2 d2h2",
+"themes": [
+"deflection",
+"endgame",
+"fork",
+"long",
+"mate",
+"mateIn3",
+"sacrifice"
+],
+"group": "fork",
+"why": "Fork: your queen on g2 checks the king and attacks the rook on h1. It ends in checkmate."
+},
+{
+"id": "QcW99",
+"fen": "2kr1b1r/pppbpppp/2n5/8/5B2/2P3P1/PP2PPBP/R2K2NR w - - 5 9",
+"moves": "g1f3 d7h3 d1c2 h3g2",
+"themes": [
+"crushing",
+"discoveredAttack",
+"discoveredCheck",
+"middlegame",
+"short"
+],
+"group": "discovered",
+"why": "Discovered check: moving your bishop uncovers your rook on d8, which now checks the king. You win a bishop."
+},
+{
+"id": "N0UYk",
+"fen": "2rq1rk1/3nBpp1/p3p2p/1p6/1P1N4/P2QP3/B4nPP/2R2RK1 w - - 0 19",
+"moves": "f1f2 c8c1 f2f1 c1f1 g1f1 d8e7",
+"themes": [
+"advantage",
+"hangingPiece",
+"long",
+"middlegame"
+],
+"group": "hanging",
+"why": "Free piece: the rook on c1 has no defender, so you take it for nothing. You win a rook and a bishop."
+},
+{
+"id": "bfNoq",
+"fen": "rn1qr1k1/4bppp/p7/1p1nP3/3N4/1P6/1B3PPP/RN1QR1K1 b - - 2 16",
+"moves": "b8d7 d4c6 d8c7 d1d5",
+"themes": [
+"crushing",
+"discoveredAttack",
+"opening",
+"short"
+],
+"group": "discovered",
+"why": "Discovered attack: moving your knight uncovers your queen on d1, which now attacks the knight on d5. You win a knight."
+},
+{
+"id": "IBZI0",
+"fen": "r1bqr1k1/pp3pp1/6np/2bpP3/3N1P2/2NB4/PPQ3PP/R4RK1 w - - 1 18",
+"moves": "d3g6 c5d4 g1h1 f7g6",
+"themes": [
+"advantage",
+"hangingPiece",
+"intermezzo",
+"middlegame",
+"short"
+],
+"group": "intermezzo",
+"why": "In-between move: instead of taking back on g6 at once, your bishop goes to d4 with check first. You win a knight and a bishop."
+},
+{
+"id": "C2J7v",
+"fen": "8/8/p7/8/1Pk5/5K2/8/8 w - - 3 53",
+"moves": "f3e4 c4b4 e4d3 b4b3 d3d2 b3b2",
+"themes": [
+"crushing",
+"defensiveMove",
+"endgame",
+"long",
+"pawnEndgame"
+],
+"group": "defend",
+"why": "The key is taking the pawn on b4 with your king. You win a pawn."
+},
+{
+"id": "PLvUU",
+"fen": "r3k2r/pb1p1pp1/3bp2p/1B1pq3/8/4B1P1/PPPQ1P1P/R4RK1 b kq - 0 14",
+"moves": "b7c6 b5c6 d7c6 e3f4 e5h5 f4d6",
+"themes": [
+"advantage",
+"long",
+"middlegame",
+"skewer"
+],
+"group": "skewer",
+"why": "The key is taking the bishop on c6 with your bishop. You win a bishop."
+},
+{
+"id": "RYH1g",
+"fen": "rn3rk1/3bppb1/3p1np1/1ppP2Bp/1q2P2P/2NB1P2/PP1QN1P1/1K1R3R w - - 0 15",
+"moves": "c3b5 d7b5 d2b4 b5d3 d1d3 c5b4",
+"themes": [
+"advantage",
+"intermezzo",
+"long",
+"middlegame",
+"queensideAttack",
+"sacrifice"
+],
+"group": "intermezzo",
+"why": "The key is taking the knight on b5 with your bishop. You win a knight."
+},
+{
+"id": "TqJwS",
+"fen": "1krq1r2/6QR/p1bp4/3N4/6P1/2p2P2/PPP5/1K1R4 b - - 1 27",
+"moves": "c6d5 g7a7",
+"themes": [
+"mate",
+"mateIn1",
+"middlegame",
+"oneMove"
+],
+"group": "mate1",
+"why": "Checkmate: your queen goes to a7, the king is attacked and has no safe square."
+},
+{
+"id": "Myl8A",
+"fen": "rn2r2k/5pp1/2p2p2/2P5/3P3P/1Q1BPP2/5P2/q1KR3R w - - 1 22",
+"moves": "d3b1 a8a3 b3c2 a3c3 c1d2 c3c2",
+"themes": [
+"advantage",
+"long",
+"middlegame",
+"pin",
+"queensideAttack"
+],
+"group": "pin",
+"why": "The key is moving your rook to a3. You win a queen."
+},
+{
+"id": "Su7T8",
+"fen": "2br1r2/5p2/pR4n1/2p5/P3N1Nk/3P2PP/1P6/6K1 b - - 0 27",
+"moves": "h4h3 g4f2",
+"themes": [
+"mate",
+"mateIn1",
+"middlegame",
+"oneMove"
+],
+"group": "mate1",
+"why": "Checkmate: your knight goes to f2, the king is attacked and has no safe square."
+},
+{
+"id": "4HuO3",
+"fen": "2r3k1/p6p/2P3p1/1Pp1q3/P2b4/5p1P/3Q1P2/2R2BK1 w - - 1 32",
+"moves": "c1e1 e5g3 g1h1 d4f2",
+"themes": [
+"crushing",
+"deflection",
+"endgame",
+"master",
+"pin",
+"short"
+],
+"group": "pin",
+"why": "Pin: the pawn on f2 is pinned to the king, so it cannot move. You win a pawn."
+},
+{
+"id": "hhROT",
+"fen": "8/1p1r1k2/1R4p1/1P2n2p/8/4B1PP/5PK1/8 w - - 1 38",
+"moves": "e3f4 e5c4 b6c6 b7c6",
+"themes": [
+"advantage",
+"endgame",
+"short",
+"trappedPiece"
+],
+"group": "trapped",
+"why": "Trapped piece: the rook on b6 has no safe square left, so you win it. You win a rook."
+},
+{
+"id": "zQ78K",
+"fen": "8/2N5/p5k1/6pp/P1R5/6PK/r6P/8 w - - 0 47",
+"moves": "c7a6 g5g4 c4g4 h5g4 h3g4 a2a4",
+"themes": [
+"attraction",
+"crushing",
+"endgame",
+"long",
+"master"
+],
+"group": "deflection",
+"why": "Lure away: the rook on c4 is drawn off, and it no longer guards g4, where you then take. You win a rook for a pawn."
+},
+{
+"id": "ODU2Y",
+"fen": "2r3k1/ppP3pp/3Bp1p1/3pP1Q1/8/2q1P2P/6P1/6K1 b - - 1 25",
+"moves": "c8c7 g5d8 g8f7 d8f8",
+"themes": [
+"endgame",
+"mate",
+"mateIn2",
+"short"
+],
+"group": "mate2",
+"why": "Mate in 2: after your queen goes to d8, your queen mates on f8 whatever the reply."
+},
+{
+"id": "saSpd",
+"fen": "8/3p4/3Pp3/2P2kp1/3B4/5K1b/8/8 b - - 0 54",
+"moves": "e6e5 c5c6 f5e6 c6c7",
+"themes": [
+"advancedPawn",
+"bishopEndgame",
+"crushing",
+"endgame",
+"master",
+"short"
+],
+"group": "promotion",
+"why": "The key is moving your pawn to c6. It is the only good move here."
+},
+{
+"id": "wlHx7",
+"fen": "8/6p1/k4p1P/P6P/P3P3/2p1r3/2K5/8 b - - 0 58",
+"moves": "a6a5 h6h7 a5b4 h7h8q",
+"themes": [
+"advancedPawn",
+"crushing",
+"endgame",
+"master",
+"promotion",
+"rookEndgame",
+"short"
+],
+"group": "promotion",
+"why": "Promotion: the pawn reaches h8 and becomes a queen."
+},
+{
+"id": "oxkWi",
+"fen": "r1b1kR2/p4r2/2pR2Q1/1p2P1P1/4P3/2P2P2/qP6/2K2nN1 b - - 0 25",
+"moves": "e8f8 d6d8 f8e7 g6d6",
+"themes": [
+"mate",
+"mateIn2",
+"middlegame",
+"short",
+"triangleMate"
+],
+"group": "mate2",
+"why": "Mate in 2: after your rook goes to d8, your queen mates on d6 whatever the reply."
+}
+]

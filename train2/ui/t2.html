@@ -1,0 +1,28 @@
+<!-- Train 2 tab (inlined into the Train view by build.py at the T2_HTML placeholder); filled by T2.init() in t2core.js -->
+<div id="t2" class="t2">
+  <div id="t2-home"></div>
+  <div id="t2-course" hidden></div>
+  <div id="t2-stats" hidden></div>
+  <div id="t2-themes" hidden></div>
+  <div id="t2-player" class="play" hidden>
+    <div class="backrow t2-backrow"><button class="btn" data-act="back">← Back</button><span class="t2-kind draft" id="t2-draft" hidden>Draft</span></div>
+    <div class="viewer t2-viewer">
+      <div class="board-col">
+        <div class="t2-head">
+          <div class="t2-hrow"><span class="eyebrow" id="t2-mode"></span><span class="t2-src" id="t2-src" hidden></span></div>
+          <h3 id="t2-title"></h3>
+          <div class="progress"><span id="t2-bar"></span></div>
+        </div>
+        <div class="board-shell" id="t2-shell"><div class="board" id="t2board"></div></div>
+        <div class="controls actionbar" id="t2-actions"></div>
+      </div>
+      <div class="side">
+        <div class="t2-steps" id="t2-steps" hidden></div>
+        <div class="card t2-fb" id="t2-fb" aria-live="polite"></div>
+        <div id="t2-panel"></div>
+      </div>
+    </div>
+    <div class="t2-menu card" id="t2-menu" role="menu" hidden></div>
+  </div>
+  <div class="t2-toast" id="t2-toast" role="status" aria-live="polite"></div>
+</div>

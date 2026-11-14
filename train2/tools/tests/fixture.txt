@@ -1,0 +1,61 @@
+# COURSE fixture | Fixture course
+sub: A tiny course used by the tests.
+why: Two lessons, one checked by the engine and one by the tablebase.
+
+## CHAPTER ch1 | Fixture chapter | theme=fork
+> Two small lessons that every check must accept.
+
+### LESSON fork | The knight fork
+goal: Fork the king and the queen with a knight.
+rule: A knight check that also attacks the queen wins the queen.
+> A knight attacks eight squares and cannot be blocked. When it gives check and hits a bigger piece, you win it.
+
+#### EX fork-a | 3q3k/6pp/8/4N3/8/8/PPP5/R5K1 w - - 0 1 | src=composed
+> White to move. The black queen and king are a knight's jump apart.
+1. Nf7+! {The knight checks the king and attacks the queen on d8. [g:f7-h8] [g:f7-d8]} Kg8 {The king must step aside.} 2. Nxd8 {White wins the queen for free.}
+key: Look for a knight check that also attacks the queen.
+
+#### CARD fork-1 | r5k1/ppp5/8/8/4n3/8/6PP/3Q3K b - - 0 1 | src=composed
+sol: Nf2+ Kg1 Nxd1
+why: The knight checks the king and attacks the queen on d1. You win the queen.
+wrong: Nd2 | ((1...Nd2 2.Qxd2)) The queen takes the knight.
+
+#### CARD fork-2 | k3q3/pp6/8/3N4/8/8/5PPP/1K5R w - - 0 1 | src=composed
+sol: Nc7+ Kb8 Nxe8
+why: The knight checks the king and attacks the queen on e8. You win the queen.
+wrong: Nb6 | ((1.Nb6 axb6)) A pawn takes the knight.
+
+#### CARD fork-3 | 1k5r/5ppp/8/8/3n4/8/PP6/K3Q3 b - - 0 1 | src=composed
+sol: Nc2+ Kb1 Nxe1
+why: The knight checks the king and attacks the queen on e1. You win the queen.
+wrong: Nb3 | ((1...Nb3 2.axb3)) A pawn takes the knight.
+
+### LESSON kpk | King and pawn: take the opposition
+goal: Win with king and pawn when your king is in front.
+rule: Put your king in front of the pawn and keep the kings facing each other.
+> A king in front of its pawn is worth more than the pawn itself. The defender can only draw by stepping in front.
+
+#### EX kpk-a | 8/8/8/4k3/8/4K3/4P3/8 b - - 0 1 | src=book
+> Black to move. White has the better king.
+1... Kd5 {Black steps aside.} 2. Kf4! {White goes round the other side. [g:e3-f4]} Ke6 3. Ke4 {The king keeps in front of the pawn.} Kd6 4. Kf5 {White heads for the pawn's path.} Ke7 5. e3 {The pawn can now advance safely.} Kd6
+key: Walk the king round the defender first, then push the pawn.
+
+#### CARD kpk-1 | 3k4/8/3K4/3P4/8/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kc6
+also: Ke6 | The mirror image works just as well.
+why: Your king steps in front of the pawn with the defender cut off.
+wrong: Kc5 | ((1.Kc5 Kd7)) Black steps in front and the pawn cannot move.
+
+#### CARD kpk-2 | 4k3/8/4K3/4P3/8/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kd6
+also: Kf6 | The mirror image works just as well.
+why: Your king steps in front of the pawn with the defender cut off.
+wrong: Kd5 | ((1.Kd5 Kd7)) Black steps in front and the pawn cannot move.
+
+#### CARD kpk-3 | 8/8/8/2k5/8/2KP4/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd5
+why: Step in front of the pawn: now White cannot make progress.
+wrong: Kc6 | ((1...Kc6 2.Kc4)) White takes the {gl:opposition} and wins.
+
+#### PLAY kpk-p | 8/8/3k4/8/3K4/3P4/8/8 b - - 0 1 | side=white | goal=win | finish=promote | max=80
+> Play it out against the computer. You win when the pawn becomes a queen safely.

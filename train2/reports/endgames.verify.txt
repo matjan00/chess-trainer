@@ -1,0 +1,2 @@
+Train 2 verification: course endgames (Essential endgames), lesson rbehind
+21 lessons, 127 items; 0 FAIL, 0 WARN; 21.3 s, 1 engine searches, 13 tablebase probes

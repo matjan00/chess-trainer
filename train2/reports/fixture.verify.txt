@@ -1,0 +1,22 @@
+Train 2 verification: course fixture (Fixture course)
+2 lessons, 9 items; 18 FAIL, 0 WARN; 0.0 s, 0 engine searches, 0 tablebase probes
+
+== FAIL (18)
+[L0] fork / fork-a / ply 1: fork-a move 1.Nf7+: no engine
+[L0] fork / fork-a / ply 2: fork-a move 2.Kg8: no engine
+[L0] fork / fork-a / ply 3: fork-a move 3.Nxd8: no engine
+[L0] fork / fork-1: fork-1 step 1: no engine
+[L0] fork / fork-2: fork-2 step 1: no engine
+[L0] fork / fork-3: fork-3 step 1: no engine
+[L0] kpk / kpk-a / ply 2: kpk-a move 2.Kd5: no engine
+[L0] kpk / kpk-a / ply 3: kpk-a move 3.Kf4: no engine
+[L0] kpk / kpk-a / ply 4: kpk-a move 4.Ke6: no engine
+[L0] kpk / kpk-a / ply 5: kpk-a move 5.Ke4: no engine
+[L0] kpk / kpk-a / ply 6: kpk-a move 6.Kd6: no engine
+[L0] kpk / kpk-a / ply 7: kpk-a move 7.Kf5: no engine
+[L0] kpk / kpk-a / ply 8: kpk-a move 8.Ke7: no engine
+[L0] kpk / kpk-a / ply 9: kpk-a move 9.e3: no engine
+[L0] kpk / kpk-a / ply 10: kpk-a move 10.Kd6: no engine
+[L0] kpk / kpk-1: kpk-1 step 1: no engine
+[L0] kpk / kpk-2: kpk-2 step 1: no engine
+[L0] kpk / kpk-3: kpk-3 step 1: no engine

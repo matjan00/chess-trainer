@@ -1,0 +1,69 @@
+Puzzle verification report (BLUEPRINT 2.2)
+built 2026-11-14 16:26
+
+candidates examined by the engine pipeline: 684   accepted: 9153
+rejections by rule (each candidate counted once, at its first failure): PZ2 1, PZ3 31, PZ4 297, PZ5 354, PZ6 1
+  PZ1 invalid/illegal/over | PZ2 solution not best | PZ3 second solution | PZ4 pay-off or time-out | PZ5 trivial capture | PZ6 duplicate position | PZ7 explanation | PZG same game
+
+accepted per group x rating band (wanted in the last row):
+group       600-  899 900- 1099 1100- 1299 1300- 1499 1500- 1699 1700- 1999   total
+hanging             60        100        150        170        150        120   750
+fork                60        100        150        170        150        120   750
+pin                 60        100        150        170        150        120   750
+skewer              60        100        150        170        150        120   750
+discovered          60        100        150        170        150        120   750
+removal             16        100        150        170        150        112   698
+deflection          60        100        150        166        132         96   704
+trapped              5        100        150        170        150        120   695
+intermezzo          13        100        150        170        150        120   703
+mate1               60        100        150        170        150        120   750
+mate2               60        100        150        162        150        120   742
+backrank            46         53         58         79         65         30   331
+defend              23         71        106        112         98         92   502
+promotion           60         75         37         14          7          5   198
+pawnEndgame         36          1          0          0          0          0   37
+rookEndgame          8         16          6          9          4          0   43
+TOTAL              687       1316       1857       2072       1806       1415   9153
+wanted             960       1600       2400       2720       2400       1920   12000
+
+cells below the wanted number (the group has no more candidates passing the Lichess filters, or the engine rejected them):
+  removal 600-899: 16 of 60
+  removal 1700-1999: 112 of 120
+  deflection 1300-1499: 166 of 170
+  deflection 1500-1699: 132 of 150
+  deflection 1700-1999: 96 of 120
+  trapped 600-899: 5 of 60
+  intermezzo 600-899: 13 of 60
+  mate2 1300-1499: 162 of 170
+  backrank 600-899: 46 of 60
+  backrank 900-1099: 53 of 100
+  backrank 1100-1299: 58 of 150
+  backrank 1300-1499: 79 of 170
+  backrank 1500-1699: 65 of 150
+  backrank 1700-1999: 30 of 120
+  defend 600-899: 23 of 60
+  defend 900-1099: 71 of 100
+  defend 1100-1299: 106 of 150
+  defend 1300-1499: 112 of 170
+  defend 1500-1699: 98 of 150
+  defend 1700-1999: 92 of 120
+  promotion 900-1099: 75 of 100
+  promotion 1100-1299: 37 of 150
+  promotion 1300-1499: 14 of 170
+  promotion 1500-1699: 7 of 150
+  promotion 1700-1999: 5 of 120
+  pawnEndgame 600-899: 36 of 60
+  pawnEndgame 900-1099: 1 of 100
+  pawnEndgame 1100-1299: 0 of 150
+  pawnEndgame 1300-1499: 0 of 170
+  pawnEndgame 1500-1699: 0 of 150
+  pawnEndgame 1700-1999: 0 of 120
+  rookEndgame 600-899: 8 of 60
+  rookEndgame 900-1099: 16 of 100
+  rookEndgame 1100-1299: 6 of 150
+  rookEndgame 1300-1499: 9 of 170
+  rookEndgame 1500-1699: 4 of 150
+  rookEndgame 1700-1999: 0 of 120
+
+timings: this run 45.6 min, 7096 positions searched at depth 16 (cap 4 s), 0 time-outs; cache pz_evals.jsonl 35123 positions
+NOT COMPLETE: the time limit was reached; run verify_puzzles.py again to continue (nothing is lost).

@@ -1,0 +1,7 @@
+mine2: 432 cards {'fix': 234, 'pun': 81, 'tq': 97, 'thr': 20}; judges Counter({('opp', 'safe'): 246, ('me', 'safe'): 207, ('me', 'blunder'): 159}); plays Counter({'cv': 104, 'eo': 53}); left 0; 8s
+  dropped chk: something special to find 223
+  dropped cv: search below 85 6
+  dropped fix: gap too small 199, many ok moves 88, best too low 64, duplicate position 2, everything wins 1, his move is ok now 1
+  dropped pun: best too low 50, gap too small 9, many ok moves 2, one legal move 1
+  dropped thr: fix rule fails or not searched 69, threat not unique 63
+  dropped tq: many ok moves 199, gap too small 92, best too low 88, no kind 19, no contrast 1, duplicate position 1

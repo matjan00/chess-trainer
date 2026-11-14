@@ -1,0 +1,742 @@
+# COURSE endgames | Essential endgames
+sub: The endings every club player must know, checked move by move with the tablebase.
+why: Many of your games are decided in the endgame, and most of them reach one of a handful of standard positions. Learn these and you stop throwing away won endings and stop losing drawn ones.
+
+## CHAPTER mates | Basic checkmates | theme=mate2
+> A queen or a rook up is only a win if you can deliver mate. These four lessons give you a fixed method for each mate, and show the stalemate traps that turn a win into a draw.
+
+### LESSON qmate | Queen checkmate
+goal: Mate with king and queen against king, quickly and safely.
+rule: Shrink his box with the queen a knight's move away, bring your king close, then mate on the edge.
+> The queen alone cannot mate: your king must help. Use the queen to shrink the box the enemy king lives in, often from a knight's move away, so that he is never stalemated. When he is stuck on the edge, walk your king up and give mate. In the corner, look for the mate before anything else.
+
+#### EX qmate-a | 8/8/8/3k4/8/8/8/K5Q1 w - - 0 1 | src=book
+> White to move. The black king is in the middle of the board.
+1. Qe1 {The queen cuts off the e-file: the king must stay on the left side. [g:g1-e1]} Kc6 2. Qe6+ Kb7 3. Qd7+ {Checks drive him towards the edge.} Ka6 4. Kb1 {Now the king walks up to help.} Kb6 5. Kb2 Ka5 6. Qc6! {A knight's move away from his king: it shrinks the box and leaves him a square. [g:d7-c6]} Kb4 7. Qd5! {Again a knight's move away.} Ka4 8. Kc3 Ka3 9. Qb3# {Your king guards the queen and his king has nowhere to go.}
+key: Queen a knight's move from his king, your king up close, then mate.
+
+#### CARD qmate-1 | 8/8/8/8/8/6Q1/7p/5K1k w - - 0 1 | src=composed | goal=win
+sol: Qg2#
+also: Qf3# | Also mate: the queen checks along the long diagonal.
+why: His pawn blocks his own king. The queen checks next to the king, guarded by your king on f1, and it is mate.
+wrong: Qg4 | ((1.Qg4)) His king has no move and is not in check: stalemate, a draw.
+
+#### CARD qmate-2 | 8/8/8/8/8/8/5Q1p/5K1k w - - 0 1 | src=composed | goal=win
+sol: Qg2#
+also: Qf3# | The check on the long diagonal is mate too.
+why: The queen checks from g2, protected by your king. His king cannot take it and has no square left.
+wrong: Qe2 | ((1.Qe2)) No check and no move for Black: stalemate.
+
+#### CARD qmate-3 | 8/7K/8/8/8/7Q/7p/7k w - - 0 1 | src=composed | goal=win
+sol: Qf1#
+why: A check along the first rank. The g-squares are covered and his own pawn blocks h2, so it is mate.
+wrong: Qg3 | ((1.Qg3)) The queen takes away his last squares without giving check: stalemate.
+
+#### PLAY qmate-p | 8/8/8/4k3/8/8/8/4K2Q w - - 0 1 | goal=win | finish=mate | max=30
+> You are White. Shrink the box, bring your king, and mate without stalemate.
+
+### LESSON qstale | Don't stalemate him
+goal: Finish a won ending without giving stalemate.
+rule: Before every quiet move, check that his king still has a legal move.
+> Stalemate means the side to move is not in check but has no legal move, and the game is a draw. It happens most when you are a queen up and play fast. Before each move that is not a check, ask one question: after this, can his king still move? If not, look for a check instead.
+
+#### EX qstale-a | 7k/8/5K2/8/8/8/8/6Q1 w - - 0 1 | src=book
+> White to move. The natural ((1.Qg6)) is stalemate: the king on h8 cannot move and is not in check.
+1. Qg5! {This leaves the king the h7-square. [g:g1-g5]} Kh7 2. Qg7# {The queen is guarded by your king: mate.}
+key: Leave his king one square until you can give mate.
+
+#### CARD qstale-1 | 8/8/8/8/8/6Q1/5K1p/7k w - - 0 1 | src=composed | goal=win
+sol: Qg2#
+also: Qf3# | Also mate, along the long diagonal.
+why: Here a check is the only way: every quiet move leaves his king without a move, and that is stalemate.
+wrong: Kf3 | ((1.Kf3)) A quiet king move, and Black has no legal move: stalemate.
+
+#### CARD qstale-2 | 8/8/8/8/8/1Q6/p1K5/k7 w - - 0 1 | src=composed | goal=win
+sol: Qb2#
+also: Qc3# | The check on the long diagonal is mate as well.
+why: His king is boxed in and his pawn cannot move. Only a check keeps the win: the queen mates on b2, guarded by your king.
+wrong: Qa3 | ((1.Qa3)) It looks strong, but Black has no move at all: stalemate.
+
+#### CARD qstale-3 | 8/8/8/8/8/8/7p/4QK1k w - - 0 1 | src=composed | goal=win
+sol: Qe4#
+also: Kf2# | The king steps aside and the queen gives mate along the first rank.
+why: Give check with the queen on the long diagonal. A quiet queen move here takes his last squares away.
+wrong: Qe2 | ((1.Qe2)) No check, no legal move for Black: stalemate.
+
+#### PLAY qstale-p | 8/k7/8/1K6/8/8/8/5Q2 w - - 0 1 | goal=win | finish=mate | max=15
+> You are White. Mate the king in the corner, and check every quiet move for stalemate.
+
+### LESSON rrmate | Two-rook ladder
+goal: Mate with two rooks without the help of your king.
+rule: One rook fences a line, the other checks on the next line; keep both far from his king.
+> Two rooks mate on their own, like climbing a ladder. One rook holds a rank, the other checks on the next rank, and they take turns. If his king comes close to a rook, move that rook far away along its line. Near the corner, watch out for stalemate.
+
+#### EX rrmate-a | 8/8/3k4/8/8/8/8/R3K2R w - - 0 1 | src=book
+> White to move. Your king can stay at home.
+1. Ra5 {The first rook fences off the fifth rank. [g:a1-a5]} Ke6 2. Rh6+ {The second rook checks on the next rank.} Kd7 3. Ra7+ {The rooks take turns, one rank higher each time.} Kc8 4. Rh8# {The last rung of the ladder: mate on the back rank.}
+key: Rooks take turns: one holds a rank, the other checks one rank further.
+
+#### CARD rrmate-1 | K7/8/8/4R1R1/8/8/7p/7k w - - 0 1 | src=composed | goal=win
+sol: Re1#
+why: The rook on g5 already covers g1 and g2. A check on the first rank finishes it.
+wrong: Rg4 | ((1.Rg4)) No check, and his king cannot move: stalemate.
+
+#### CARD rrmate-2 | 8/8/8/1K1R2R1/8/8/7p/7k w - - 0 1 | src=composed | goal=win
+sol: Rd1#
+why: One rook holds the g-file, the other checks along the first rank: the ladder's last rung.
+wrong: Rd2 | ((1.Rd2)) A quiet rook move leaves Black with no legal move: stalemate.
+
+#### CARD rrmate-3 | 3K4/6R1/8/7R/8/8/7p/7k w - - 0 1 | src=composed | goal=win
+sol: Rf7
+why: Neither rook can give a mating check yet, and every move that keeps him boxed is stalemate. Give his king a square, and mate follows next move.
+wrong: Rg4 | ((1.Rg4)) His king is boxed in without check: stalemate.
+
+#### CARD rrmate-4 | 2K5/7R/6R1/8/8/8/7p/7k w - - 0 1 | src=composed | goal=win
+sol: Rf6
+why: Let him out to g1 or g2 first. Then one rook checks and the other covers his escape squares.
+wrong: Rg5 | ((1.Rg5)) Both rooks still box him in, and nothing is check: stalemate.
+
+#### PLAY rrmate-p | 8/8/8/4k3/8/8/8/R3K2R w - - 0 1 | goal=win | finish=mate | max=15
+> You are White. Climb the ladder with the rooks and keep them away from his king.
+
+### LESSON rmate | Rook checkmate
+goal: Mate with king and rook against king.
+rule: The rook cuts his king off; your king walks up to face his; then the rook checks him back a line.
+> King and rook against king is a win, but only if your king helps. The rook builds a fence along a rank or file. Your king walks up until the two kings face each other with one square between. Then a rook check pushes him back one line. Keep the rook far from his king, or he just takes it.
+
+#### EX rmate-a | 4k3/R7/8/8/8/8/8/4K3 w - - 0 1 | src=book
+> White to move. The rook on the seventh rank keeps the black king on the back rank.
+1. Kd2 {The rook does the fencing, so your king walks up.} Kd8 2. Kc3 Kc8 3. Rh7! {His king came close to the rook, so the rook moves far away along its rank. [g:a7-h7]} Kb8 4. Kc4 Kc8 5. Kd5 Kd8 6. Ke6 Kc8 7. Kd6 Kb8 8. Kc6 Ka8 9. Kb6! {Now the kings face each other on the b-file. [g:c6-b6]} Kb8 10. Rh8# {The rook checks along the back rank and the king has no square left.}
+key: Fence with the rook, walk the king up to face his, then check along the edge.
+
+#### CARD rmate-1 | 4k3/8/2K5/8/8/8/8/5R2 w - - 0 1 | src=book | goal=win
+sol: Kd6
+why: Step in front of his king so the kings face each other on the 6th and 8th ranks. If he goes to d8, the rook check on the back rank ends it.
+wrong: Rf8+ | ((1.Rf8+ Kxf8)) The rook stood next to his king and is lost.
+
+#### CARD rmate-2 | 3k4/8/5K2/8/8/8/8/2R5 w - - 0 1 | src=book | goal=win
+sol: Ke6
+why: The same pattern on the other side: your king faces his, and the rook waits on the c-file for the back-rank check.
+wrong: Rc8+ | ((1.Rc8+ Kxc8)) A check next to his king just gives the rook away.
+
+#### CARD rmate-3 | 8/8/8/8/3R4/1k6/8/2K5 w - - 0 1 | src=book | goal=win
+sol: Kd2
+why: The rook already fences him in. Bring your king closer; the rook alone cannot finish the job.
+wrong: Rb4+ | ((1.Rb4+ Kxb4)) The rook checks from next to his king and is taken.
+
+#### CARD rmate-4 | 8/8/8/8/8/k7/3R4/3K4 w - - 0 1 | src=book | goal=win
+sol: Rd4
+why: Shrink the box. With the rook on the fourth rank and your king guarding the first two ranks, his king is caught in the corner.
+wrong: Ra2+ | ((1.Ra2+ Kxa2)) A check from next to his king loses the rook.
+
+#### CARD rmate-5 | 8/8/8/8/8/6k1/3R4/2K5 w - - 0 1 | src=book | goal=win
+sol: Rd4
+why: The rook on the fourth rank keeps his king on the bottom three ranks, and your king comes closer next.
+wrong: Rg2+ | ((1.Rg2+ Kxg2)) The checking rook stands next to his king and is lost.
+
+#### PLAY rmate-p | 8/8/8/4k3/8/8/8/R3K3 w - - 0 1 | goal=win | finish=mate | max=40
+> You are White. Fence him in with the rook, bring your king, and mate on the edge.
+
+
+## CHAPTER kp | King and pawn | theme=pawnEndgame
+> With only kings and pawns left, every single move counts. These lessons give you the counting tools: the square, key squares and the opposition. Everything later in the course is built on them.
+
+### LESSON square | The square rule
+goal: Know at a glance whether a king can catch a passed pawn.
+rule: Picture a square with the pawn's path as one side; if the king can step inside it, he catches the pawn.
+> A passed pawn far from both kings starts a race. Counting moves one by one is slow and easy to get wrong in a 10-minute game. The square is a shortcut: the pawn's path to the last rank is one side of it. If the defending king can step into that square on his move, the pawn is caught. A pawn on its starting rank counts from one square further up, because it can jump two squares.
+
+#### EX square-a | 8/8/8/2P5/6k1/8/8/K7 b - - 0 1 | src=book
+> Black to move. The square of the c5-pawn has the corners c5, f5, f8 and c8.
+1... Kf5! {One diagonal step and the king is inside the square. [g:g4-f5] [r:c5] [r:f5] [r:f8] [r:c8]} 2. c6 Ke6 {The square shrinks as the pawn moves, and the king stays inside it.} 3. c7 Kd7 4. c8=Q+ Kxc8 {The pawn is caught and the game is a draw.}
+key: Do not count moves: check whether the king can step into the square.
+
+#### EX square-b | 8/8/6k1/8/1P6/8/8/7K w - - 0 1 | src=book
+> White to move. Right now the black king could still step into the square of the b4-pawn.
+1. b5! {Push at once. The new square runs from b5 to e8, and the king on g6 cannot reach it in one step. [g:b4-b5]} Kf6 2. b6 Ke6 3. b7 Kd7 4. b8=Q {The pawn queens: the king was one step too slow.}
+key: When the king is just outside the square, push the pawn now before he steps in.
+
+#### CARD square-1 | 8/8/8/6P1/2k5/8/8/K7 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd5
+why: The square of the g5-pawn runs from d5 to g8. Only the diagonal step lands inside it, and then the king catches the pawn.
+wrong: Kc5 | ((1...Kc5 2.g6)) The c-file is outside the square, so the pawn runs through.
+
+#### CARD square-2 | K7/8/8/8/7P/2k5/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd4
+why: The square of the h4-pawn runs from d4 to h8. The diagonal step puts the king inside it just in time.
+wrong: Kc4 | ((1...Kc4 2.h5)) The king is still outside the square and the pawn cannot be stopped.
+
+#### CARD square-3 | 7K/8/8/8/8/8/P5k1/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kf3
+why: The a2-pawn can jump two squares, so count its square from a3: it runs from a3 to f8. Only the step to f3 gets inside.
+wrong: Kf2 | ((1...Kf2 2.a4)) The double step leaves the king behind; f2 was never inside the square.
+
+#### CARD square-4 | 8/8/5k2/8/P7/8/8/6K1 w - - 0 1 | src=book | goal=win
+sol: a5
+why: After the push the square runs from a5 to d8, and the black king cannot step into it. Your own king is far too slow to help, so the pawn must go now.
+wrong: Kf2 | ((1.Kf2 Ke5)) Black steps into the square of the a4-pawn and catches it.
+
+#### PLAY square-p | 8/8/8/1P6/5k2/8/8/7K b - - 0 1 | goal=draw | finish=hold:3 | max=6
+> You are Black. Catch the b-pawn: find the one move that steps into its square.
+
+#### PLAY square-p2 | 8/8/2k5/8/7P/8/8/1K6 w - - 0 1 | goal=win | finish=promote | max=10
+> You are White. Check the square before you move, then queen the pawn.
+
+### LESSON kpfront | King in front of the pawn
+goal: Win king and pawn against king by leading with your king.
+rule: Put your king two squares in front of the pawn, or next to that square, and the pawn will queen.
+> The three squares two steps in front of a pawn are its key squares: with your king on one, you win. So the king goes first and the pawn follows. Pushing the pawn too early is the classic way to turn a win into a draw.
+
+#### EX kpfront-a | 3k4/8/8/3K4/3P4/8/8/8 w - - 0 1 | src=book
+> White to move. The key squares of the d4-pawn are c6, d6 and e6.
+1. Kd6! {The king steps onto a key square. Now the pawn cannot be stopped. [g:d5-d6] [r:c6] [r:d6] [r:e6]} Ke8 2. Kc7 {The king clears the path. Black cannot get back in front of the pawn.} Ke7 3. d5 {Only now does the pawn move, protected all the way.} Kf7 4. d6 Ke6 5. d7 Ke7 6. d8=Q+ Ke6 {The pawn has queened.}
+key: King first, pawn second: walk the king to a key square, then push.
+
+#### CARD kpfront-1 | 4k3/8/8/3K4/4P3/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Ke6
+also: Kd6 | Also a key square; both win.
+why: The king steps onto a key square in front of the pawn, and Black can no longer stop it.
+wrong: e5 | ((1.e5 Ke7)) The pawn went first, Black's king stands in front of it and it is a draw.
+
+#### CARD kpfront-2 | 2k5/8/8/1K6/2P5/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kc6
+also: Kb6 | Also a key square of the pawn; both win.
+why: King first: from the key square your king escorts the pawn home.
+wrong: c5 | ((1.c5 Kc7)) Black's king blocks the pawn and you cannot win.
+
+#### CARD kpfront-3 | 6k1/8/8/5K2/6P1/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kf6
+also: Kg6 | The other key square in front of the pawn; both win.
+why: Same rule on the other wing: put the king two squares in front of the pawn.
+wrong: g5 | ((1.g5 Kg7)) The pawn moved first and Black's king gets in front of it.
+
+#### CARD kpfront-4 | 3k4/8/3K4/3P4/8/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Ke6
+also: Kc6 | The step to the other side wins just as well.
+why: Your king on the sixth rank in front of the pawn wins even when it is your move. Step to the side and the pawn walks through.
+wrong: Kc5 | ((1.Kc5 Kd7)) Retreating lets Black's king settle in front of the pawn: a draw.
+
+#### PLAY kpfront-p | 4k3/8/4K3/4P3/8/8/8/8 w - - 0 1 | goal=win | finish=promote | max=30
+> You are White. King first, pawn second: queen the pawn.
+
+### LESSON oppwin | The opposition: win
+goal: Use the {gl:opposition} to force your king through.
+rule: When the kings face each other with one square between, the side that must move has to give way.
+> This standoff is called the opposition: the kings face each other with one square between them, and whoever must move gives way. If you take the opposition, his king has to step aside and yours walks forward. When he steps aside, go round the other side: that is called outflanking.
+
+#### EX oppwin-a | 8/8/8/3k4/8/3K4/3P4/8 b - - 0 1 | src=book
+> Black to move. The kings face each other and Black has to give way.
+1... Kc5 {Black steps aside.} 2. Ke4! {Go round the other side. Your king heads for the squares in front of the pawn. [g:d3-e4]} Kd6 3. Kd4! {Take the opposition again: now Black must give way once more. [g:e4-d4]} Kc6 4. Ke5 Kd7 5. d3 {A spare pawn move. The pawn stays back until the king has done its work.} Kc6 6. d4 Kd7 7. Kd5! {The opposition once more, now on the fifth rank.} Ke7 8. Kc6 Ke8 9. Kc7 {The king controls the queening square. The pawn walks through.} Ke7 10. d5 Kf6 11. d6
+key: Take the opposition, and when his king steps aside, go round the other side.
+
+#### CARD oppwin-1 | 8/8/4k3/8/5K2/8/4P3/8 w - - 0 1 | src=book | goal=win
+sol: Ke4
+why: Take the opposition: the kings face each other and Black must give way.
+wrong: e4 | ((1.e4 Kf6)) Black takes the opposition in front of your king and the pawn has moved too early.
+
+#### CARD oppwin-2 | 8/4k3/8/5K2/4P3/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Ke5
+why: Step in front of the pawn and take the opposition. Black must give way and your king reaches the sixth rank.
+wrong: e5 | ((1.e5 Kf7)) Now Black has the opposition and your king cannot get in front of the pawn.
+
+#### CARD oppwin-3 | 8/8/5k2/8/6K1/8/5P2/8 w - - 0 1 | src=book | goal=win
+sol: Kf4
+why: Face his king with one square between. He has to step aside and you go round.
+wrong: f4 | ((1.f4 Kg6)) The pawn move hands the opposition to Black: a draw.
+
+#### CARD oppwin-4 | 8/2k5/8/1K6/2P5/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kc5
+why: Your king goes in front of the pawn with the opposition. Black has to give way.
+wrong: c5 | ((1.c5 Kb7)) Black takes the opposition and your king cannot get past.
+
+#### PLAY oppwin-p | 8/8/8/4k3/8/4K3/4P3/8 b - - 0 1 | side=white | goal=win | finish=promote | max=40
+> You are White and Black moves first. Take the opposition, go round, then queen.
+
+### LESSON oppdraw | The opposition: hold
+goal: Hold king and pawn against king as the defender.
+rule: Stay in front of the pawn and face his king every time it steps forward.
+> Now you are the defender. You hold the draw if you keep the opposition: the kings face each other with one square between, and he must move. When he steps up, step up to face him. When the pawn checks you, step straight back, never to the side.
+
+#### EX oppdraw-a | 8/8/8/3k4/8/3K4/3P4/8 w - - 0 1 | src=book
+> White to move. Can White win? No: Black only has to face White's king.
+1. Kc3 Kc5! {Face the king: Black keeps the opposition. [g:d5-c5]} 2. d4+ Kd5 3. Kd3 Kd6 4. Ke4 Ke6! {Face it again.} 5. d5+ Kd6 6. Kd4 Kd7! {After the check, step straight back.} 7. Kc5 Kc7! 8. d6+ Kd7 9. Kd5 Kd8! {Straight back again, so you can face his king next move.} 10. Ke6 Ke8! 11. d7+ Kd8 12. Kd6 {Stalemate: Black has no legal move, so it is a draw.}
+key: Face his king when it steps forward, and step straight back after a pawn check.
+
+#### CARD oppdraw-1 | 8/8/8/4k3/8/3K4/4P3/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd5
+why: Face his king with one square between. You keep the opposition and he cannot get in front of the pawn.
+wrong: Kd6 | ((1...Kd6 2.Kd4)) Now White has the opposition and wins.
+
+#### CARD oppdraw-2 | 8/4k3/8/3K4/4P3/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd7
+why: Take the opposition at once: White's king cannot reach a key square in front of the pawn.
+wrong: Kf6 | ((1...Kf6 2.Kd6)) White's king reaches the sixth rank and the pawn queens.
+
+#### CARD oppdraw-3 | 8/8/4k3/8/3KP3/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd6
+why: Face the king on the d-file. If you step aside, it walks to the fifth rank in front of the pawn.
+wrong: Kf6 | ((1...Kf6 2.Kd5)) White takes the opposition and wins.
+
+#### CARD oppdraw-4 | 8/3k4/8/4PK2/8/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Ke7
+why: Get straight in front of the pawn. When White's king comes to f6 or d6, you face it.
+wrong: Ke8 | ((1...Ke8 2.Kf6)) White's king reaches the sixth rank first and wins.
+
+#### CARD oppdraw-5 | 4k3/8/4PK2/8/8/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kf8
+why: Face the king. After the pawn checks, you step in front and it ends in stalemate.
+wrong: Kd8 | ((1...Kd8 2.Kf7)) White's king controls the queening square and the pawn walks through.
+
+#### PLAY oppdraw-p | 8/8/8/4k3/8/4K3/4P3/8 w - - 0 1 | side=black | goal=draw | finish=hold:20 | max=30
+> You are Black. Stay in front of the pawn and face White's king every time.
+
+### LESSON kpdef | Get in front of the pawn
+goal: Defend king and pawn against king by blocking the pawn's path.
+rule: Run your king to the squares in front of the pawn; from there you can always face his king.
+> The defending king belongs on the pawn's path, in front of it. From there you can face the white king whenever it steps forward, and the pawn never gets through. A king beside or behind the pawn is usually too late.
+
+#### EX kpdef-a | 8/8/8/3k4/8/8/3P4/3K4 b - - 0 1 | src=book
+> Black to move. Your king is already in front of the pawn: keep it there.
+1... Kd4 {Stay on the pawn's path.} 2. Ke2 Ke4! {Face the king: one square between, and White must give way. [g:d4-e4]} 3. d3+ Kd4 4. Kd2 Kd5! {After the check, step back but stay in front of the pawn.} 5. Ke3 Ke5! {Face the king again.} 6. d4+ Kd5 7. Kd3 Kd6 8. Ke4 Ke6! {The same pattern one rank higher. White makes no progress.}
+key: Keep your king in front of the pawn and face his king whenever it steps up.
+
+#### CARD kpdef-1 | 8/2k5/8/8/3PK3/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd6
+also: Kd8 | Also on the pawn's file; you can still face White's king in time.
+why: Step onto the pawn's file in front of it. From there you can face White's king when it comes forward.
+wrong: Kc6 | ((1...Kc6 2.Ke5)) White's king walks in front of its pawn and the pawn queens.
+
+#### CARD kpdef-2 | 8/k7/8/8/8/1PK5/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kb7
+why: Stay on the pawn's file but keep a distance. When White's king steps to the fourth rank, you step to the sixth and face it.
+wrong: Kb6 | ((1...Kb6 2.Kb4)) Too close: White takes the opposition, which means you must give way.
+
+#### CARD kpdef-3 | 1k6/8/8/8/2PK4/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kc8
+why: Go in front of the pawn, even far back. When White's king reaches c5, you answer by facing it from c7.
+wrong: Kc7 | ((1...Kc7 2.Kc5)) White's king faces yours first and you must give way.
+
+#### CARD kpdef-4 | 8/4k3/8/8/5K2/5P2/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kf6
+why: Step in front of the pawn and face White's king. It cannot get past you.
+wrong: Ke6 | ((1...Ke6 2.Kg5)) White's king gets in front of its pawn and wins.
+
+#### PLAY kpdef-p | 8/8/8/4k3/8/8/4P3/4K3 b - - 0 1 | goal=draw | finish=hold:20 | max=30
+> You are Black. Get in front of the pawn and stay there.
+
+### LESSON rookpawn | Rook pawn: run to the corner
+goal: Draw against a rook pawn by reaching the corner in front of it.
+rule: Against a rook pawn, get your king to the queening corner; nobody can push it out.
+> A pawn on the a-file or h-file is special. Once the defending king reaches the corner in front of it, the attacker cannot push it out: every try ends in stalemate. So the defender runs for the corner, and the attacker must cut him off before he gets there.
+
+#### EX rookpawn-a | 6k1/8/8/4K3/7P/8/8/8 b - - 0 1 | src=book
+> Black to move. Your king is close to the h8 corner.
+1... Kh7 {Head for the corner. [g:g8-h7]} 2. Kf6 Kh6 3. h5 Kh7 4. Kf7 Kh8 5. Kg6 Kg8! {Only this move: stay next to the corner. [g:h8-g8]} 6. h6 Kh8! 7. h7 {Stalemate: Black has no legal move, so it is a draw.}
+key: In the corner in front of a rook pawn you cannot be pushed out.
+
+#### CARD rookpawn-1 | 8/4k3/6K1/8/7P/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kf8
+why: Run for the h8 corner. From f8 you reach g8 in time, and White cannot keep you out.
+wrong: Ke6 | ((1...Ke6 2.Kg7)) White's king guards the corner first, so the pawn walks home.
+
+#### CARD rookpawn-2 | 4k3/8/8/3K4/P7/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd7
+also: Kd8 | Also heads for c8 and the corner in time.
+why: Head for the a8 corner at once, via c8. White's king cannot shut you out.
+wrong: Ke7 | ((1...Ke7 2.Kc6)) A step the wrong way: White's king blocks the road to the corner.
+
+#### CARD rookpawn-3 | 8/8/K7/P2k4/8/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kc6
+why: Head for c7 and b8 in front of the pawn. Once you are there, White can only stalemate you.
+wrong: Kc5 | ((1...Kc5 2.Kb7)) White's king blocks the way to the corner and the pawn queens.
+
+#### CARD rookpawn-4 | 8/8/K7/P1k5/8/8/8/8 w - - 0 1 | src=book | goal=win
+sol: Kb7
+why: You are the stronger side here. Shut the black king out of the corner first; then the pawn queens.
+wrong: Ka7 | ((1.Ka7 Kc6)) Black's king gets to c7 and the corner: a draw.
+
+#### PLAY rookpawn-p | 8/3k4/1K6/8/P7/8/8/8 b - - 0 1 | goal=draw | finish=hold:4 | max=8
+> You are Black. Run for the corner before White's king shuts you out.
+
+### LESSON race | Pawn races
+goal: Count a pawn race before you push, and stop his pawn first when you can.
+rule: Count both pawns' moves to queen; if both would queen, stop his pawn with your king first.
+> When both sides have a passed pawn, do not push on autopilot. Count how many moves each pawn needs to queen, and check whether each king can catch the other pawn with the square rule. If both pawns queen, it is usually a draw. Often the winning plan is quieter: your pawn runs on its own, and your king catches his.
+
+#### EX race-a | 8/6k1/8/P7/5p2/8/8/1K6 w - - 0 1 | src=composed
+> White to move. Black's king cannot catch the a-pawn. Your king can still catch the f-pawn.
+1. Kc2! {Step into the square of the f-pawn first. If you push the a-pawn instead, Black's pawn queens as well. [g:b1-c2]} Kf6 2. Kd3 {The f-pawn is caught: if it moves, your king takes it.} Ke5 3. a6 {Now push. Black's king is far too slow.} Kd5 4. a7 Kc6 5. a8=Q+ Kd6 {You have a queen and Black has nothing.}
+key: If your pawn runs on its own, use the king to catch his pawn first.
+
+#### CARD race-1 | 8/7k/8/P7/6p1/8/8/2K5 w - - 0 1 | src=composed | goal=win
+sol: Kd2
+also: Kd1 | Also steps into the square of the g-pawn in time.
+why: Black's king cannot catch your a-pawn, so it will queen anyway. First step into the square of the g-pawn.
+wrong: a6 | ((1.a6 g3)) Both pawns queen and the extra tempo is gone: a draw.
+
+#### CARD race-2 | 8/8/k7/5KP1/1p6/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: Ke4
+why: Your king gets into the square of the b-pawn, and the g-pawn cannot be caught. Stop his pawn first.
+wrong: g6 | ((1.g6 b3)) Both pawns queen and the game is drawn.
+
+#### CARD race-3 | 8/8/8/1K1P4/5p2/8/8/1k6 w - - 0 1 | src=composed | goal=win
+sol: Kc4
+why: Black's king is too far from your d-pawn. Your king steps towards the f-pawn and catches it in time.
+wrong: d6 | ((1.d6 f3)) Both sides queen: a draw instead of a win.
+
+#### CARD race-4 | 8/8/4K3/P7/5p2/k7/8/8 w - - 0 1 | src=composed | goal=win
+sol: a6
+why: Count: you queen first, and your new queen arrives in time to stop the f-pawn. Black's king is right next to your pawn, so it must run now.
+wrong: Kf5 | ((1.Kf5 Kb4)) While your king chases the f-pawn, Black's king takes your a-pawn.
+
+#### CARD race-5 | 8/8/8/2P4k/K6p/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: c6
+why: Your pawn needs three moves to queen and his needs four. Push at once and your queen stops his pawn.
+wrong: Kb4 | ((1.Kb4 h3)) You wasted a move: now both pawns queen together.
+
+#### PLAY race-p | 8/8/8/6P1/1p3K2/8/8/5k2 w - - 0 1 | goal=win | finish=promote | max=30
+> You are White. Count the race first: whose pawn queens, and can your king catch his?
+
+## CHAPTER pieces | Queen and bishops | theme=promotion
+> A queen against a pawn about to queen, a bishop that cannot help its pawn, and bishops on opposite colours. In each one the material count lies: you must know which positions win and which are draws.
+
+### LESSON qvp | Queen against a pawn on the 7th
+goal: Beat a centre or knight pawn on the seventh rank with your queen.
+rule: Force his king in front of the pawn with checks, then use the free move to bring your king closer.
+> A pawn one step from queening, with its king beside it, looks dangerous. Against a centre pawn or a knight pawn the queen still wins. Check and attack the pawn until his king has to step in front of it. While it stands there, the pawn cannot move, so you have one free move to bring your king one step closer. Repeat until your king arrives.
+
+#### EX qvp-a | 7K/8/8/8/8/8/2kp4/4Q3 w - - 0 1 | src=book
+> White to move. Your king is far away on h8.
+1. Qe2 {Pin the pawn: it cannot queen while the queen watches d1. [g:e1-e2]} Kc1 2. Qc4+ Kb1 3. Qb3+ Kc1 4. Qc3+ Kd1 {His king now stands in front of the pawn.} 5. Kg7! {The free move: your king steps closer. [g:h8-g7]} Ke2 6. Qc2 Ke1 7. Qe4+ Kf1 8. Qf3+ Ke1 9. Qe3+ Kd1 {In front of the pawn again.} 10. Kf6 {Another free move. Your king keeps coming until it can help.}
+key: Each time his king blocks his own pawn, your king takes one step closer.
+
+#### CARD qvp-1 | 5QK1/8/8/8/8/4k3/3p4/8 w - - 0 1 | src=composed | goal=win
+sol: Qf1
+why: Stop the pawn first: from f1 the queen guards d1, so the pawn cannot queen. Then the checks start.
+wrong: Qb4 | ((1.Qb4 d1=Q)) Attacking the pawn from the side does not cover d1: Black gets a new queen.
+
+#### CARD qvp-2 | 7K/8/8/3Q4/8/4k3/3p4/8 w - - 0 1 | src=composed | goal=win
+sol: Qh5
+why: From h5 the queen watches d1 along the diagonal, so the pawn cannot queen. Then the checks begin.
+wrong: Qxd2+ | ((1.Qxd2+ Kxd2)) The pawn is guarded by his king and you lose the queen.
+
+#### CARD qvp-3 | 7K/8/8/1Q6/8/2k5/3p4/8 w - - 0 1 | src=composed | goal=win
+sol: Qb1
+also: Qa4 | From a4 the queen also watches d1, along the diagonal.
+why: Cover the queening square first. From b1 the queen watches d1 along the first rank.
+wrong: Qf5 | ((1.Qf5 d1=Q)) The queen does not cover d1 and Black gets a new queen.
+
+#### CARD qvp-5 | K7/8/8/8/8/3k4/3p4/4Q3 w - - 0 1 | src=composed | goal=win
+sol: Qd1
+why: Put the queen on the queening square. The pawn is stopped for good and your king can walk over.
+wrong: Qxd2+ | ((1.Qxd2+ Kxd2)) The pawn is guarded by his king: you lose the queen.
+
+#### PLAY qvp-p | 8/8/8/8/8/8/3pk3/K5Q1 w - - 0 1 | goal=win | finish=mate | max=25 | failBelow=80
+> You are White. Stop the pawn, force his king in front of it, bring your king and mate.
+
+### LESSON qvpdraw | …and when it is a draw
+goal: Know when a queen cannot beat a pawn on the seventh, and hold it as the defender.
+rule: A rook pawn or bishop pawn on the seventh, its king beside it and the enemy king far away, is a draw.
+> The method of the last lesson fails against a pawn on the a-, c-, f- or h-file. With a rook pawn the defender goes into the corner and is stalemated. With a bishop pawn he goes to the corner too: if the queen takes the pawn, it is stalemate. So as the defender, head for the corner; as the attacker, know it is a draw unless your king is close.
+
+#### EX qvpdraw-a | 8/8/8/8/6K1/8/2pQ4/1k6 w - - 0 1 | src=book
+> White to move. Can White win? No: the bishop pawn saves Black.
+1. Qb4+ Ka2! {Black goes to the side, not in front of the pawn. [g:b1-a2]} 2. Qc3 Kb1 3. Qb3+ Ka1! {Into the corner: now taking the pawn is stalemate.} 4. Qxc2 {Stalemate: Black has no legal move, so it is a draw.}
+key: Against a bishop pawn or rook pawn, the defender's king runs to the corner.
+
+#### CARD qvpdraw-1 | 8/8/8/8/8/k7/p5K1/7Q b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kb2
+why: Guard the queening square with your king. If White takes the pawn, you are stalemated.
+wrong: a1=Q | ((1...a1=Q 2.Qxa1+)) The new queen is lost at once and the game is lost.
+
+#### CARD qvpdraw-2 | 8/8/8/8/6K1/2k2Q2/2p5/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kb2
+why: Stand next to the pawn and aim for the a1 corner. White's king is too far away to help.
+wrong: Kd2 | ((1...Kd2 2.Qd5+)) The checks drive your king in front of the pawn and White's king comes closer.
+
+#### CARD qvpdraw-3 | 8/8/2K1Q3/8/8/7k/7p/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kg2
+why: Get next to the pawn, ready to go into the corner. White can only stalemate you.
+wrong: Kg3 | ((1...Kg3 2.Qe4)) The queen blocks the pawn and White's king walks in.
+
+#### CARD qvpdraw-4 | 3K4/8/8/8/2Q5/6k1/5p2/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kg2
+why: Protect the queening square with your king. If White takes the pawn after you reach h1, it is stalemate.
+wrong: f1=Q | ((1...f1=Q 2.Qxf1)) Queening at once just gives the new queen away.
+
+#### CARD qvpdraw-5 | 5K2/8/8/8/5Q2/1k6/2p5/8 w - - 0 1 | src=composed | goal=win
+sol: Qc1
+why: You are the stronger side here. His king is not next to the queening square yet, so block it at once and win.
+wrong: Qf1 | ((1.Qf1 Kb2)) His king reaches the pawn and the corner trick saves him.
+
+#### PLAY qvpdraw-p | 8/8/Q7/8/8/8/2p3K1/2k5 b - - 0 1 | goal=draw | finish=hold:10 | max=20
+> You are Black. Keep your king next to the pawn and use the corner.
+
+### LESSON wrongb | The wrong bishop
+goal: Spot the draw with a rook pawn and the wrong bishop.
+rule: A rook pawn plus a bishop that cannot cover the queening square is a draw once the defender's king reaches the corner.
+> Say the rook pawn queens on a dark square and the bishop runs on light squares. Then the bishop can never drive the king out of the corner. So the defender runs for the corner and stays there. The attacker must keep his king out of the corner, or the win is gone.
+
+#### EX wrongb-a | 6k1/8/4K3/7P/8/8/4B3/8 b - - 0 1 | src=book
+> Black to move. The h8-square is dark and White's bishop is light.
+1... Kh7 {Head for the corner.} 2. Kf7 Kh8! {Into the corner. [g:h7-h8]} 3. h6 Kh7! 4. Bd3+ Kh8 5. h7 {Stalemate: Black has no legal move, so it is a draw.}
+key: Against the wrong bishop, get into the corner and stay there.
+
+#### CARD wrongb-1 | 6k1/8/7P/8/4K3/8/B7/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kh8
+also: Kh7 | Also next to the corner; both hold.
+why: The corner is your fortress: the light bishop can never chase your king off h8.
+wrong: Kf8 | ((1...Kf8 2.Be6)) The bishop cuts you off from the corner and the pawn queens.
+
+#### CARD wrongb-2 | 8/3B1k2/7P/8/4K3/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kg8
+also: Kg6 | Also heads for the corner in time.
+why: Run for h8 before White's king or bishop can stop you.
+wrong: Kf6 | ((1...Kf6 2.Be8)) The bishop guards g6 and h7, and your king never reaches the corner.
+
+#### CARD wrongb-3 | 8/3K4/8/5k1P/8/8/6B1/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kg5
+also: Kf6 | Also on the way to the corner.
+why: Go towards the pawn and the h8 corner at once.
+wrong: Ke5 | ((1...Ke5 2.Ke7)) White's king blocks your way to the corner.
+
+#### CARD wrongb-4 | 4k3/8/4K3/7P/6B1/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: Kf6
+why: You are the stronger side here. Keep his king out of the corner first; then the pawn walks home.
+wrong: h6 | ((1.h6 Kf8)) His king reaches the corner and it is a draw.
+
+#### CARD wrongb-5 | 5k2/8/3K3P/5B2/8/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: Be6
+why: The bishop takes g8 away and his king cannot get to the corner.
+wrong: h7 | ((1.h7 Kg7)) His king blocks the pawn: a draw.
+
+#### PLAY wrongb-p | 7k/8/5K2/7P/8/8/4B3/8 b - - 0 1 | goal=draw | finish=hold:6 | max=12
+> You are Black. Stay in the corner and let White find no way through.
+
+### LESSON ocb | Opposite-coloured bishops
+goal: Hold an ending with bishops of opposite colours, even pawns down.
+rule: Blockade the pawns on the colour his bishop cannot touch, and let your bishop guard the squares in front of them.
+> When the bishops run on different colours, the defender often draws even two pawns down. His bishop can never chase your king off a square of your bishop's colour, and your bishop guards the squares his pawns need. Put your king in front of the pawns and keep the bishop on a long diagonal. Pawns that cannot move forward cannot win.
+
+#### EX ocb-a | 4B3/6b1/2k5/4P3/5P2/5K2/8/8 b - - 0 1 | src=composed
+> Black to move. White is two pawns up, but your bishop runs on dark squares and his on light ones.
+1... Kd5! {Into the blockade in front of the e-pawn, on a light square. [g:c6-d5]} 2. Bf7+ Kd4! {Stay close to the pawns.} 3. e6 Bf6! {Your bishop guards e7, a dark square: the pawn is stopped for good. [g:g7-f6]}
+key: King in front of the pawns, bishop on the squares they need: two pawns down is still a draw.
+
+#### CARD ocb-2 | 5bB1/4k3/8/4PP2/5K2/8/8/8 b - - 0 1 | src=composed | tag=hold | goal=draw
+sol: Bg7
+also: Bh6+ | The check from h6 also brings the bishop onto the dark squares in front of the pawns.
+why: Put the bishop on the long dark diagonal, attacking e5. Your king stays in front of the pawns.
+wrong: Kd7 | ((1...Kd7 2.f6)) Your king left the blockade and the f-pawn runs.
+
+#### CARD ocb-3 | 8/6k1/3KP3/b4P2/8/8/2B5/8 b - - 0 1 | src=composed | tag=hold | goal=draw
+sol: Kf6
+also: Bb4+ | The check also keeps the bishop on the dark diagonal that guards e7.
+why: Your king blockades the f-pawn while your bishop watches e7. Neither pawn can advance safely.
+wrong: Kh6 | ((1...Kh6 2.f6)) Your king walked away and the f-pawn runs through.
+
+#### CARD ocb-4 | B7/7k/8/4PP2/3b2K1/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: Kf4
+why: You are the stronger side here. His king is not yet in front of your pawns, so bring your king to support them before he blockades.
+wrong: e6 | ((1.e6 Bf6)) The pawns get stuck on light and dark squares that his king and bishop control: a draw.
+
+#### PLAY ocb-p | 8/5k2/3b4/8/4PP2/3BK3/8/8 b - - 0 1 | goal=draw | finish=hold:15 | max=25
+> You are Black, two pawns down. Blockade the pawns and keep your bishop on the dark squares.
+
+## CHAPTER rooks | Rook endings | theme=rookEndgame
+> Rook endings are the endings you will reach most often. A few rules decide most of them: rooks belong behind passed pawns, an active rook beats a passive one, and there are three positions every player must know by heart.
+
+### LESSON rbehind | Rooks belong behind passed pawns
+goal: Put your rook behind a passed pawn, whether it is yours or his.
+rule: Put the rook behind the passed pawn: behind yours it pushes, behind his it gains room as the pawn moves.
+> A rook behind its own passed pawn supports it all the way, and the further the pawn runs, the more room the rook has. A rook in front of the pawn is stuck there. The same holds in defence: your rook behind his passed pawn keeps attacking it from behind.
+
+#### EX rbehind-a | 8/8/7k/8/P7/4K3/5r2/4R3 b - - 0 1 | src=book
+> Black to move. White has a passed a-pawn. Where does your rook belong?
+1... Ra2! {Behind the pawn: from a2 it attacks the pawn on every square it moves to. [g:f2-a2]} 2. Kd3 Rxa4 {White's king came too late, and the pawn falls.}
+key: Against a passed pawn, put your rook behind it.
+
+#### CARD rbehind-1 | 6k1/8/P1r5/8/8/7R/4K3/8 w - - 0 1 | src=book | goal=win
+sol: Ra3
+also: Rg3+ | The check first is just as good; the rook still goes behind the pawn next.
+why: Put the rook behind the pawn. From a3 it protects the pawn and pushes it forward.
+wrong: a7 | ((1.a7 Rc2+)) The pawn ran ahead without support and his rook catches it after a few checks.
+
+#### CARD rbehind-2 | 8/7k/P7/8/5K2/5R2/8/3r4 w - - 0 1 | src=book | goal=win
+sol: Ra3
+also: Rh3+ | The check first also wins; the rook still belongs behind the pawn.
+why: Behind the pawn the rook guards it on every square up to a8.
+wrong: a7 | ((1.a7 Ra1)) Now his rook is behind your pawn and yours has to stay in front of it: a draw.
+
+#### CARD rbehind-3 | 8/8/6k1/P6r/4R3/4K3/8/8 w - - 0 1 | src=book | goal=win
+sol: Ra4
+why: The rook goes behind the pawn and protects it. Pushing first lets his rook get behind it instead.
+wrong: a6 | ((1.a6 Ra5)) His rook gets behind your pawn and wins it or holds the draw.
+
+#### PLAY rbehind-p | 6k1/8/P1r5/8/8/8/4K3/7R w - - 0 1 | goal=win | finish=mate | max=90 | failBelow=62
+> You are White. Put your rook behind the pawn and push it home.
+
+### LESSON r7th | The active rook
+goal: Use your rook actively: attack pawns and take the seventh rank.
+rule: Put your rook where it attacks: on the seventh rank or behind his pawns, never on passive defence.
+> A rook that attacks pawns or stands on the seventh rank ties his whole army down. A rook that only guards pawns is a bad piece. In rook endings ask: where does my rook attack something? That square is usually the right one, even if it costs a pawn.
+
+#### EX r7th-a | 6k1/8/2p5/4r2R/8/8/6PP/6K1 w - - 0 1 | src=composed
+> White to move. Black's rook is active too, so you must act first.
+1. Rh3! {The rook swings to the third rank: it guards your pawns from the side and stays free to attack. [g:h5-h3]} c5 2. Kf2 {Now the king comes up. Your rook is active and his pawn is a target.}
+key: Attack with the rook first, defend with it only when you must.
+
+#### CARD r7th-1 | 2r3k1/8/2p5/8/8/8/4R1PP/6K1 w - - 0 1 | src=composed | goal=win
+sol: Re7
+why: The rook on the seventh rank cuts his king off on the back rank and attacks along the whole rank.
+wrong: h3 | ((1.h3 c5)) A slow move: his pawn runs and the win is gone.
+
+#### CARD r7th-2 | 6k1/8/2pR1r2/8/8/8/6PP/6K1 w - - 0 1 | src=composed | goal=win
+sol: Rd7
+why: The rook goes to the seventh rank, behind his king's line, and next it can attack the pawn from behind.
+wrong: Rd1 | ((1.Rd1 c5)) A passive rook on the first rank lets his pawn run.
+
+#### CARD r7th-3 | 6k1/8/R1p5/8/8/2r5/6PP/6K1 w - - 0 1 | src=composed | goal=win
+sol: Ra7
+also: Kf2 | The king step also keeps the win.
+why: The rook on the seventh rank keeps his king on the back rank and gets ready to attack the pawn.
+wrong: h3 | ((1.h3 Kf7)) His king walks out and the pawn is safe: a draw.
+
+#### PLAY r7th-p | 2r3k1/8/2p5/8/8/8/6PP/4R1K1 w - - 0 1 | goal=win | finish=eval:200 | max=60
+> You are White. Find the active rook move and win.
+
+
+### LESSON cutoff | Cut the king off
+goal: Win rook and pawn against rook by keeping his king away from your pawn.
+rule: Put your rook on the file between his king and your pawn, then bring your king up before the pawn.
+> In rook endings the defender's king is his best defender. If your rook stands on a file between his king and your pawn, his king is cut off: it cannot cross that file. With his king cut off by two files or more, rook and pawn against rook is usually a win. Keep the fence, walk your king in front of the pawn, and push the pawn behind it.
+
+#### EX cutoff-a | 7r/8/1k6/8/4P3/4K3/8/3R4 w - - 0 1 | src=book
+> White to move. The rook on the d-file keeps the black king on the queenside.
+1. Kf4 {King first: it walks up next to the pawn.} Rf8+ 2. Kg5 Re8 3. Re1 {The rook comes back behind the pawn, still on the near side.} Kc6 4. Kf6! {The king goes in front of the pawn's path. [g:g5-f6]} Rh8 5. Rd1! {The fence again: his king must not cross the d-file. [g:e1-d1]} Rh6+ 6. Kg5 Re6 7. Kf5 Re8 8. e5 {Only now does the pawn move, with king and rook ready.}
+key: Fence his king off with the rook, then king in front, pawn behind.
+
+#### CARD cutoff-1 | 3r4/8/5k2/1K6/3P4/8/8/3R4 w - - 0 1 | src=book | goal=win
+sol: Kc6
+why: Your king goes in front of the pawn first. Pushing now lets Black's rook and king attack it together.
+wrong: d5 | ((1.d5 Rd6)) The pawn is blockaded and his king comes over: a draw.
+
+#### CARD cutoff-2 | r7/8/2K2k2/8/3P4/8/8/3R4 w - - 0 1 | src=book | goal=win
+sol: Re1
+why: Put the rook on the e-file, between his king and your pawn. Now his king is cut off and cannot help.
+wrong: d5 | ((1.d5 Ke7)) His king steps in front of the pawn and holds.
+
+#### CARD cutoff-3 | 1r6/8/8/8/4P2k/3K4/8/R7 w - - 0 1 | src=book | goal=win
+sol: Rg1
+why: Cut his king off along the g-file. It is then too far from the pawn to stop it.
+wrong: e5 | ((1.e5 Kg4)) His king walks back towards the pawn and it is a draw.
+
+#### CARD cutoff-4 | 6r1/4k3/8/8/1KP5/8/8/R7 w - - 0 1 | src=book | goal=win
+sol: Rd1
+why: The rook on the d-file keeps his king away from the c-pawn. Then your king and pawn advance together.
+wrong: c5 | ((1.c5 Rg4+)) The checks begin, his king gets closer and the win is gone.
+
+#### PLAY cutoff-p | r7/8/6k1/8/3P4/3K4/8/4R3 w - - 0 1 | goal=win | finish=promote | max=60 | failBelow=62
+> You are White. Keep his king cut off, bring your king up, then push.
+
+### LESSON lucena | Lucena: build a bridge
+goal: Win the most important rook ending: pawn on the seventh, your king in front of it.
+rule: Check his king away, put your rook on the fourth rank, walk your king out, and block the checks with the rook.
+> This is the winning position every rook ending aims for. Your king sits in front of the pawn on the seventh, and his rook keeps checking. The plan: drive his king one more file away with a check and lift your rook to the fourth rank. Then walk your king out and block the checks with the rook. That block is called building a bridge.
+
+#### EX lucena-a | 6K1/4k1P1/8/8/8/8/7r/5R2 w - - 0 1 | src=book
+> White to move. This is the Lucena position.
+1. Re1+! {First push his king one more file away. [g:f1-e1]} Kd7 2. Re4! {The bridge: the rook goes to the fourth rank. [g:e1-e4]} Rg2 3. Kf7 Rf2+ 4. Kg6 Rg2+ 5. Kf6 Rf2+ 6. Kg5 Rg2+ 7. Rg4 {The rook blocks the check: the bridge is built and the pawn queens.}
+key: Check his king away, rook to the fourth rank, king out, then block the check.
+
+#### CARD lucena-1 | 8/1PK1k3/8/8/3R4/8/2r5/8 w - - 0 1 | src=book | goal=win
+sol: Kb6
+also: Kb8 | Also keeps the win, but you have to start again.
+why: Step out of the check towards your rook. The checks will run out once your rook can block on the fourth rank.
+wrong: Rc4 | ((1.Rc4 Rxc4+)) The rook is unprotected on c4 and is lost.
+
+#### CARD lucena-2 | 8/1P2k3/2K5/8/3R4/8/2r5/8 w - - 0 1 | src=book | goal=win
+sol: Kb5
+also: Kd5 | Also escapes the checks and wins.
+why: Walk your king towards your rook on the fourth rank. The next check can be blocked.
+wrong: Rc4 | ((1.Rc4 Rxc4+)) The rook blocks too early, without protection, and is lost.
+
+#### CARD lucena-3 | 8/3k2P1/5K2/8/4R3/8/5r2/8 w - - 0 1 | src=book | goal=win
+sol: Kg5
+also: Ke5 | Also walks towards the rook and wins.
+why: Walk your king down towards your rook on the fourth rank. The next check can be blocked.
+wrong: Rf4 | ((1.Rf4 Rxf4+)) The rook blocks too early, without protection, and is lost.
+
+#### CARD lucena-4 | 8/3k1KP1/8/8/4R3/8/5r2/8 w - - 0 1 | src=book | goal=win
+sol: Kg6
+also: Kg8 | Also keeps the win, but you have to start again.
+why: The same idea on the other wing: step out of the check towards your rook on the fourth rank.
+wrong: Rf4 | ((1.Rf4 Rxf4+)) The block comes too early: the rook is unprotected and lost.
+
+#### PLAY lucena-p | 1K6/1P1k4/8/8/8/8/r7/2R5 w - - 0 1 | goal=win | finish=promote | max=30 | failBelow=75
+> You are White. Check, bridge on the fourth rank, walk out, block.
+
+### LESSON philidor | Philidor: third-rank defence
+goal: Hold rook and pawn against rook with the Philidor defence.
+rule: King in front of the pawn, rook on your third rank; when the pawn steps onto it, check from behind.
+> This is the most important drawing method in rook endings. Your king stands in front of the pawn, and your rook guards your third rank, so his king cannot come forward. When the pawn steps onto that rank, his king loses its shelter: your rook drops to the back and checks from behind. The checks never end.
+
+#### EX philidor-a | 3k4/8/7r/3PK3/8/8/8/R7 b - - 0 1 | src=book
+> Black to move. Your king is in front of the pawn.
+1... Rg6! {The rook stays on the sixth rank, your third: White's king cannot reach it. [g:h6-g6]} 2. Ra7 Rb6 3. d6 {The pawn steps onto the sixth rank, so White's king has no shelter in front of it any more.} Rb1! {Now the rook goes to the back and checks from behind. [g:b6-b1]} 4. Ke6 Re1+ 5. Kd5 Rd1+ 6. Kc6 Rc1+ 7. Kd5 {The checks go on forever: a draw.}
+key: Rook on your third rank until the pawn arrives there, then check from behind.
+
+#### CARD philidor-1 | 3k4/8/r7/4KP2/8/8/8/6R1 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Ke8
+also: Ke7 | Also in front of the pawn; both hold.
+why: First the king: it must stand in front of the pawn. Only then does the rook defence work.
+wrong: Kd7 | ((1...Kd7 2.Rg6)) Your king is on the wrong side and White's rook takes your third rank.
+
+#### CARD philidor-2 | 4k3/8/7r/2PK4/8/8/8/1R6 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd8
+also: Kd7 | Also in front of the pawn; both hold.
+why: Put your king in front of the c-pawn's path before anything else.
+wrong: Ke7 | ((1...Ke7 2.Rb6)) His rook takes your third rank and his king walks in.
+
+#### CARD philidor-3 | 2k5/8/r7/3KP3/8/8/8/5R2 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kd8
+also: Kd7 | Also stands in front of the pawn; both hold.
+why: The defending king belongs on the pawn's file, in front of it.
+wrong: Kc7 | ((1...Kc7 2.Rf6)) Your king is too far from the pawn's path and his rook cuts you off.
+
+#### CARD philidor-4 | 5k2/8/7r/3PK3/8/8/8/2R5 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Ke8
+also: Ke7 | Also blocks the pawn's path; both hold.
+why: Same rule: king in front of the pawn first, then the third-rank rook.
+wrong: Kf7 | ((1...Kf7 2.Rc6)) His rook takes the sixth rank and your king is shut out.
+
+#### PLAY philidor-p | 4k3/8/r7/3KP3/8/8/8/7R b - - 0 1 | goal=draw | finish=hold:20 | max=30
+> You are Black. Rook on the sixth rank until the pawn arrives, then check from behind.
+
+### LESSON longside | Check from far away
+goal: Hold rook and pawn against rook when Philidor is too late.
+rule: King to the short side of the pawn, rook to the long side, and check from far away.
+> If his king already stands on your third rank, the Philidor defence is too late. Then your king goes to the short side of the pawn, the side with fewer files to the edge. Your rook goes to the long side and checks from a distance. Checks from close by run out; from far away they never do.
+
+#### EX longside-a | 2k5/R7/4K3/3P4/8/8/8/7r b - - 0 1 | src=book
+> Black to move. White's king is already on the sixth rank.
+1... Rh6+! {Check from the far side of the board. [g:h1-h6]} 2. Ke5 Rh5+ 3. Ke6 Rh6+ 4. Kf5 {White's king cannot hide from the checks and the pawn cannot advance.}
+key: Check from far away; a rook needs distance to keep checking.
+
+#### CARD longside-1 | 6k1/1R6/4P3/3K4/r7/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Kf8
+why: Put your king on the short side, in front of the pawn. Your rook stays on the long side, far away.
+wrong: Ra5+ | ((1...Ra5+ 2.Kd6)) The checks run out and White's king shelters in front of the pawn.
+
+#### CARD longside-2 | 8/1R3k2/8/2KP4/8/8/8/4r3 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Ke8
+why: Your king goes in front of the pawn's path. Wandering off to the side lets the pawn run.
+wrong: Kg8 | ((1...Kg8 2.d6)) Your king is too far from the pawn and it marches on.
+
+#### CARD longside-3 | 5k2/7R/3P4/3K4/r7/8/8/8 b - - 0 1 | src=book | tag=hold | goal=draw
+sol: Ke8
+why: Step in front of the pawn. From e8 your king blocks d7 and d8 together with your rook's checks.
+wrong: Kg8 | ((1...Kg8 2.Rb7)) Your king walked away from the pawn and White wins.
+
+#### PLAY longside-p | 5k2/7R/3K4/4P3/8/8/8/r7 b - - 0 1 | goal=draw | finish=hold:20 | max=30
+> You are Black. Keep your king on the short side and check from far away.
