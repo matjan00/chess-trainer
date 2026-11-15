@@ -20,7 +20,7 @@
             engine,                                     // engine.go(fen,{movetime}) -> {best, score} (optional: "Show why")
             myRating: MY_RATING,                        // chess.com rapid rating: puzzle-rating start value (optional)
             openGame: url => {},                        // open one of his games (optional; else the url opens in a new tab)
-            analyse: fen => {},                         // open the explore board (optional, "More" menu)
+            analyse: (fen, gameUrl) => {},             // open the explore board (optional, "More" menu)
             onChange: () => {},                         // called after T2 records progress (refresh Today; optional)
           }
         });
@@ -1060,7 +1060,7 @@ const T2 = (() => {
   function menuAction(id) {
     closeMenu();
     const fen = P.chess?.fen() || '';
-    if (id === 'analyse') H.analyse?.(fen);
+    if (id === 'analyse') H.analyse?.(fen, P.ctx?.url);
     if (id === 'sound') { H.sfx.on = !H.sfx.on; H.store.set('sound', H.sfx.on); }
     if (id === 'report') {
       const txt = `Train problem · item ${P.ctx?.key || '-'} · mode ${P.mode} · FEN ${fen}`;

@@ -1831,10 +1831,12 @@ function openGameUrl(url) {
   if (!g) return window.open(url, '_blank', 'noopener');
   show('games'); openGame(g);
 }
-function analysePosition(fen) {
-  const key = posKey(fen);
-  for (let gi = GAMES.length - 1; gi >= 0; gi--) {
-    const g = GAMES[gi]; prepGame(g);
+// gameUrl: the game the position came from (own-game cards). Only that one game is searched:
+// replaying every game here took ~20 s on a laptop and froze phones (2026-11-15).
+function analysePosition(fen, gameUrl) {
+  const key = posKey(fen), g = gameUrl && GAMES.find(x => x.url === gameUrl);
+  if (g) {
+    prepGame(g);
     const k = g._fens.findIndex(f => posKey(f) === key);
     if (k >= 0) { show('games'); openGame(g); goto(k); startExplore(); return; }
   }
