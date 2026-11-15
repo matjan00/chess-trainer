@@ -62,7 +62,9 @@ def external_keys():
 
         def walk(o):
             if isinstance(o, dict):
-                if isinstance(o.get("fen"), str):
+                # lead decision (T8): a lesson card or example taken from the pool (src=lichess:<id>) keeps its puzzle in
+                # the pool (practice sets and L11 need it); the app never serves those ids in the stream (reservedSet).
+                if isinstance(o.get("fen"), str) and not str(o.get("src") or "").startswith("lichess:"):
                     keys.add(tc.pos_key(o["fen"]))
                 for v in o.values():
                     walk(v)

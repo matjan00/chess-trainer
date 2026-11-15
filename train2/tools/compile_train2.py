@@ -43,7 +43,7 @@ def compile_course(course, res, pool, lock, used_sets, draft=False, engine=True)
                     continue
                 b0 = chess.Board(it.fen)
                 ours = vl.Verifier.our_side(None, it) if False else _our_side(it)
-                steps.append({"t": "ex", "id": it.id, "fen": it.fen, "side": color(ours), "setting": it.text,
+                steps.append({"t": "ex", "id": it.id, "src": it.src, "fen": it.fen, "side": color(ours), "setting": it.text,
                               "moves": [{"san": m.san, "uci": m.uci, "mine": m.mover == ours, "key": m.key, "nag": m.nag,
                                          "c": m.c, "shapes": m.shapes} for m in it.moves],
                               "keyText": it.key_text})

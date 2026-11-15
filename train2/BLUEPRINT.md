@@ -17,7 +17,7 @@ Contents: 0 Facts · 1 Design decisions · 2 Quality rules and verifiers · 3 So
 - 175 analysed rapid games (`data/analysis.json`; each ply has `san, e, best, loss` (win-% lost), `lab, pv, refute, why[], ph, clk, t` (seconds spent)).
 - His 281 mistakes/blunders by tag (`why`): **threw away a win 91**, walked into check 50, hung piece 49, fork 35, lost material in a trade 34,
   missed capture 33, allowed mate 11, missed mate 5 (87 untagged). By phase: middlegame 149, endgame 80, opening 52.
-- Speed: **31% of his mistakes are played in under 5 seconds** (median 7.4 s).
+- Speed: **31% of his mistakes are played in under 5 seconds** (median 7.4 s; his other moves: 4.5 s).
 - Current data: `puzzles.json` 3,318 Lichess puzzles (repeats were a complaint), `drills.json` 278 (his mistakes), `punish.json` 92,
   `check.json` 412, `convert.json` 107, `technique.json` 251 (defend 138, take 71, finish 24, trade 18), `essentials.json` 19, `endgames.json` 53.
 - In-page engine: Stockfish 10 wasm through `engine.go(fen, {movetime, skill})`. Build machine: Stockfish 19, python-chess, 7.7 GB free disk.
@@ -405,3 +405,14 @@ Brief for content writers (T5a-c)
 2. **One Train screen**, with Fix my mistakes folded in.
 3. Daily load: **~15 min** (up to 20 reviews, 10 puzzles, 5 Think-first, optional lesson).
 4. Endgame checks: **Lichess tablebase website** (cached), no tablebase download.
+
+### Lead review decisions (T8, 2026-11-15) — these override the text above where they differ
+1. **Lesson cards taken from the pool (R2/R3).** A card or example with `src=lichess:<id>` keeps its puzzle in `puzzles2.json` (practice sets and L11 need it). The app never serves those ids in the stream (`reservedSet()` in `t2core.js`), and `verify_puzzles.external_keys()` ignores them. No re-sourcing.
+2. **Own-game positions used by a lesson** are dropped from the own-game cards in the app (`prepMine`), so nothing is asked twice.
+3. **mine2: one card per position across types** (not only per type): thr > tq > pun > fix, tags merged (`build_mine2.py`). 432 → 331 cards.
+4. **puzzles2.json size limit 2.4 MB** approved (about 0.64 MB gzipped). The short 600-899 cells are accepted: he will rarely be served that band.
+5. **Clock numbers**: the median time on his other moves is **4.5 s** (all his moves; the 5.8 s in §0 counted only moves after move 8). Texts use 4.5.
+6. **L7 WARN** (the engine's best wrong move is not among the `wrong:` lines) is accepted when the `wrong:` line is the move a club player would play. No action on the 30 tactics WARNs.
+7. **Explanations count a pending recapture** (`explain.py`): a line that stops on a capture which is taken back no longer claims the whole piece ("You win a queen and a rook" → "You win a rook"). 850 texts changed.
+8. Habit courses (think, convert): judgements count as cards for L10; `MINE` filters that return fewer items than asked are fine.
+9. An empty `theme=` on a `SET` means "all groups" (the course exam). Not an error.

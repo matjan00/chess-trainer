@@ -1,70 +1,14 @@
-"""Build drill positions from the analysis and assemble the publishable app in dist/.
+"""Assemble the publishable app in dist/ (Claude artifact) and docs/ (installed app on GitHub Pages).
 
 Usage:  python build.py [--skip-drills]
+(--skip-drills is accepted for old scripts and does nothing: the "Fix my mistakes" drills are now Train cards from
+ train2/tools/build_mine2.py, data/mine2.json.)
 """
-import argparse, hashlib, json, math, shutil, threading
+import argparse, hashlib, json, shutil
 from pathlib import Path
-import chess, chess.engine
 
 ROOT = Path(__file__).parent
 DATA, DIST = ROOT / "data", ROOT / "dist"
-from engine_path import find_engine
-ENGINE = find_engine(ROOT)
-
-
-def win_pct(score, pov):
-    s = score.pov(pov)
-    if s.is_mate():
-        return 100.0 if s.mate() > 0 else 0.0
-    cp = max(-1000, min(1000, s.score()))
-    return 50 + 50 * (2 / (1 + math.exp(-0.00368208 * cp)) - 1)
-
-
-def build_drills(games, depth=16, workers=7):
-    """Every blunder/mistake of mine becomes a 'find the better move' position.
-    Moves within 3% win chance of the engine's best are accepted too."""
-    todo = []
-    for g in games:
-        me_white = g["color"] == "white"
-        board = chess.Board()
-        for i, p in enumerate(g["plies"]):
-            mine = (i % 2 == 0) == me_white
-            if mine and p.get("lab") in ("blunder", "mistake") and p.get("fen"):
-                last = board.peek() if board.move_stack else None
-                todo.append({
-                    "id": f'{g["url"].rsplit("/", 1)[-1]}-{i}', "url": g["url"], "fen": p["fen"], "ph": p["ph"], "lab": p["lab"],
-                    "played": p["san"], "pv": p.get("pv", ""), "refute": p.get("refute"), "e": p["e"],
-                    "moveNo": f'{i // 2 + 1}{"." if i % 2 == 0 else "..."}',
-                    "last": [chess.square_name(last.from_square), chess.square_name(last.to_square)] if last else None,
-                })
-            board.push_san(p["san"])
-
-    lock, out = threading.Lock(), []
-
-    def worker():
-        eng = chess.engine.SimpleEngine.popen_uci(str(ENGINE))
-        eng.configure({"Threads": 1, "Hash": 64})
-        while True:
-            with lock:
-                if not todo: break
-                d = todo.pop()
-            b = chess.Board(d["fen"])
-            infos = eng.analyse(b, chess.engine.Limit(depth=depth), multipv=4)
-            best = win_pct(infos[0]["score"], b.turn)
-            ok = [b.san(i["pv"][0]) for i in infos if "pv" in i and (best - win_pct(i["score"], b.turn) <= 3 or win_pct(i["score"], b.turn) >= 97)]
-            if d["played"] in ok:  # deeper search says the game move was fine after all
-                continue
-            d["ok"] = ok
-            d["pv"] = b.variation_san(infos[0]["pv"][:8])
-            with lock:
-                out.append(d)
-        eng.quit()
-
-    ts = [threading.Thread(target=worker) for _ in range(workers)]
-    for t in ts: t.start()
-    for t in ts: t.join()
-    out.sort(key=lambda d: d["id"])
-    return out
 
 
 O2_UI = ROOT / "openings2" / "ui"
@@ -83,31 +27,56 @@ def inline_o2(html):
     return html
 
 
+T2_UI = ROOT / "train2" / "ui"
+
+
+def inline_t2(html):
+    """The Train tab (train2/ui, train2/BLUEPRINT.md section 7) at three placeholders, like the Openings tab:
+    t2.css at /*T2_CSS*/, t2.html at <!--T2_HTML-->, t2core.js + t2play.js + t2stats.js at /*T2_JS*/ (inside the module script)."""
+    parts = {"/*T2_CSS*/": (T2_UI / "t2.css").read_text(encoding="utf-8"),
+             "<!--T2_HTML-->": (T2_UI / "t2.html").read_text(encoding="utf-8"),
+             "/*T2_JS*/": "\n".join((T2_UI / f).read_text(encoding="utf-8") for f in ("t2core.js", "t2play.js", "t2stats.js"))}
+    for k, v in parts.items():
+        assert html.count(k) == 1, f"app.html must contain {k} exactly once"
+        assert "</script" not in v.lower(), f"{k}: the inlined file must not contain </script>"
+        html = html.replace(k, v)
+    return html
+
+
+# data files the page fetches (besides analysis.json, which is slimmed below); a missing optional file is skipped
+# (the page hides that part). train2.json: Train courses (train2/tools/compile_train2.py); puzzles2.json: verified
+# puzzle pool (build_puzzles2.py); mine2.json: cards from your own games (build_mine2.py, nightly).
+SHIPPED = ["courses2.json", "explorer.json", "tube.json", "train2.json", "puzzles2.json", "mine2.json"]
+# files of the old Train pages (Tactics, Middlegame, Endgames, Fix my mistakes) that are no longer shipped: removed from
+# dist/ and docs/ so the installed app does not keep serving them (the copies in data/ are left alone)
+DROPPED = ["drills.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json"]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--skip-drills", action="store_true")
-    args = ap.parse_args()
+    ap.add_argument("--skip-drills", action="store_true", help="accepted for old scripts; does nothing")
+    ap.parse_args()
     games = json.loads((DATA / "analysis.json").read_text(encoding="utf-8"))
-    if not args.skip_drills:
-        drills = build_drills(games)
-        (DATA / "drills.json").write_text(json.dumps(drills), encoding="utf-8")
-        print(f"{len(drills)} drill positions")
 
     DIST.mkdir(exist_ok=True)
     css = "\n".join((ROOT / "vendor" / f).read_text(encoding="utf-8") for f in ("chessground.base.css", "chessground.brown.css", "chessground.cburnett.css"))
     html = (ROOT / "app.html").read_text(encoding="utf-8").replace("/*CG_CSS*/", css)
     html = inline_o2(html)
+    html = inline_t2(html)
     notes = ROOT / "notes.html"
     if notes.exists():
         html = html.replace("<!--NOTES-->", notes.read_text(encoding="utf-8"))
     (DIST / "index.html").write_text(html, encoding="utf-8")
     # local preview copy with the skeleton the artifact host would add
     (DIST / "preview.html").write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + "</body></html>", encoding="utf-8")
-    # the page doesn't need the per-move FEN strings, the drills carry their own
+    # the page doesn't need the per-move FEN strings (the Train cards carry their own)
     slim = [{**g, "plies": [{k: v for k, v in p.items() if k != "fen"} for p in g["plies"]]} for g in games]
     (DIST / "analysis.json").write_text(json.dumps(slim, separators=(",", ":")), encoding="utf-8")
-    for f in ("drills.json", "courses2.json", "puzzles.json", "punish.json", "check.json", "convert.json", "technique.json", "endgames.json", "essentials.json", "explorer.json", "tube.json"):
+    for f in SHIPPED:
         if (DATA / f).exists(): shutil.copy(DATA / f, DIST / f)
+        else: print(f"note: data/{f} is missing; that part of the page stays hidden")
+    for f in DROPPED:
+        (DIST / f).unlink(missing_ok=True)
     shutil.copy(ROOT / "vendor" / "sf" / "stockfish.wasm", DIST / "stockfish.wasm")
     print("built", DIST / "index.html")
     build_app(html)
@@ -119,8 +88,7 @@ def main():
 # through the Supabase table chess_progress instead of Claude's database.
 APP = ROOT / "docs"
 SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}
-DATA_FILES = ["analysis.json", "drills.json", "courses2.json", "puzzles.json", "punish.json", "check.json",
-              "convert.json", "technique.json", "endgames.json", "essentials.json", "explorer.json", "tube.json"]
+DATA_FILES = ["analysis.json", "courses2.json", "explorer.json", "tube.json", "train2.json", "puzzles2.json", "mine2.json"]
 VENDOR = ["chess.min.js", "chessground.min.js", "supabase.js", "stockfish.wasm.js", "stockfish.wasm", "stockfish.js"]
 # fonts travel with the app (no Google Fonts request, so nothing waits for the internet on a plane)
 FONTS = sorted(f.name for f in (ROOT / "vendor" / "pwa" / "fonts").iterdir())
@@ -130,7 +98,7 @@ MANIFEST = {
     "id": "/chess-trainer/app", "name": "Chess Trainer", "short_name": "Chess",
     "start_url": "./?source=app", "scope": "./", "display": "standalone", "display_override": ["standalone"],
     "orientation": "any", "background_color": "#e9eeec", "theme_color": "#16201d",
-    "description": "Personal chess trainer: openings, tactics, middlegame and endgames from your own games.",
+    "description": "Personal chess trainer: openings, tactics, endgames and winning technique from your own games.",
     "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
               {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
               {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
@@ -249,6 +217,10 @@ def build_app(html):
         (DATA / "courses2.json").write_text('{"v":2,"courses":[]}', encoding="utf-8"); shutil.copy(DATA / "courses2.json", DIST / "courses2.json")
     if not (DATA / "explorer.json").exists():   # the weekly Lichess job hasn't run yet
         (DATA / "explorer.json").write_text('{"stats":{},"courses":{}}', encoding="utf-8"); shutil.copy(DATA / "explorer.json", DIST / "explorer.json")
+    for f in DROPPED:
+        (APP / f).unlink(missing_ok=True)
+    for f in [x for x in DATA_FILES if not (DIST / x).exists()]:   # optional Train data not built yet: the app hides that part
+        DATA_FILES.remove(f)
     for f in DATA_FILES:
         shutil.copy(DIST / f, APP / f)
     (APP / "manifest.webmanifest").write_text(json.dumps(MANIFEST, indent=1), encoding="utf-8")

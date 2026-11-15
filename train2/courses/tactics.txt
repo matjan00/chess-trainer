@@ -1,0 +1,849 @@
+# COURSE tactics | Tactics ABC
+sub: The patterns behind most won and lost pieces: learn the clue, watch it work, then practise until you see it at a glance.
+why: In your 175 analysed games you left a piece hanging 49 times, missed a free capture 33 times and ran into a fork 35 times. These are short tactics, one or two moves deep. Each lesson teaches one pattern and, above all, the clue on the board that tells you it is there.
+
+## CHAPTER loose | Free pieces | theme=hanging
+> A free piece is one that nobody defends. Taking one costs you nothing, and losing one costs you the game. This chapter trains one habit: after every move, look for pieces that nothing defends, his and yours.
+
+### LESSON loose | Free pieces
+goal: Spot a piece nobody defends, yours or his.
+rule: After every move, ask: which pieces are undefended now, his and mine?
+> In your games you left a piece hanging 49 times. Another 33 times you did not take a piece he left for you. Both mistakes have the same cure. After each move, his or yours, scan the board for pieces that nothing defends. It takes a few seconds, and it is the most valuable habit in chess.
+
+#### EX loose-a | 8/4p1k1/3p2p1/8/4PqN1/4QNnP/PP1K2P1/3r4 w - - 17 47 | src=lichess:dmwsQ
+> Black's rook has just given check on d1. Your queen and his queen face each other.
+47. Kxd1! {The rook gives check, but no black piece defends it. Take it with the king. [r:d1] [g:d2-d1]} Qxe3 48. Nxe3 {The queens come off the board.} Nxe4 49. Kc2 {He picked up a pawn, but you are a whole rook ahead.}
+key: When a piece gives check, first ask who defends it: a checking piece with no defender is just a free piece.
+
+#### EX loose-b | 2r2rk1/1p1q1pp1/1n2pb1p/p2p4/P2P4/1QP2N2/1P1N1PPP/R3R1K1 w - - 0 16 | src=game:165464356968-30
+> Your game against Caro-6, 3 Mar 2026. Black has just pushed a pawn to a5.
+16. Qxb6! {His knight on b6 was defended by a pawn on a7. That pawn has moved to a5, so the knight is now free. You took it. [r:b6] [g:b3-b6]} Bd8 17. Qb3 {Your queen steps back with a whole extra knight.}
+key: When a pawn moves forward, look at what it was defending: that piece may now be free.
+
+#### EX loose-c | 5k2/4b1p1/3N1n1p/r7/Pn4P1/1bN1B2P/2P2P2/2KR4 w - - 0 29 | src=game:168882144530-56
+> Your game against laleta34, 18 May 2026. Black's bishop has just gone to b3. You played ((29.Nb7)) here.
+29. cxb3! {The bishop on b3 is attacked by your pawn and nothing defends it. Take it. In the game you moved the knight, and after ((29.Nb7 Rxa4)) your extra piece was gone. [r:b3] [g:c2-b3]} Kg8 30. Nc4 Ra8 {You are a bishop up.}
+key: Before any plan of your own, check whether his last move left something you can take for free.
+
+#### CARD loose-1 | 1Rr3k1/p4p2/4pQp1/3p2P1/8/2q5/P1P2P2/4R1K1 b - - 0 25 | src=lichess:UqBFM | last=b1b8
+sol: Qxe1+ Kh2 Rxb8
+why: His rook on e1 has no defender. Take it with check, and then take back on b8 as well: his rook on e1 was a free gift.
+wrong: Qxf6 | ((25...Qxf6 26.Rxc8+ Kg7 27.gxf6+ Kxf6)) You take his queen, but he takes your rook with check and then your queen. You end up a rook down.
+
+#### CARD loose-2 | 5rk1/4Rnrp/ppq3pQ/5pN1/P7/6P1/1P3P1P/4R1K1 b - - 6 30 | src=lichess:c3u9D | last=e5e7
+sol: Nxh6 Rxg7+ Kxg7
+why: His queen on h6 is attacked by your knight and nothing defends it. Take the queen first; the rest can wait.
+wrong: Qxa4 | ((30...Qxa4 31.Nxf7 Rgxf7)) You grab a pawn, he takes your knight, and his queen is no longer under attack.
+
+#### CARD loose-3 | 3r1k2/1q3p1Q/p3pN2/1p2P1b1/1P1R4/P3N2P/8/6K1 b - - 0 37 | src=lichess:StzgJ | last=d1d4
+sol: Bxe3+ Kh2 Bxd4
+why: His knight on e3 is free, and taking it gives check. After his king moves, your bishop also takes the rook on d4.
+wrong: Rxd4 | ((37...Rxd4 38.Qg8+ Ke7 39.Qe8#)) Your rook leaves the back rank, and his queen mates you on e8.
+
+#### CARD loose-4 | 8/8/7p/1p2p1bP/p3P1R1/3r1P2/PP2k3/4R1K1 b - - 6 53 | src=lichess:ojG7V | last=f1e1
+sol: Kxe1 Rxg5 hxg5
+why: His rook gives check, but nothing defends it. Your king takes it. He takes your bishop, you take back, and you are a rook up.
+wrong: Kxf3 | ((53...Kxf3 54.Rg2)) You take a pawn and attack his other rook, but it steps away and the free rook on e1 is safe again.
+
+#### CARD loose-5 | 2q2rk1/p3bppp/1p2p3/3pP3/3N1P2/3bP3/PP2RPBP/3Q2K1 w - - 1 20 | src=lichess:9mGju | last=a6d3 | tag=hold
+sol: Qxd3 Qc1+ Bf1
+why: His bishop attacks your rook, but the bishop itself has no defender. Take it, and block his queen check with your bishop.
+wrong: Rd2 | ((20.Rd2 Bg6)) You save the rook, but his bishop gets away and you have missed a free piece.
+
+#### SET loose-set | theme=hanging | rating=700-1500 | n=20 | moves=1-2
+
+#### MINE fix | tags=hung piece | n=6
+
+## CHAPTER count | Count before you capture | theme=removal
+> When a piece is defended, taking it starts a string of captures on one square. Count the attackers and the defenders before you start, and you know who comes out ahead.
+
+### LESSON count | Count before you capture
+goal: Work out who wins a string of captures on one square.
+rule: Count attackers and defenders; start with the cheapest piece, and remember that a trade can remove a defender.
+> Thirty-four of your mistakes lost material in a trade. A piece with more attackers than defenders can be won, but only if you capture in the right order: cheapest piece first. And a defender is not always a real defender: if it can be traded off, or cannot take back safely, do not count it.
+
+#### EX count-a | 1r4k1/6p1/5n2/3p4/8/2N4P/5PP1/3R2K1 w - - 0 1 | src=composed
+> White to move. Count the pieces aiming at the pawn on d5.
+1. Nxd5! {Two attackers (knight and rook) against one defender (the knight on f6). Start with the cheaper piece, the knight. Starting with the rook would be wrong: after ((1.Rxd5 Nxd5 2.Nxd5)) you have given a rook for a knight and a pawn. [g:c3-d5] [g:d1-d5] [r:d5]} Nxd5 2. Rxd5 {The last capture is yours, and you are a pawn up.}
+key: More attackers than defenders wins the target, as long as you capture with the cheapest piece first.
+
+#### EX count-b | rn3rk1/pp3pp1/2p4p/3p1bq1/3P4/2PBP1QP/P4PP1/R3K1NR w KQ - 1 15 | src=lichess:2WRbp
+> Black's bishop has just come to f5. Your bishop attacks it, and his queen defends it.
+15. Qxg5! {One attacker, one defender: taking the bishop now only trades it, as in ((15.Bxf5 Qxf5)). So first trade off the defender. [g:g3-g5] [r:f5]} hxg5 16. Bxf5 {Now nothing defends the bishop on f5, and you have won it.}
+key: When the count is level, look for a trade that takes away one of the defenders.
+
+#### EX count-c | 2r2rk1/pp2qppp/4p3/3pR3/3n4/P1PQ3P/1P1N1PP1/1R4K1 b - - 1 22 | src=game:166421708968-43
+> Your game against Baterdene_Bachka, 25 Mar 2026. Your knight on d4 is attacked by a pawn. You played ((22...Nf5)) here.
+22... Nc6! {Retreat the knight to a safe square. On f5 it looks defended by the pawn on e6, but that pawn cannot take back: after ((22...Nf5 23.Qxf5 exf5 24.Rxe7)) your queen falls. So on f5 your knight would have no real defender. [r:f5] [g:d4-c6]} 23. Re3 Rfd8 24. Nf3 {Your knight is safe and the material is level.}
+key: A defender that cannot take back without losing something bigger does not count.
+
+#### CARD count-1 | r1br2k1/1pq2ppp/p3p3/3n4/1b6/1NNPBP2/PP1Q2PP/1K1R3R w - - 0 15 | src=lichess:9ysMW | last=f6d5
+sol: Nxd5 Rxd5 Qxb4
+why: His bishop on b4 has one defender, the knight on d5. Take that knight first. After he takes back, nothing defends the bishop and your queen takes it.
+wrong: Bg5 | ((15.Bg5 Nxc3+ 16.bxc3)) His knight takes yours with check, and the chance is gone.
+
+#### CARD count-2 | rnq3nr/ppp1k1Np/3p1b2/4p3/4P1Q1/7P/PPP2PP1/RNB1K2R b KQ - 4 12 | src=lichess:1oJcZ | last=e6g7
+sol: Qxg4 hxg4 Bxg7
+why: His knight on g7 is attacked by your bishop and defended only by his queen. Trade queens first; then the knight has no defender.
+wrong: Bxg7 | ((12...Bxg7 13.Qxc8)) You take the knight, but his queen takes yours on c8. Count what attacks your own pieces too.
+
+#### CARD count-3 | rn2k2r/ppp1bppp/5n2/3qp1B1/6b1/3P2Q1/PPP2PPP/RN2KBNR w KQkq - 2 7 | src=lichess:b5GxI | last=f8e7
+sol: Bxf6 Bxf6 Qxg4
+why: His bishop on g4 is attacked by your queen and defended only by the knight on f6. Take the knight first, and the bishop is free.
+wrong: Qxg4 | ((7.Qxg4 Nxg4)) One attacker against one defender: you lose your queen for a bishop.
+
+#### CARD count-4 | 2r1r1k1/1p1p1ppp/p3p3/4P3/1bP4P/1PNB4/3Q1qP1/1K1R3R b - - 2 22 | src=lichess:sbTS3 | last=e2d3
+sol: Qxd2 Rxd2 Bxc3
+why: His knight on c3 is defended only by his queen. Trade queens first; after the recapture the knight has no defender, and your bishop takes it.
+wrong: Bxc3 | ((22...Bxc3 23.Qxf2)) You win the knight, but his queen takes yours on f2.
+
+#### CARD count-5 | 1r3rk1/pppn1p1p/3qp1p1/1B6/3P4/2P3QP/P1P2PP1/1R3RK1 w - - 1 17 | src=lichess:UDmUb | last=e5d7
+sol: Qxd6 cxd6 Bxd7
+why: His knight on d7 is attacked by your bishop and defended only by his queen. Trade queens first, then take the knight for free.
+wrong: Bxd7 | ((17.Bxd7 Qxd7)) One attacker, one defender: it is only a trade of bishop for knight.
+
+#### SET count-set | theme=removal | rating=700-1500 | n=20 | moves=1-2
+
+#### MINE fix | tags=lost material | n=6
+
+## CHAPTER mate1 | Checkmate in one | theme=mate1
+> Most mates in real games use one of a few patterns. Learn to recognise them, and look at every check before any other move.
+
+### LESSON mate1 | Checkmate patterns in one
+goal: Recognise the everyday mates: queen next to the king, two rooks, the knight in the corner, and pieces working together.
+rule: Look at every check first: for each one, count the squares his king can still reach.
+> A mate needs three things: a check, no square for the king, and no way to take or block the checking piece. The quickest way to find one is a fixed habit. Before any other move, look at every check you have. For each check, ask where his king can go. If the answer is nowhere, it is mate.
+
+#### EX mate1-a | 3R2nk/4q1p1/8/p7/8/6bP/P5P1/3Q3K w - - 8 32 | src=lichess:ELX2f
+> White to move. His king on h8 is boxed in by his own knight and pawn.
+32. Qh5# {Check along the h-file. The king cannot go to g8 or g7, because his own pieces stand there, and h7 is covered by your queen. Nothing can block or take her: mate. [g:d1-h5] [r:h8]}
+key: A king boxed in by its own pieces needs only one check on an open line.
+
+#### EX mate1-b | r4r1k/1b6/p3p1R1/1p1p3p/4nP1q/1QP1P3/PP6/2K3R1 w - - 1 32 | src=game:164157967040-62
+> Your game against toehats, 2 Feb 2026. His king has just stepped into the corner.
+32. Rh6# {You found it. The rook checks on the h-file, and your other rook on g1 controls the whole g-file, so the king has no square. Two rooks side by side, one checking and one guarding, give mate. [g:g6-h6] [g:g1-g8]}
+key: Two rooks mate together: one gives check, the other takes away the next line.
+
+#### EX mate1-c | 5qr1/2R3pk/5pRp/5P2/pr2PQ1P/3PK3/8/8 w - - 0 40 | src=game:164970146112-78
+> Your game against albert_sebastian, 20 Feb 2026. Black has just pushed a pawn on the queenside.
+40. Qxh6# {You found this one too. The pawn on g7 cannot take back, because your rook on c7 pins it to the king. The rook on g6 is guarded by your pawn on f5, so the king has nowhere to go. [g:f4-h6] [r:g7]}
+key: Check every capture next to his king: a pinned pawn is not a real defender.
+
+#### CARD mate1-1 | r4rk1/3ppp1p/2p3p1/8/p2Bn1N1/6P1/P4P1P/R4bK1 w - - 0 19 | src=lichess:wc2cg | last=a6f1
+sol: Nh6#
+why: The knight checks the king, your bishop on the long diagonal covers g7 and h8, and his own rook blocks f8. That is mate.
+wrong: Rxf1 | ((19.Rxf1 h5)) Taking back the bishop is natural, but you had mate on the board and now his king gets air.
+
+#### CARD mate1-2 | r2r4/ppp2kpp/2n5/6q1/3PQ2n/B7/P1P2PPP/3RR1K1 w - - 0 18 | src=lichess:ZumMg | last=g8f7
+sol: Qe6#
+why: Your queen checks right next to the king, guarded by the rook on e1. Your bishop on a3 covers f8, so the king has no square.
+wrong: g3 | ((18.g3 Re8)) You chase his knight, and his rook blocks the e-file. The mate is gone.
+
+#### CARD mate1-3 | 6k1/1Q3R2/6pp/8/8/1P1P2PP/1PP2P1K/4rq2 b - - 0 38 | src=lichess:oM0ds | last=a7b7
+sol: Qg1#
+why: Your queen checks next to his king, and your rook on e1 guards her. His own pawns on g3 and h3 take away his last squares.
+wrong: Qh1+ | ((38...Qh1+ 39.Qxh1 Rxh1+ 40.Kxh1)) This check only trades your queen and rook away. Look for the check that leaves no square.
+
+#### CARD mate1-4 | 8/p2R3p/2pR4/5k2/5P1r/5K1P/Pr6/8 w - - 2 45 | src=lichess:lXkGs | last=e6f5
+sol: Rf7#
+why: One rook checks on the f-file, the other covers the sixth rank, and your king and pawn take the squares below. It is mate.
+wrong: Kg3 | ((45.Kg3 Rxf4)) You save the pawn on h3, but he takes the pawn on f4 and your mate has gone.
+
+#### CARD mate1-5 | 6R1/p7/1p6/8/1PP1nkp1/P2K4/1r6/4N3 b - - 4 55 | src=lichess:AbL86 | last=e2d3
+sol: Rd2#
+why: The rook checks right next to his king, and your knight on e4 guards it. The knight and your king cover every square he could run to.
+wrong: Nf2+ | ((55...Nf2+ 56.Kc3)) A check, but his king walks away. Count his escape squares before you give a check.
+
+#### SET mate1-set | theme=mate1 | rating=700-1500 | n=20 | moves=1
+
+#### MINE fix | tags=missed mate | n=4
+
+## CHAPTER backrank | The back rank | theme=backrank
+> A king behind a wall of its own pawns is safe from the front but helpless from behind. Use this against him, and make sure he cannot use it against you.
+
+### LESSON backrank | The back rank
+goal: Use, and avoid, the king stuck behind its own pawns.
+rule: If his king has no escape square, every rook or queen check on the back rank is a threat.
+> Look at the king and the three pawns in front of it. If none of them has moved, the king has no escape square. Then a rook or queen landing on the back rank with check is mate, unless something can block or take it. Eleven of your mistakes allowed a mate. Count who guards the back rank, for both kings.
+
+#### EX backrank-a | 7Q/4kb2/6Bp/5r2/2P5/4q3/P5PP/5R1K b - - 13 36 | src=lichess:pT3fM
+> Black to move. Look at the white king on h1 and the pawns in front of it.
+36... Rxf1# {His king has no escape square: his own pawns on g2 and h2 take the squares in front of it. Your rook takes on f1 with check, your queen covers g1, and nothing can block or take your rook. [r:h1] [g:f5-f1]}
+key: A king behind unmoved pawns is mated by any safe check along the back rank.
+
+#### EX backrank-b | r3r2k/1q2n1pp/p2B4/2P5/QP2R3/2b3P1/5P1P/5RK1 b - - 4 29 | src=game:147092775202-57
+> Your game against matteoperugia, 23 Dec 2025. His rook has just come to e4. You played ((29...Nd5)) here.
+29... Qxe4! {Nothing defends his rook on e4, so take it. In the game you moved the knight, and after ((29...Nd5 30.Rxe8+ Rxe8 31.Qxe8#)) your king was caught on the back rank. Your king on h8 has no air, so the rook on e8 must stay defended. [r:e8] [g:b7-e4]} 30. Bxe7 Qxe7 31. Qc2 Bxb4 32. Qb1 Bxc5 {You have won a rook, and your back rank is safe again.}
+key: When your king has no escape square, check twice before moving a piece that guards the back rank.
+
+#### EX backrank-c | r1b2rk1/pp4p1/2p1ppNp/6b1/8/2P5/PPB3PP/3R1R1K b - - 1 19 | src=game:166470757312-37
+> Your game against hazemalassaf, 26 Mar 2026. His rook on d1 controls the open d-file. You played ((19...Rf7)) here.
+19... Re8! {His rook threatens to check on d8. Your king could step to h7, but his knight on g6 covers h8, so a rook check there would be mate. Your rook goes to e8 and guards the back rank. In the game, after ((19...Rf7 20.Rd8+ Rf8 21.Rxf8+ Kh7 22.Rh8#)) it was over. [r:d8] [g:f8-e8]} 20. h4 Be3 21. h5 {Your back rank is covered, and you can think about your own plans again.}
+key: If his rook or queen can reach your back rank with check, guard that rank first or make an escape square.
+
+#### CARD backrank-1 | 4r1k1/pbp2p1p/1p3Qp1/3B4/6q1/2N5/PPP2PPP/3R2K1 b - - 0 18 | src=lichess:6SLVG | last=c4d5
+sol: Qxd1+ Nxd1 Re1#
+why: His king has no escape square, and only his rook guards the first rank. Give your queen to remove that rook; then your rook mates on e1.
+wrong: Bxd5 | ((18...Bxd5 19.f3)) You take back the bishop, but his pawn moves, his king gets air, and your queen is attacked.
+
+#### CARD backrank-2 | 5r1k/1p4pp/8/8/1Q2p1q1/5rN1/6KP/2R2R2 w - - 7 36 | src=lichess:HenPF | last=f4f3
+sol: Qxf8+ Rxf8 Rxf8#
+why: His king is stuck behind its pawns, and only one rook guards his back rank. Give your queen for that rook; your other rook then mates on f8.
+wrong: Qe7 | ((36.Qe7 Ra8)) Too slow: his rook leaves f8 and his back rank no longer matters.
+
+#### CARD backrank-3 | 4r2k/p5pp/5b2/1Q6/8/1P5P/P3p1P1/3qR2K w - - 2 37 | src=lichess:BaGyQ | last=d4d1
+sol: Qxe8#
+why: His rook on e8 is the only guard of his back rank, and nothing defends it. Take it with check: his king cannot get out.
+wrong: Kh2 | ((37.Kh2 Qd6+)) You give your own king air, but his queen checks and you have lost your chance.
+
+#### CARD backrank-4 | 6k1/1p4pp/5p1q/8/4p1Q1/BP4PP/P1r2P1K/5b2 w - - 3 34 | src=lichess:i1HDP | last=c8c2
+sol: Qe6+ Kh8 Qe8#
+why: His king has no air. The check on e6 drives it into the corner, and then your queen mates along the back rank on e8.
+wrong: Qxe4 | ((34.Qxe4 Qxh3+)) You grab a pawn, but his queen takes on h3 with check and now your king is in danger.
+
+#### CARD backrank-5 | RB4k1/p2r1ppp/1p6/8/1b6/6P1/5P1P/6K1 w - - 0 31 | src=lichess:0ClEz | last=f8b4
+sol: Bd6+ Rd8 Rxd8#
+why: Your bishop steps off the back rank and your rook gives check from behind it. His rook must block on d8, and your rook takes it with mate.
+wrong: Bxa7+ | ((31.Bxa7+ Bf8)) His bishop blocks on f8, and his back rank is covered.
+
+#### SET backrank-set | theme=backrank | rating=700-1500 | n=20 | moves=1-2
+
+#### MINE fix | tags=allowed mate | n=4
+
+## CHAPTER fork | Forks | theme=fork
+> A fork is one move that attacks two things at once. He can save only one of them. Knights are the best forkers, but every piece can do it, even a pawn.
+
+### LESSON fork-knight | Knight forks
+goal: One knight move, two targets.
+rule: Look for two valuable pieces a knight's jump apart, and a safe square that hits both.
+> A knight attacks in a strange shape, so people forget about it. That is why forks cost you 35 mistakes in your games. The clue is simple: find two of his valuable pieces, the king, queen or rooks, that a knight on one square would attack together. Then check that the square is safe, or that the move comes with check.
+
+#### EX fork-knight-a | 8/5p1p/4k3/1P3p1P/8/3NP2r/3K4/8 w - - 1 39 | src=lichess:V8XBy
+> White to move. Look at his king on e6 and his rook on h3.
+39. Nf4+! {The knight checks the king and attacks the rook at the same time. [g:d3-f4] [r:e6] [r:h3]} Ke5 40. Nxh3 {The king had to move, and you take the rook.}
+key: A knight check that also hits a rook or queen wins it, because the check must be answered first.
+
+#### EX fork-knight-b | r2qkbnr/ppp2ppp/2n1b3/3N4/3P1B2/8/PPP2PPP/R2QKBNR w KQkq - 1 7 | src=game:173089799018-12
+> Your game against ant-lop8, 16 Aug 2026. His bishop has just come to e6.
+7. Nxc7+! {You found it. The knight takes a pawn with check and attacks the rook on a8. If his queen takes the knight, your bishop on f4 takes the queen. [g:d5-c7] [g:f4-c7]} Qxc7 8. Bxc7 Nf6 {You won his queen for a knight.}
+key: A knight check next to his king often hits a rook in the corner as well.
+
+#### EX fork-knight-c | r2qk1nr/pp3ppp/4p3/3pPb2/1n1P4/P4N1P/1P3PP1/RN1QKB1R b KQkq - 0 10 | src=game:166318883832-19
+> Your game against AintGenius, 23 Mar 2026. He has just pushed a pawn to a3 to chase your knight.
+10... Nc2+! {You found it again. The knight checks the king and attacks the rook on a1 from the same square. [g:b4-c2] [r:e1] [r:a1]} 11. Kd2 Nxa1 12. Qa4+ Kf8 13. Nc3 {You won a whole rook.}
+key: When he chases your knight, look at every square it can jump to: one of them may be a fork.
+
+#### CARD fork-knight-1 | 8/1ppk1n2/1pnpr3/5Q2/2P4P/BP6/P1KP4/8 b - - 1 44 | src=lichess:PSaav | last=e4f5
+sol: Nd4+ Kb2 Nxf5
+why: The knight jumps to d4 with check and attacks his queen on f5 at the same time. He must move the king, and you take the queen.
+wrong: Nh6 | ((44...Nh6 45.Qh3)) You chase the queen, but she steps away. The fork with check was there.
+
+#### CARD fork-knight-2 | 3r1k2/pp4p1/4p2p/P4p2/5P2/1Bn1P3/3n1PKP/R1R5 b - - 4 25 | src=lichess:KKSgJ | last=f1c1
+sol: Nxb3 Rxc3 Nxa1
+why: Take the bishop: your knight lands on b3, where it attacks both rooks. He saves one by taking your other knight, and you take the rook on a1.
+wrong: Ne2 | ((25...Ne2 26.Bxe6)) You attack a rook, but his bishop takes your pawn on e6 and escapes.
+
+#### CARD fork-knight-3 | 2r2n2/p3k1pp/1p2P3/5pP1/5N1P/P1pNrP2/P1K5/3R4 w - - 1 34 | src=lichess:rFDSk | last=e4e3
+sol: Nd5+ Kxe6 Nxe3
+why: Your knight jumps to d5 with check and attacks the rook on e3. The king must move, and the rook is yours.
+wrong: g6 | ((34.g6 Rxf3)) You push a pawn, and his rook takes your pawn on f3 instead.
+
+#### CARD fork-knight-4 | rr6/4kpp1/p2bp2p/4q3/3N4/1bP1B3/P1PQ2PP/5KR1 w - - 0 22 | src=lichess:vHOor | last=d5b3
+sol: Nc6+ Ke8 Nxe5
+why: Do not take back the bishop yet. The knight checks from c6 and attacks his queen on e5, so you win the queen.
+wrong: axb3 | ((22.axb3 Rc8)) You win back the bishop, but you missed a fork that wins his queen.
+
+#### CARD fork-knight-5 | r5k1/p1R3pp/1p3p2/3p4/P2B2n1/4P1P1/4r1KP/R7 w - - 3 30 | src=lichess:m85cp | last=f2g4 | tag=hold
+sol: Kf3 Rxh2 Kxg4
+why: His knight checks you, and his knight and rook are hunting your king and pawns. Step to f3: your king attacks the knight and takes it next.
+wrong: Kh1 | ((30.Kh1 Nxh2)) His knight takes on h2, and your king is stuck in the corner next to his rook and knight.
+
+#### SET fork-knight-set | theme=fork | rating=700-1500 | n=20 | moves=1-2
+
+#### MINE fix | tags=fork | n=6
+
+### LESSON fork-other | Pawn, queen and rook forks
+goal: Every piece can fork: pawns, queens, rooks and bishops.
+rule: Look for two of his pieces on one line or diagonal, or side by side in front of your pawn.
+> A pawn fork is the cheapest win in chess: the pawn is worth less than either piece it attacks. A queen fork often comes with check, so he has no time to save the second piece. The clue is two of his pieces that one of your pieces could hit from a single square. Look especially at loose pieces and at his king.
+
+#### EX fork-other-a | 3r1rk1/pp5p/3p2p1/4p3/2P2P2/PP1RPR2/3K1P2/8 b - - 1 24 | src=lichess:f3LN5
+> Black to move. His two rooks stand side by side on d3 and f3.
+24... e4! {Your pawn attacks both rooks at once. He can save only one. [g:e5-e4] [r:d3] [r:f3]} 25. Rg3 exd3 {The pawn takes the other rook.} 26. Kxd3 d5 {He took the pawn, but you have won a rook for it.}
+key: Two pieces side by side, one square in front of your pawn: push the pawn between them.
+
+#### EX fork-other-b | 7k/4R2p/7b/7p/4BP2/5KP1/1r6/8 w - - 0 49 | src=lichess:JlYTr
+> White to move. His bishop on h6 and his king on h8 are on the same file.
+49. Rxh7+! {The rook takes a pawn with check and attacks the bishop on h6 along the file. [g:e7-h7] [r:h6]} Kg8 50. Rxh6 {The king had to move, and the bishop falls.}
+key: A check along a file or rank that also attacks a loose piece behind is a fork.
+
+#### EX fork-other-c | r3k2r/p1p1qppp/1pn1p3/3n4/3P4/2QBPPB1/P4P1P/R3K2R w KQkq - 0 16 | src=game:148083365522-30
+> Your game against benjonas27, 16 Jan 2026. He has just taken a pawn on d5 with his knight. You played ((16.Qc2)) here.
+16. Qxc6+! {The queen takes a knight with check and also attacks the rook on a8. In the game you moved the queen away, and after ((16.Qc2 Ndb4)) his knight attacked your queen and bishop. [g:c3-c6] [g:c6-a8]} Kf8 17. Qxa8+ Qe8 18. Qxa7 {You have won a knight and a rook.}
+key: A queen capture with check gives you a second move: use it to take the next loose piece.
+
+#### CARD fork-other-1 | 5r2/4ppkp/pr1qbnp1/1p6/2P5/4Q2P/PP2BPP1/R4RK1 w - - 6 20 | src=lichess:dPM6B | last=c8e6
+sol: c5 Qb8 cxb6
+why: Your pawn steps forward and attacks his queen on d6 and his rook on b6 together. The queen must move, and the pawn takes the rook.
+wrong: cxb5 | ((20.cxb5 axb5)) Taking a pawn is fine, but the pawn fork on c5 was winning a rook.
+
+#### CARD fork-other-2 | r1bqk2r/pp3ppp/4p3/3pP3/1bPNn3/2N5/PP2BPPP/R2QK2R w KQkq - 1 11 | src=lichess:StXru | last=e7b4
+sol: Qa4+ Bd7 Qxb4
+why: The queen checks on a4 and attacks his bishop on b4, which nothing defends. He blocks the check, and you take the bishop.
+wrong: Qc2 | ((11.Qc2 O-O)) A calm move, and his king walks to safety. The check with a fork was there.
+
+#### CARD fork-other-3 | r3kb1N/pppb1ppp/2B2n2/8/3PpB2/2N5/PqP2PPP/R2QK2R b KQq - 0 10 | src=lichess:pdTIl | last=b5c6
+sol: Qxc3+ Bd2 Qxc6
+why: Take his knight on c3 with check. From c3 your queen also attacks his bishop on c6, so you take that next.
+wrong: Bxc6 | ((10...Bxc6 11.Bd2)) You take back the bishop, but his knight escapes from c3 and you have missed a piece.
+
+#### CARD fork-other-4 | r1b2rk1/pppp1pp1/7p/3NN3/2q1P3/2P5/P4PPP/R2QK2R b KQ - 0 13 | src=lichess:c51Vw | last=f3e5
+sol: Qxe4+ Ne3 Qxe5
+why: Take the pawn on e4 with check. Your queen now also attacks the knight on e5, which nothing defends. After he blocks, take the knight.
+wrong: Qc5 | ((13...Qc5 14.Qd4)) You offer a queen trade, but his knights stay safe and you missed the fork with check.
+
+#### CARD fork-other-5 | 5k1r/1p5p/p3p3/8/3B4/qP5P/2P1BPP1/2K4R w - - 1 22 | src=lichess:yCyIO | last=a2a3 | tag=hold
+sol: Bb2 Qb4 Bxh8
+why: His queen checks you. Block with the bishop on b2: it attacks his queen, and from b2 it also aims at his rook on h8. After the queen moves, take the rook.
+wrong: Kd1 | ((22.Kd1 Qd6)) Your king runs, but his queen now attacks your bishop on d4, and it cannot move without exposing your king.
+
+#### SET fork-other-set | theme=fork | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER pin | Pins | theme=pin
+> A pinned piece stands in front of something bigger on the same line. If it moves, the bigger piece is lost, or, when the king stands behind it, it cannot move at all.
+
+### LESSON pin | Pins
+goal: Use a piece that cannot move because something bigger stands behind it.
+rule: A pinned piece does not really defend anything: attack it again, or take what it is supposed to guard.
+> Look along every line from your bishops, rooks and queen. When two of his pieces stand on that line with the bigger one behind, you have a pin. Pinned to the king, the piece cannot move at all. Pinned to the queen, it can move, but he loses the queen. Then pile up on the pinned piece: it cannot run away.
+
+#### EX pin-a | 4k3/1p3ppp/2n5/1B6/3P4/8/5PPP/6K1 w - - 0 1 | src=composed
+> White to move. Your bishop on b5 pins his knight on c6 to his king on e8.
+1. d5! {The pawn attacks the knight. The knight cannot move, because that would expose his king to your bishop. [g:d4-d5] [r:c6] [g:b5-e8]} Kd7 2. dxc6+ bxc6 3. Ba4 {He saved the king from the pin, but the knight was lost: you won a piece for a pawn.}
+key: A pinned piece cannot run away: attack it with something cheap, ideally a pawn.
+
+#### EX pin-b | 2kr3r/1ppq1pp1/p1nbb2p/3n4/3P4/P1N2P2/1PPQ1BPP/2KR1BNR b - - 2 12 | src=lichess:94ZU3
+> Black to move. His queen on d2 and his king on c1 stand on one diagonal.
+12... Bf4! {Your bishop attacks the queen, and the king behind her pins her. She cannot step away, so he gives her up for the bishop. [g:d6-f4] [r:d2] [r:c1]} 13. Qxf4 Nxf4 14. Nge2 Nxe2+ 15. Bxe2 {You have won his queen for a bishop.}
+key: Look along the diagonals from his king: a queen standing on one can be pinned by a bishop.
+
+#### EX pin-c | 3r2k1/5rpp/p1p2q2/1p6/3P2b1/1B2Q3/P4PPP/4R1K1 w - - 0 23 | src=lichess:w4Ca9
+> White to move. Your bishop on b3 pins his rook on f7 to his king on g8.
+23. Qe8+! {A queen check on the back rank. His rook on f7 cannot block on f8, because it is pinned. [g:e3-e8] [r:f7]} Rxe8 24. Rxe8# {His other rook took the queen, and your rook mates on the back rank.}
+key: A pinned piece cannot help its king: count it out when you look for mate.
+
+#### CARD pin-1 | r6N/ppqk1ppp/b4b2/2p5/P2p4/3P4/1PPBQPPP/R3K2R b KQ - 0 17 | src=lichess:K1ZKm | last=g6h8
+sol: Re8 Qxe8+ Kxe8
+why: Your rook goes to e8, guarded by your king, and pins his queen to his king. She cannot step away, so he must give her up for the rook.
+wrong: Rxh8 | ((17...Rxh8 18.Qg4+)) You take his knight, but his queen escapes with check.
+
+#### CARD pin-2 | 3r2k1/1B2p1b1/1p2npp1/2p4p/2P2P2/2N5/PP4PP/5RK1 w - - 0 23 | src=lichess:Ih9aT | last=c7e6
+sol: Bd5 Kf8 Bxe6
+why: Your bishop pins the knight on e6 to his king. The knight cannot move, nothing can guard it in time, and you take it next.
+wrong: Nd5 | ((23.Nd5 Kf7)) His king steps to f7 and guards the knight, so the pin no longer wins anything.
+
+#### CARD pin-3 | rn1qkbnr/pp3ppp/3p4/2p5/6b1/5NP1/PPPP1P1P/RNBQKB1R b KQkq - 0 5 | src=lichess:cc9ft | last=g2g3
+sol: Qe7+ Qe2 Bxf3
+why: Check on e7. He blocks with his queen, and now she is pinned to his king, so she cannot take back on f3. Your bishop wins the knight.
+wrong: Nc6 | ((5...Nc6 6.Bg2)) His bishop now guards the knight on f3, and the chance has gone.
+
+#### CARD pin-4 | 5r2/pp1R4/2p3p1/2q1P1k1/5r2/2P3Q1/P4R1P/6K1 b - - 5 32 | src=lichess:Zg8mq | last=h3g3 | tag=hold
+sol: Rg4 Qxg4+ Kxg4
+why: His queen checks you. Block on g4 with the rook: it is pinned there, but your king guards it. If his queen takes, you take her.
+wrong: Kh5 | ((32...Kh5 33.Rh7#)) The king walks into the corner of the board, and his rook mates you on h7.
+
+#### CARD pin-5 | 1q6/R4p1k/1p4pp/8/2Q5/7P/5PPK/1r6 w - - 4 40 | src=lichess:Or3Sb | last=e8b8 | tag=hold
+sol: Rc7 Qxc7+ Qxc7
+why: His queen checks you and attacks your rook on a7. Block with the rook on c7, where your queen guards it. If he takes, he is left with a rook against your queen.
+wrong: g3 | ((40.g3 Qxa7)) You stop the check, but his queen takes your rook on a7.
+
+#### SET pin-set | theme=pin | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER skewer | Skewers | theme=skewer
+> A skewer is a pin turned around: the big piece stands in front. You attack it, it must move, and you take the piece behind.
+
+### LESSON skewer | Skewers
+goal: Attack the big piece and win the one behind it when it moves.
+rule: When his king or queen stands in front of another piece on one line, check or attack along that line.
+> The most common skewer is a check. His king stands on a line, and further along the same line stands a rook or queen. You give check along that line, the king must step aside, and you take what was hiding behind it. Look for it whenever his king is out in the open, especially in the endgame.
+
+#### EX skewer-a | 8/pp3R2/4B1p1/4p1P1/3k3P/8/5PK1/3q4 w - - 3 42 | src=lichess:LJ4Lz
+> White to move. His king on d4 and his queen on d1 stand on the same file.
+42. Rd7+! {Check along the d-file. The king must step off the file, and then your rook takes the queen behind it. [g:f7-d7] [r:d4] [r:d1]} Kc3 43. Rxd1 {A whole queen for nothing.}
+key: King and queen on one file, rank or diagonal: check along that line and take the queen.
+
+#### EX skewer-b | r1bq1b1r/pp2kPpp/8/2pp4/4n3/2P5/PP2QPPP/RNB1K2R w KQ - 0 12 | src=lichess:a3zoJ
+> White to move. His king on e7 and his queen on d8 stand on one diagonal.
+12. Bg5+! {The bishop checks along the diagonal g5-d8. Behind the king stands his queen. [g:c1-g5] [r:e7] [r:d8]} Kxf7 13. Bxd8 {The king had to move, and the queen falls.}
+key: A bishop check can skewer too: look along the diagonals through his king.
+
+#### EX skewer-c | 8/pp6/4nk2/7R/7P/8/r4P2/4K1R1 b - - 6 46 | src=lichess:0V4IF
+> Black to move. His king on e1 and his rook on g1 stand on the first rank.
+46... Ra1+! {Check along the first rank. When the king steps off it, the rook on g1 behind it is yours. [g:a2-a1] [r:e1] [r:g1]} 47. Ke2 Rxg1 {You have won a whole rook.}
+key: In the endgame, look along the ranks too: king and rook side by side are a skewer waiting to happen.
+
+#### CARD skewer-1 | 8/2r5/7P/4kp2/3b3K/8/8/2B2R2 w - - 3 54 | src=lichess:O2uH6 | last=c3c7
+sol: Bf4+ Kf6 Bxc7
+why: Check with the bishop on f4. His king and his rook on c7 stand on the same diagonal, so when the king moves, the rook is yours.
+wrong: Kg5 | ((54.Kg5 Kd5)) You attack his pawn, but his king slips away and the skewer is gone.
+
+#### CARD skewer-2 | 2k3r1/R6p/pp1p4/3P4/1Pr5/8/4RKP1/8 w - - 0 32 | src=lichess:FJSmP | last=c1c4
+sol: Ra8+ Kb7 Rxg8
+why: Check along the back rank from a8. His king and his rook on g8 stand on that rank, so after the king moves you take the rook.
+wrong: Ree7 | ((32.Ree7 Kb8)) Two rooks on the seventh rank look strong, but his king hides and his rook on g8 stays safe.
+
+#### CARD skewer-3 | 8/q4k2/p7/1p1r3R/6R1/P6P/1r3PP1/6K1 w - - 0 36 | src=lichess:IsKvM | last=g7f7
+sol: Rh7+ Kf6 Rxa7
+why: Check on h7. His king and his queen on a7 stand on the seventh rank, so the king steps away and your rook takes the queen.
+wrong: Rxd5 | ((36.Rxd5 Qxf2+)) Taking the rook looks natural, but his queen takes on f2 with check and joins the attack on your king.
+
+#### CARD skewer-4 | 2r5/4bkp1/7p/3K4/R7/p6P/3R4/8 b - - 2 55 | src=lichess:YbEyR | last=c4d5
+sol: Rd8+ Ke4 Rxd2
+why: Check on the d-file. His king and his rook on d2 stand on that file, so the king steps away and you take the rook.
+wrong: Rc5+ | ((55...Rc5+ 56.Kd4)) A check, but nothing stands behind the king on that line, and his king is safe.
+
+#### CARD skewer-5 | 5r2/1b6/p6p/1p1pPk2/8/2P1K3/PP6/6R1 w - - 0 41 | src=lichess:gHpeQ | last=g6f5
+sol: Rf1+ Kxe5 Rxf8
+why: His king just walked onto the f-file, in front of his own rook. Check along the file; after the king moves, take the rook on f8.
+wrong: Kd4 | ((41.Kd4 Re8)) You guard your pawn, but his rook steps off the file and the skewer is gone.
+
+#### SET skewer-set | theme=skewer | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER discovered | Discovered attacks and double check | theme=discovered
+> When one of your pieces stands in front of another on a line, moving the front piece uncovers an attack. If the piece that moves makes a threat of its own, he faces two threats at once.
+
+### LESSON discovered | Discovered attacks and double check
+goal: Move one piece and uncover the attack of another.
+rule: The piece that moves away can go anywhere with a threat of its own: a check, a capture, or an attack.
+> Look for your bishop, rook or queen hidden behind one of your own pieces, aiming at something of his. Now move the front piece with a threat: a check is best. He must answer that threat, and the uncovered attack wins. When both pieces give check, it is a double check: the king must move, because nothing can block two checks at once.
+
+#### EX discovered-a | 8/8/4p2p/4k1p1/4B1P1/3PK3/8/1r6 w - - 4 50 | src=lichess:M0n6p
+> White to move. Your pawn on d3 stands between your bishop and his rook on b1.
+50. d4+! {The pawn gives check, and by moving it uncovers your bishop's attack on the rook. [g:d3-d4] [g:e4-b1] [r:b1]} Kf6 51. Bxb1 {The king had to deal with the check, and the rook falls.} h5 52. gxh5 {You are a whole bishop up.}
+key: Even a pawn can uncover an attack: move it with check and the piece behind does the rest.
+
+#### EX discovered-b | 1r2q2r/1pp2pk1/p1n4n/4P1N1/6Q1/2P4P/P4PP1/1R2R1K1 w - - 3 26 | src=lichess:X9Hso
+> White to move. Your knight on g5 stands between your queen and his king.
+26. Ne6+! {Double check: the knight checks the king, and your queen behind it checks along the g-file. Nothing can block both, so the king must move. [g:g5-e6] [g:g4-g7] [r:g7]} Kh7 27. Qg7# {The queen comes to g7, guarded by the knight, and it is mate.}
+key: Against a double check the king must move: look where it can go before anything else.
+
+#### EX discovered-c | 3r2k1/pp1r1pp1/5p1p/2q1nb2/Q7/P1P2NP1/1P3RBP/5R1K w - - 9 20 | src=lichess:bBFeR
+> White to move. Your knight on f3 stands between your rook on f2 and his bishop on f5.
+20. Nxe5! {The knight takes his knight, and at the same moment your rook attacks the bishop on f5. [g:f3-e5] [g:f2-f5] [r:f5]} Qxe5 21. Rxf5 {He took back the knight, and your rook takes the bishop. You have won a piece.}
+key: A capture by the front piece is the strongest way to uncover an attack: he cannot answer both.
+
+#### CARD discovered-1 | 2k2b1r/ppp2ppp/2n5/8/Q2P4/8/PP3P1P/2KR1B1q w - - 0 14 | src=lichess:RJRaa | last=f3h1
+sol: Bh3+ Kb8 Rxh1
+why: Your bishop on f1 blocks your rook's path to his queen on h1. Move it with check: the king must answer, and the rook takes the queen.
+wrong: d5 | ((14.d5 Kb8)) You attack his knight, but his queen on h1 stays safe.
+
+#### CARD discovered-2 | rn1q1rk1/pp3pp1/3bpn1p/2P5/2P1N3/3Q1N1P/PP3PP1/R1B2RK1 b - - 0 12 | src=lichess:27t4w | last=d4c5
+sol: Bh2+ Nxh2 Qxd3
+why: Your bishop stands between your queen and his queen on d3. Move it with check to h2. He must deal with the check, and your queen takes his.
+wrong: Be7 | ((12...Be7 13.Qc2)) The bishop steps back quietly, and his queen walks away.
+
+#### CARD discovered-3 | r2qkb1r/pp2pppp/4b3/3n2B1/P1BP4/2N5/1P3PPP/R2QK2R b KQkq - 0 10 | src=lichess:RPzuy | last=f1c4
+sol: Nxc3 bxc3 Bxc4
+why: Your knight on d5 blocks your bishop's line to his bishop on c4. Take his knight on c3: now your bishop attacks c4, and you win a piece.
+wrong: h6 | ((10...h6 11.Bb5+)) His bishop checks you, and your chance to uncover the attack has gone.
+
+#### CARD discovered-4 | 2rqrb2/1p1b1kpp/p1nB1n2/8/2NpP3/2PB4/Q4PPP/R4RK1 w - - 0 20 | src=lichess:QY1CY | last=g8f7
+sol: Ne5#
+why: Double check: the knight checks from e5, and your queen on a2 checks along the diagonal it has opened. The king has no square, so it is mate.
+wrong: e5 | ((20.e5 Be6)) His bishop blocks the diagonal, and the double check is gone.
+
+#### CARD discovered-5 | 8/1R2Kpk1/4p1p1/4P1b1/8/8/8/8 w - - 0 68 | src=lichess:qvXFk | last=f4g5 | tag=hold
+sol: Ke8 Kg8 Rxf7
+why: His bishop checks you. Step to e8: your king now attacks the pawn on f7 together with your rook, and his king alone cannot hold it.
+wrong: Kd7 | ((68.Kd7 Kf8)) Your king is too far away, and the pawn on f7 stays defended.
+
+#### SET discovered-set | theme=discovered | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER removal | Remove the defender | theme=removal
+> Every defender has a job. Take it, trade it or chase it away, and the piece it was guarding is left alone.
+
+### LESSON removal | Remove the defender
+goal: Take or chase away the piece that guards the target.
+rule: Ask what job the defending piece has, then take it, trade it or chase it away.
+> When the piece you want is defended, do not give up. Look at its defender instead. Can you take the defender, trade it off, or force it to move? Often you can even capture the defender with check or with a threat, so he has no time to rescue anything. Then the target is free.
+
+#### EX removal-a | 6k1/2p2pp1/1n1q3p/2Q5/2p1r3/5N1P/5PP1/1R4K1 w - - 0 31 | src=lichess:lHcQi
+> White to move. Your rook attacks his knight on b6. What guards it?
+31. Qxd6! {The knight on b6 is guarded only by the pawn on c7. Take his queen: he must take back with that pawn. [g:c5-d6] [r:c7]} cxd6 32. Rxb6 {The pawn left c7, the knight lost its only defender, and your rook takes it.}
+key: If a pawn is the only defender, force it to capture something else.
+
+#### EX removal-b | r5k1/p2r2pp/4pp2/Bp6/1P1b1P2/7P/P3NnPK/R4R2 w - - 1 26 | src=lichess:4O4e6
+> White to move. His knight on f2 attacks your rooks, and his bishop on d4 guards it.
+26. Nxd4! {Take the defender. [g:e2-d4] [r:f2]} Rxd4 27. Rxf2 {His bishop is gone, so nothing guards the knight, and your rook takes it.}
+key: When his piece attacks you from a defended square, take the defender first.
+
+#### EX removal-c | 1r3rk1/pp3p1p/2p3n1/3pbBP1/8/6P1/P2B1PK1/1R2R3 w - - 0 26 | src=lichess:qLoLl
+> White to move. Your rook attacks his bishop on e5, and his knight on g6 guards it.
+26. Bxg6! {Take the defender. [g:f5-g6] [r:e5]} fxg6 27. Rxe5 {Now nothing guards the bishop, and your rook takes it.}
+key: When the defender can be taken, take it first and collect the target afterwards.
+
+#### CARD removal-1 | r2q1rk1/ppp3pp/2npp3/2b1p1N1/4P3/3PB3/PPP2PPP/R2QK2R b KQ - 1 10 | src=lichess:KHNzQ | last=c1e3
+sol: Bxe3 fxe3 Qxg5
+why: His knight on g5 is guarded only by the bishop on e3. Take that bishop; after he takes back, your queen takes the knight.
+wrong: Qf6 | ((10...Qf6 11.Qh5)) A natural move, but his knight stays guarded and his queen joins the attack.
+
+#### CARD removal-2 | r2r2k1/p4p2/1p1p1n2/4q1B1/2PRb3/7Q/P4PPP/1R4K1 w - - 0 23 | src=lichess:KiVG1 | last=b7e4
+sol: Bxf6 Qxf6 Rxe4
+why: His bishop on e4 is guarded by the knight on f6. Take the knight first; when his queen takes back, the bishop has no defender left.
+wrong: Rxe4 | ((23.Rxe4 Nxe4)) The knight takes back, and you have given a rook for a bishop.
+
+#### CARD removal-3 | r3k1nr/pp1b1ppp/2n1p3/qB1p4/1b1P4/P1N2N2/1PPB1PPP/R2QK2R b KQkq - 2 9 | src=lichess:XY2PH | last=c1d2
+sol: Bxc3 Bxc3 Qxb5
+why: Your queen attacks his bishop on b5, and his knight on c3 guards it. Take the knight; the bishop is then left without a defender.
+wrong: Bd6 | ((9...Bd6 10.Qe2)) His queen now guards the bishop, and the chance is gone.
+
+#### CARD removal-4 | rn2k2r/pp3ppp/2p5/q2bP3/B3n3/2N1Q3/PPP2PPP/R1B1K2R b KQkq - 0 17 | src=lichess:mTGx4 | last=d4e5
+sol: Nxc3 Qxc3 Qxa4
+why: Your queen attacks his bishop on a4, and his knight on c3 guards it. Take the knight; after his queen takes back, the bishop is yours.
+wrong: Nd7 | ((17...Nd7 18.Bb3)) His bishop steps back to safety.
+
+#### CARD removal-5 | 2rq1rk1/p3npb1/bpnBp2p/2p3p1/P1N5/2PP1NP1/1PQ2PBP/R3R1K1 b - - 1 16 | src=lichess:cFFLi | last=f4d6
+sol: Bxc4 dxc4 Qxd6
+why: His bishop on d6 sits in your camp, guarded only by the knight on c4. Take the knight, and then your queen takes the bishop.
+wrong: Re8 | ((16...Re8 17.Bxe7)) His bishop takes your knight before you can win it.
+
+#### SET removal-set | theme=removal | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER deflect | Lure and drag away | theme=deflection
+> A defender can be dragged away from its post, and a king can be lured onto a bad square. Both work because a piece can only be in one place at a time.
+
+### LESSON deflect | Lure and drag away
+goal: Force a defender to leave its post, or drag a king onto a bad square.
+rule: A piece with two jobs can do only one: give it a reason to leave.
+> Find a piece of his that does an important job: guarding a square, a piece or his back rank. Now attack it, check it, or offer it something it must take. When it leaves, the job is undone. This is called a {gl:deflection}. Luring his king onto a square where it can be attacked works the same way.
+
+#### EX deflect-a | 8/2k5/2pR1p2/2K5/2P2rP1/8/8/8 b - - 6 41 | src=lichess:2FRvu
+> Black to move. His rook on d6 is guarded only by his king on c5.
+41... Rxc4+! {Give up your rook to drag the king away from d6. [g:f4-c4] [r:d6]} 42. Kxc4 Kxd6 {His king took your rook, but now his rook has no guard and your king takes it. You are left with a pawn ending, a pawn up.}
+key: When a single piece guards something, see if you can force that piece to take something else.
+
+#### EX deflect-b | 8/4p3/R6p/6pk/5P2/2r3PP/6K1/8 w - - 1 37 | src=lichess:rSUqo
+> White to move. His king on h5 has very few squares.
+37. g4+! {The pawn checks, and the king cannot take it because your pawn on h3 guards g4. It must step to h4. [g:g3-g4]} Kh4 38. Rxh6# {On h4 the king is boxed in by your pawns, and the rook takes on h6 with mate.}
+key: A check can drive his king onto a square where your next move is mate.
+
+#### EX deflect-c | 8/pp4RR/3p4/3P3p/2P4k/1P6/r3r1P1/7K w - - 2 38 | src=lichess:9d49N
+> White to move. His pawn on h5 is guarded only by his king on h4.
+38. g3+! {Check with the pawn. The king cannot take it, because your rook on g7 guards g3, so it must step to h3. [g:g2-g3] [r:h4]} Kh3 39. Rxh5# {The king has been dragged away from h5, and your rook takes the pawn with mate.}
+key: Drag the king away with a check, then take what it was guarding.
+
+#### CARD deflect-1 | 7k/5rrp/1p5q/2p1Q2P/p1P1P1B1/P2P3K/8/1R6 w - - 5 44 | src=lichess:rJD2N | last=f8f7
+sol: Qe8+ Rg8 Qxf7
+why: His rook on g7 has two jobs: guarding his back rank and guarding the rook on f7. Check on e8: the rook must block, and the rook on f7 falls.
+wrong: Rg1 | ((44.Rg1 Qe3+)) His queen checks you, and his rooks stay guarded.
+
+#### CARD deflect-2 | 4r3/4P3/p7/1p1K3k/1P6/P7/6p1/4R3 b - - 0 53 | src=lichess:tIahP | last=d4d5
+sol: Rxe7 Rxe7 g1=Q
+why: His rook on e1 guards your pawn's queening square. Take the pawn on e7: if his rook takes back, it leaves the first rank and your pawn becomes a queen.
+wrong: g1=Q | ((53...g1=Q 54.Rxg1 Rxe7)) The rook guarding g1 takes your new queen.
+
+#### CARD deflect-3 | 8/8/3kp3/4r1pp/8/5KP1/4RP1P/8 b - - 2 39 | src=lichess:A9tYZ | last=e4f3
+sol: g4+ Kg2 Rxe2
+why: His rook on e2 is guarded only by his king. Check with the pawn: the king must move away, and your rook takes his rook.
+wrong: Rxe2 | ((39...Rxe2 40.Kxe2)) Trading rooks gives a level pawn ending. The check first wins his rook for nothing.
+
+#### CARD deflect-4 | r7/5p2/1B2k3/8/2p1N3/P3K1P1/3p3r/R7 b - - 1 39 | src=lichess:hAFcy | last=f3e3
+sol: Rxa3+ Rxa3 d1=Q
+why: His rook on a1 stops your pawn from queening on d1. Take on a3 with check: if his rook takes back, it has left the first rank and your pawn queens.
+wrong: Kd5 | ((39...Kd5 40.Nc3+)) His knight checks you and then stops the pawn.
+
+#### CARD deflect-5 | 5rk1/b5pp/p3p3/1p4BP/1P2p1K1/P1P5/4Br2/3RR3 b - - 0 28 | src=lichess:979ug | last=a2a3
+sol: Rg2+ Kh3 Rxg5
+why: His bishop on g5 is guarded only by his king. Check on g2: the king must step away, and your rook takes the bishop.
+wrong: Bb8 | ((28...Bb8 29.Rd8)) His rook comes to d8 and attacks your rook, and his bishop stays guarded.
+
+#### SET deflect-set | theme=deflection | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER trapped | Trapped pieces | theme=trapped
+> A piece that has gone too far, or stands in a corner, may have no safe square at all. Attack it, and it is lost.
+
+### LESSON trapped | Trapped pieces
+goal: Win a piece that has no safe square.
+rule: Before you grab a pawn deep in his camp, ask: how does my piece get out?
+> When one of his pieces goes deep into your half, count its squares. If every square it could go to is guarded, one attack wins it. Pawns are the best trappers, because nothing is cheaper. And when you are the one grabbing a pawn with your queen, count her way back first.
+
+#### EX trapped-a | 8/6p1/p5kp/1p5b/1P1N1K2/8/6PP/8 w - - 4 42 | src=lichess:IhkKe
+> White to move. Look at his bishop on h5 and the squares around it.
+42. g4! {The pawn attacks the bishop. It cannot retreat to g6 or towards e8, because his own king is in the way. The other diagonal is blocked by your pawn. [g:g2-g4] [r:h5]} Bxg4 43. Kxg4 {He had to give the bishop for a pawn.}
+key: A bishop on the edge with its own pieces in the way has very few squares: one pawn can trap it.
+
+#### EX trapped-b | r2qk1nr/1pp1bpQ1/p2p2bp/8/4P3/2N4P/PPP1BPP1/R1B1R1K1 b kq - 0 13 | src=lichess:6YClP
+> Black to move. His queen has just taken a pawn on g7.
+13... Bf6! {The bishop attacks the queen. Every square she could go to is guarded, so she cannot escape. [g:e7-f6] [r:g7]} 14. Qxh8 Bxh8 {He gets a rook for his queen, and you are well ahead.}
+key: A queen that grabs a pawn next to your king can often be trapped there.
+
+#### EX trapped-c | r1b2rk1/pppp1ppp/8/4q3/4P3/8/PPP1Q1PP/RN2KB1R b KQ - 0 14 | src=lichess:CECB6
+> Black to move. His rook on a1 is stuck in the corner behind his knight.
+14... Qxb2! {Take the pawn: now your queen attacks the rook on a1, which has no safe square. [g:e5-b2] [r:a1]} 15. c3 Qxa1 {The rook was trapped in its corner, and your queen takes it.}
+key: Rooks and knights still at home can be trapped: look at them when his pawn in front of them falls.
+
+#### CARD trapped-1 | 3r4/p4pkp/1p2p1p1/4Pq2/P1P2P2/1P1p1KP1/1Q1R3P/8 w - - 0 39 | src=lichess:BIGjY | last=d4d3
+sol: g4 Qxg4+ Kxg4
+why: His queen on f5 has very few squares. Push the pawn to g4: it attacks her, and every square she could go to is guarded.
+wrong: Ke3 | ((39.Ke3 a6)) Too slow: his queen keeps her escape squares.
+
+#### CARD trapped-2 | r3k1nr/p2b1ppp/2p5/3pb3/4P3/P4B2/1PPBNKPq/R2Q1R2 w kq - 1 20 | src=lichess:0HwGS | last=h6h2
+sol: Rh1 Qxh1 Qxh1
+why: His queen went deep into your camp on h2. Bring the rook to h1: she is attacked and has no safe square left.
+wrong: exd5 | ((20.exd5 Qh4+)) His queen escapes with check.
+
+#### CARD trapped-3 | r3k2r/2qnbnpp/b3p3/p2pPp1Q/2pP2P1/2P4P/PBBN1P1N/1R3RK1 b kq - 0 18 | src=lichess:BDzsT | last=g2g4
+sol: g6 gxf5 gxh5
+why: His queen on h5 is short of squares. Push the pawn to g6: it attacks her, and every square she could go to is guarded.
+wrong: Nxe5 | ((18...Nxe5 19.Ba4+)) You take a pawn, but his bishop checks you and his queen gets time to escape.
+
+#### CARD trapped-4 | 1r6/4kppp/1pR5/2p5/5PPP/1P6/P1P5/2K5 b - - 2 28 | src=lichess:DyeUF | last=d6c6
+sol: Kd7 Rxb6 Rxb6
+why: His rook on c6 is deep in your camp. Your king attacks it from d7, and every square it could go to is guarded, so it is lost.
+wrong: Kd8 | ((28...Kd8 29.Rd6+)) His rook escapes with check.
+
+#### CARD trapped-5 | 2r2rk1/1b2bppp/p3pn2/1p2N3/1n1q1P2/1BN4Q/PP1B2PP/3R1RK1 w - - 0 19 | src=lichess:3dL1x | last=d8d4 | tag=hold
+sol: Be3 Qxe3+ Qxe3
+why: His queen checks you. Block with the bishop on e3: it attacks the queen, and she has no safe square. She must take the bishop, and you take her.
+wrong: Kh1 | ((19.Kh1 Nbd5)) You step out of check, but his queen stays strong in the middle of the board.
+
+#### SET trapped-set | theme=trapped | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER between | In-between moves | theme=intermezzo
+> When he takes one of your pieces, taking back is not compulsory. First look for a check or a bigger threat; the recapture can usually wait one move.
+
+### LESSON between | In-between moves
+goal: Before the obvious recapture, look for a check or a bigger threat.
+rule: You do not have to recapture at once: first look for a check or a capture of something bigger.
+> After a capture your hand moves by itself to take back. Stop for a moment. Is there a check, or a capture of a bigger piece, that he must answer first? Play that, and take back afterwards. This is called an in-between move ({gl:intermezzo}). It often wins a whole piece, because his piece is still hanging when you come back to it.
+
+#### EX between-a | 6k1/1p4pp/1p3p2/4p3/2b1P3/1N5P/2n1BPP1/2n2K2 w - - 0 31 | src=lichess:31HU3
+> White to move. His knight has just taken on c1, and his bishop on c4 attacks your bishop on e2.
+31. Bxc4+! {Take his bishop first, with check. Taking the knight at once with ((31.Nxc1)) leaves your bishop attacked, and you lose a piece back. [g:e2-c4] [r:c1]} Kf8 32. Nxc1 {Now take back the knight. You have won a whole bishop.}
+key: When two of your pieces are attacked, look for a capture with check: it saves one and wins time for the other.
+
+#### EX between-b | rnbqk2r/ppp2pp1/5b1p/3Q4/8/2NP4/PPP2PPP/R3KBNR b KQkq - 0 8 | src=lichess:ch0NS
+> Black to move. His queen has just taken a pawn on d5, offering a queen trade.
+8... Bxc3+! {Before taking the queen, take his knight with check. If you take the queen first, ((8...Qxd5 9.Nxd5)) his knight takes back. [g:f6-c3] [r:c3]} 9. bxc3 Qxd5 {Now the knight is gone, nothing takes back on d5, and you have won his queen.}
+key: Before you trade, take the piece that would take back, if you can do it with check.
+
+#### EX between-c | 4r1k1/pp3pp1/2p4p/3q4/5RbP/3P4/5PP1/4RBK1 w - - 0 31 | src=lichess:mQE5A
+> White to move. His bishop has just taken your pawn on g4, and your rook on f4 attacks it. Look at his rook on e8 too.
+31. Rxe8+! {Before taking the bishop, take his rook with check. [g:e1-e8]} Kh7 32. Rxg4 {Now take the bishop. Two captures, and you are a rook up.}
+key: When there are two captures, play the one with check first.
+
+#### CARD between-1 | rn1Bk1nr/pp3pbp/6p1/3Np3/3pP3/5bP1/PPP2P1P/R2QKB1R b KQkq - 0 10 | src=lichess:GmruU | last=g5d8
+sol: Bxd1 Rxd1 Kxd8
+why: He took your queen on d8. Before taking back, take his queen on d1. Your bishop on d8 cannot escape anyway, so you take it next.
+wrong: Bxe4 | ((10...Bxe4 11.Nc7+)) His knight checks you and attacks your rook, and you are a queen down.
+
+#### CARD between-2 | r1b2Bk1/pp3ppp/8/3pP3/3n4/8/P3NPPP/R4RK1 b - - 0 16 | src=lichess:zxxsd | last=e7f8
+sol: Nxe2+ Kh1 Kxf8
+why: He took your rook on f8. First take his knight on e2 with check, then take back on f8 with the king. You win a piece.
+wrong: Nc2 | ((16...Nc2 17.Rac1)) You attack his rook, but he moves it, and his bishop on f8 escapes.
+
+#### CARD between-3 | 2Rq2k1/1p5b/p3p1pp/3pn3/8/PP2PQN1/1B4PP/6K1 b - - 0 22 | src=lichess:ao8ad | last=c1c8
+sol: Nxf3+ gxf3 Qxc8
+why: His rook takes on c8 and attacks your queen. Before taking it, take his queen on f3 with check; then take the rook.
+wrong: Qxc8 | ((22...Qxc8 23.Qf6)) His queen comes in on f6, and your king is in serious danger.
+
+#### CARD between-4 | 6k1/5pp1/p5Rp/qp2p3/2p1N3/2Pr1Q1P/P4PP1/R5K1 b - - 0 29 | src=lichess:Lo5b2 | last=g3g6
+sol: Rxf3 gxf3 fxg6
+why: His rook took on g6. Before taking it back, take his queen on f3. Then take the rook: you have won his queen.
+wrong: fxg6 | ((29...fxg6 30.Qe2)) You take the rook, but his queen escapes and you have missed winning her.
+
+#### CARD between-5 | r4rk1/p5Bp/1p1bp3/8/8/8/PPP2PPP/2KR3R b - - 0 18 | src=lichess:qr9Kr | last=d4g7
+sol: Bf4+ Kb1 Kxg7
+why: Your bishop on d6 is attacked by his rook and has no defender. Move it away with check first; then take his bishop on g7 with the king.
+wrong: Kxg7 | ((18...Kxg7 19.Rxd6)) You take back at once, but his rook takes your bishop on d6.
+
+#### CARD between-6 | 8/p6k/1p1p4/2pPp3/2P1P1q1/P1P3Nn/7Q/6K1 w - - 0 43 | src=lichess:LzMPB | last=f4h3 | tag=hold
+sol: Kg2 Kg8 Qxh3
+why: His knight takes on h3 with check, and his queen guards it. Step to g2: now your king attacks the knight too, and you take it next.
+wrong: Qxh3+ | ((43.Qxh3+ Qxh3)) Your queen takes the knight, but his queen takes yours.
+
+#### SET between-set | theme=intermezzo | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER mate2 | Mate in two | theme=mate2
+> A mate in two is a check, a forced reply, and a mate. Many of them start with a sacrifice, so you must picture the position after his only answer.
+
+### LESSON mate2 | Mate in two
+goal: Check, forced reply, mate: rook ladders, smothered mates and queen sacrifices on the back rank.
+rule: Checks first; for each check, picture the position after his only reply and look for mate there.
+> When his king has few squares, try every check, even the ones that give up a piece. For each one, ask: what can he do? If he has only one answer, picture the board after it and look for a mate. Three patterns come up again and again. Two rooks take turns to check. A knight mates a king boxed in by its own pieces. A sacrifice clears the back rank.
+
+#### EX mate2-a | 5nk1/pp4p1/2n3P1/r7/5Q2/1P6/6PK/8 w - - 1 43 | src=lichess:bAoQp
+> White to move. His king on g8 has few squares, and your pawn on g6 guards f7.
+43. Qf7+! {The queen checks from f7, guarded by the pawn on g6. The king has only one square. [g:f4-f7]} Kh8 44. Qxf8# {Now the queen takes the knight with check. The king cannot go to h7 because of your pawn, and it is mate.}
+key: A pawn deep in his camp can guard your queen right next to his king.
+
+#### EX mate2-b | 5r1k/ppp1n1pp/8/2bpN3/3Nq1b1/1BP1P3/PP4PP/5RK1 w - - 0 21 | src=lichess:jUYhS
+> White to move. His king on h8 is surrounded by its own pieces.
+21. Rxf8+! {Take his rook with check. His only answer is to block on g8 with the knight. [g:f1-f8]} Ng8 22. Nf7# {Smothered mate: the king is surrounded by its own pieces, and the knight check cannot be blocked. [g:e5-f7] [r:h8]}
+key: A king in the corner, boxed in by its own pieces, can be mated by a single knight check.
+
+#### EX mate2-c | 6k1/4Rpp1/2p1p2p/3p4/r2P4/2P2N2/5PPP/6K1 b - - 0 25 | src=game:186906719572-49
+> Your game against easyyyy04, 10 Nov 2026. He has just taken your piece on e7, and his king on g1 has no escape square.
+25... Ra1+! {You found it. The rook checks on the back rank. His only answer is to block with the knight. [g:a4-a1]} 26. Ne1 Rxe1# {The rook takes the knight, and his own pawns trap his king. Mate in two.}
+key: When his king has no air, a rook check on the back rank wins even if he can block once.
+
+#### CARD mate2-1 | r4r1k/6p1/2b1R2p/p1q5/1pB5/3P1p1P/1PPQ2P1/5R1K w - - 0 29 | src=lichess:ssEdC | last=f4f3
+sol: Rxh6+ gxh6 Qxh6#
+why: Take the pawn in front of his king with the rook, giving check. After the pawn takes back, your queen comes to h6 with mate.
+wrong: Rxf3 | ((29.Rxf3 Kh7)) You take a pawn, but his king gets a square and the mate is gone.
+
+#### CARD mate2-2 | 7k/pp6/2p4P/2Qp4/2nPr3/2PR4/P4rR1/1K6 b - - 0 32 | src=lichess:KJBuV | last=d1d3
+sol: Re1+ Rd1 Rxd1#
+why: His king on b1 has no air. Check on e1: he can only block with the rook on d1, and your rook takes it with mate.
+wrong: Rxg2 | ((32...Rxg2 33.Qf8+)) You win a rook, but his queen starts checking your king.
+
+#### CARD mate2-3 | 6rk/2r2p1p/p3pP1Q/3p4/3Pq3/2P4P/P6K/6R1 w - - 3 34 | src=lichess:WSLAv | last=f8g8
+sol: Rxg8+ Kxg8 Qg7#
+why: His rook on g8 guards g7. Take it with check: the king must take back, and your queen mates on g7, guarded by the pawn on f6.
+wrong: Rg7 | ((34.Rg7 Rcc8)) The rook goes to g7, but his rooks hold, and his queen starts checking you.
+
+#### CARD mate2-4 | 5r1k/7p/2p5/1p4P1/4P1K1/5r2/1PP5/3RR3 b - - 0 35 | src=lichess:FsppP | last=g3g4
+sol: R8f4+ Kh5 Rh3#
+why: Two rooks take turns. One checks on the fourth rank and the king must go to h5. The other then checks on the h-file, and the king has no square.
+wrong: Kg8 | ((35...Kg8 36.Kh5)) Too slow: his king steps out of the net.
+
+#### CARD mate2-5 | r4rk1/1b2ppPp/p2p2p1/q1p5/1n1P4/2N1BN1P/1PPQBPP1/2KR3R b - - 0 14 | src=lichess:5KClq | last=f6g7
+sol: Qa1+ Nb1 Na2#
+why: Give check on a1. He must block with the knight on b1. Now his king is boxed in by its own pieces, and your knight mates on a2.
+wrong: Rfc8 | ((14...Rfc8 15.Kb1)) His king steps to b1, and the mate is gone.
+
+#### SET mate2-set | theme=mate2 | rating=700-1500 | n=20 | moves=2
+
+## CHAPTER defend | Find the defence | theme=defend
+> Tactics are not only for attacking. When he threatens something real, there is often exactly one move that holds. Find it by naming his threat first.
+
+### LESSON defend | Find the defence
+goal: He threatens something real: find the move that holds.
+rule: First name his threat, then choose: take, block, move away, or counter-attack with something bigger.
+> Fifty of your mistakes were answered by a check. Most of them came when you were busy with your own plans. When he makes a threat, put it into words first: "he wants to check on e8", "he wants to take my rook". Then look at your four ways out: take the attacker, block the line, move away, or make a bigger threat. Pick the one that leaves nothing loose.
+
+#### EX defend-a | 8/pk1r1K1P/1p6/1P1r4/P7/6Q1/8/8 w - - 5 82 | src=lichess:Uwl3F
+> White to move. His rook checks your king.
+82. Ke6! {You must answer the check, so pick the answer that does the most. On e6 your king attacks both of his rooks at once. [g:f7-e6] [r:d7] [r:d5]} Rxh7 83. Kxd5 {He saved one rook by taking your pawn, and you took the other.}
+key: When you must move your king out of check, look for the square where it also attacks something.
+
+#### EX defend-b | 6k1/p1p2p1p/1p4p1/4p3/Q5P1/2Pq3P/PP3P2/6K1 b - - 2 27 | src=game:166429653658-53
+> Your game against martfabr, 25 Mar 2026. Your king on g8 has no escape square. You played ((27...Qxh3)) here.
+27... Kg7! {Name his threat: his queen wants to check on e8 and then take your pawn on e5. In the game you grabbed a pawn, and after ((27...Qxh3 28.Qe8+ Kg7 29.Qxe5+)) his queen took your pawn on e5 with check. [r:e8] [g:g8-g7]} 28. Qxa7 Qxh3 {Now his checks are gone, and you take a pawn yourself.}
+key: Before grabbing a pawn, ask what checks he has: step out of them first.
+
+#### EX defend-c | 5r1k/pQ4pp/5qp1/8/1P4Pn/P5NP/5PK1/3R4 w - - 1 28 | src=game:147701400504-54
+> Your game against aegontargeryann, 7 Jan 2026. His knight on h4 has just given check. You played ((28.Kh2)) here.
+28. Kh1! {Before moving the king, check each square. On h2 his queen takes on f2 with check: ((28.Kh2 Qxf2+ 29.Kh1 Qxg3)) and you lose material. On h1 that capture is not a check. [r:f2] [g:g2-h1]} h6 29. Qe4 {You are still under some pressure, but nothing of yours falls.}
+key: When your king must move, look at every square and what his pieces can do after each one.
+
+#### CARD defend-1 | 8/2Q2k1p/2p1r2R/p4q2/8/2P5/PP2r1P1/2KR4 b - - 6 30 | src=lichess:KUFc5 | last=g3c7 | tag=hold
+sol: Re7 Rxh7+ Qxh7
+why: His queen checks you. Block on e7 with the rook: the block also attacks his queen. He throws in a rook check on h7, and you take that rook too.
+wrong: Ke8 | ((30...Ke8 31.Rd8#)) Your king steps onto the back rank, and his rook mates you on d8.
+
+#### CARD defend-3 | r3k2r/pp3ppp/2n1pnb1/3p4/3P2P1/PBq1BN1P/2P2P2/R2QK2R w KQkq - 0 14 | src=lichess:IfxmF | last=a5c3
+sol: Bd2 Qxf3 Qxf3
+why: His queen checks you. Block with the bishop on d2: it attacks the queen, which has no safe square. She takes your knight, and your queen takes her.
+wrong: Kf1 | ((14.Kf1 Be4)) The king steps aside, and his queen stays in your camp.
+
+#### CARD defend-4 | 7r/1kp1np2/p7/3P4/2P1PQ2/4KR1q/PP4r1/R7 w - - 0 28 | src=lichess:lKb06 | last=c8b7
+sol: Rxh3 Rxh3+ Kd4
+why: His queen on h3 attacks your rook. Take her: his rook takes back with check, but your king walks to d4 and you have won a queen for a rook.
+wrong: Rd1 | ((28.Rd1 Ng6)) You move a rook, but his queen and rooks stay active around your king.
+
+#### CARD defend-5 | 8/8/3k2pp/8/1nK1p3/1P4P1/7P/8 w - - 0 44 | src=lichess:7UfYF | last=c6b4
+sol: Kxb4 Kd5 Kc3
+why: Take the knight. Then his pawn on e4 is ready to run, and only the king move to c3 stops it in time.
+wrong: Kd4 | ((44.Kd4 Nd3)) You go for his pawn, but his knight escapes and guards it.
+
+#### SET defend-set | theme=defend | rating=700-1500 | n=20 | moves=1-2
+
+#### MINE fix | tags=walked into check | n=6
+
+#### MINE thr | n=4
+
+## CHAPTER promote | Pawn tricks | theme=promotion
+> A pawn that is about to become a queen changes everything. Pieces get sacrificed to stop it, and to push it through.
+
+### LESSON promote | Pawn tricks
+goal: Push a pawn through with a sacrifice or a check that gains time.
+rule: A pawn two steps from queening is worth a piece: count how many moves it needs and who can stop it.
+> When a pawn is close to the last rank, normal values no longer count. A rook can be given up to clear its path, and a check can win the one move you need. Ask three questions. What stops my pawn? Can I remove or distract that piece? Can I move with check, so that he has no time?
+
+#### EX promote-a | 8/8/8/2B5/k6P/6P1/1Rp2P2/6K1 b - - 0 41 | src=lichess:gijzR
+> Black to move. Your pawn on c2 is one step from queening.
+41... c1=Q+! {The pawn becomes a queen with check, and the new queen also attacks his rook on b2. [g:c2-c1] [r:b2]} 42. Kg2 Qxb2 {His king had to move, and your queen takes the rook.}
+key: Queen with check if you can: he has no time to stop the new queen from doing more damage.
+
+#### EX promote-b | 2r5/P4kp1/3p1p1p/3PpP2/4P3/7P/2p2P2/2R3K1 w - - 1 34 | src=lichess:HRM7N
+> White to move. Your pawn on a7 is one step from queening, but his rook on c8 guards a8.
+34. Rxc2! {Take his pawn on c2. If his rook takes back, it leaves the eighth rank and stops guarding a8. [g:c1-c2] [r:a8]} Rxc2 35. a8=Q {Your pawn becomes a queen, and you have a queen against a rook.}
+key: The piece guarding the queening square is the one to distract.
+
+#### EX promote-c | 4k3/3R4/p1PP1p2/4p1p1/3n2P1/8/r7/5K2 w - - 6 50 | src=lichess:jGpg3
+> White to move. Your pawns on c6 and d6 are close to queening, and his king on e8 is near them.
+50. Re7+! {Check first: the king must step away from your pawns. [g:d7-e7] [r:e8]} Kf8 51. c7 {Now the pawn heads for c8, and his rook and knight cannot stop both pawns.}
+key: When your pawns are close to queening, use checks to keep his king away from them.
+
+#### CARD promote-1 | 3R4/6pk/7p/5r2/8/3pp3/6PP/4R2K b - - 1 34 | src=lichess:m38r9 | last=a8d8
+sol: d2 Rxd2 exd2
+why: Push the d-pawn. If his rook takes it, your e-pawn takes back and attacks his other rook; one of your pawns gets through.
+wrong: e2 | ((34...e2 35.Kg1)) His king comes to guard the pawn's path, and your pawns are blocked.
+
+#### CARD promote-2 | 8/6k1/2p1r3/8/2PR1p2/1P2p3/4K2P/8 b - - 1 34 | src=lichess:rw9Bv | last=d1d4
+sol: f3+ Kxf3 e2
+why: His king blocks your e-pawn. Push the f-pawn with check: when the king takes it, it leaves the e-pawn's path and the pawn runs to e2.
+wrong: Rf6 | ((34...Rf6 35.Kf3)) His king comes forward and stops both pawns.
+
+#### CARD promote-4 | 3n1k2/6R1/p1r1Pn1p/1p3B2/1Pp4p/P7/5P1P/7K w - - 5 40 | src=lichess:aBuM8 | last=e7f8
+sol: e7+ Kxg7 exd8=Q
+why: Push the pawn with check. If his king takes your rook, the pawn takes the knight on d8 and becomes a queen.
+wrong: Rg6 | ((40.Rg6 Ne8)) His knight blocks, and your pawn is stopped.
+
+#### CARD promote-5 | 8/2P5/3Pkp2/2n1p2p/5P2/3K3P/8/8 w - - 1 50 | src=lichess:dwOU2 | last=d7c5 | tag=hold
+sol: Kc4 Kxd6 c8=Q
+why: His knight checks you and wants to stop your pawn on c7. Step to c4 and attack the knight: if his king takes on d6, your pawn queens.
+wrong: Kc3 | ((50.Kc3 Ne4+)) Another knight check, and his knight gets to your pawns.
+
+#### SET promote-set | theme=promotion | rating=700-1500 | n=20 | moves=1-2
+
+## CHAPTER review | Course exam | theme=hanging
+> No new patterns here. The positions are mixed, so you do not know in advance which tactic is coming, just as in a real game.
+
+### LESSON tactics-check | Course exam
+goal: Find the right pattern when nobody tells you which one it is.
+rule: In every position run the same scan: checks, captures and threats, for both sides.
+> In a game nobody tells you "this is a fork". So in this exam the patterns are mixed. Use one fixed scan in every position: first every check, then every capture, then every threat, and ask the same questions about his moves. The scan finds the tactic; the patterns you learned tell you what it is.
+
+#### EX tactics-check-a | 2r5/2R4P/8/k7/8/6P1/2p2PK1/8 b - - 6 68 | src=lichess:4fwMY
+> Black to move. Your pawn on c2 is about to queen, but so is his pawn on h7.
+68... Rxc7! {Captures first: his rook on c7 has no defender. Take it, and your pawn on c2 is no longer blocked by anything. [g:c8-c7] [r:c7]} 69. h8=Q c1=Q {Both pawns become queens, but you have an extra rook.}
+key: Scan captures for both sides: here one capture won a rook and freed your pawn.
+
+#### CARD tactics-check-1 | 8/pp3p2/2p1r1k1/4R1P1/3P1PK1/1P1P4/P5b1/8 w - - 3 38 | src=lichess:llBry | last=d5g2
+sol: f5+ Kg7 fxe6
+why: A pawn fork. The pawn checks the king on g6 and attacks the rook on e6, so you win the rook.
+wrong: Ra5 | ((38.Ra5 f5+)) His pawn checks you first, and the fork is gone.
+
+#### CARD tactics-check-2 | r5k1/p1q1Rp1p/2p4r/2n4B/2P2b1Q/2N5/PP3PP1/3R3K b - - 9 23 | src=lichess:rA44R | last=e1e7
+sol: Rxh5 Qxh5 Qxe7
+why: His rook on e7 attacks your queen, but it is guarded only by his queen. Take the bishop on h5: his queen must take back, and the rook loses its guard.
+wrong: Qxe7 | ((23...Qxe7 24.Qxe7)) His queen takes yours, because she still guards e7.
+
+#### CARD tactics-check-3 | 7k/p5pp/5q2/n1pQp2B/3pP3/P2P3P/6P1/6K1 w - - 3 32 | src=lichess:hF9dS | last=c6a5
+sol: Qa8+ Qd8 Qxd8#
+why: His king has no air on the back rank. Check on a8: he can only block with the queen, and you take it with mate.
+wrong: Qxc5 | ((32.Qxc5 Nc6)) You take a pawn, but the back-rank mate has gone.
+
+#### CARD tactics-check-4 | 8/1pQ5/p3Nbpk/3p1p2/8/Pr6/8/2K5 b - - 0 41 | src=lichess:W5XQ4 | last=f4e6
+sol: Rc3+ Qxc3 Bxc3
+why: Check on c3, guarded by your bishop. The rook attacks his king and, along the same file, his queen on c7. He must give up the queen.
+wrong: Rh3 | ((41...Rh3 42.Qxb7)) His queen takes a pawn, and you missed winning her.
+
+#### CARD tactics-check-5 | 3r3r/3bqk2/1p1p1n1p/p1p5/2P3pN/2QRP3/PP2BPP1/5RK1 b - - 1 26 | src=lichess:Zm6y3 | last=f3h4
+sol: Ne4 Qc2 Qxh4
+why: Your knight on f6 blocks your queen's line to his knight on h4. Move it to e4, attacking his queen: she must move, and your queen takes the knight.
+wrong: Rhg8 | ((26...Rhg8 27.Rdd1)) Too slow: his knight gets time to escape.
+
+#### SET tactics-check-set | theme= | rating=900-1500 | n=20 | moves=1-2

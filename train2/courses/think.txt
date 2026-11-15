@@ -73,7 +73,7 @@ key: Two of your pieces on squares one pawn can hit together: move one before he
 
 #### EX loose-b | 6k1/5qp1/2n2p1p/p4Q2/4N3/7P/6P1/7K b - - 0 34 | src=game:164202216696-67
 > Your game against karpopovitch, 3 Feb 2026. You are a piece up, but your knight on c6 is loose. You played ((34...a4)).
-34... Qe8! {Your queen defends the knight. After ((34...a4 35.Qc8+ Kh7 36.Qxc6)) the check gave him a free move to take it. [g:e8-c6] [r:c6]} 35. Qd5+ Kh7 36. Qc4 {Every piece is defended and you are still a piece up.}
+34... Qe8! {Your queen defends the knight. After ((34...a4 35.Qc8+ Kh7 36.Qxc6)) the check gave him a free move to take it. [g:e8-c6] [r:c6]} 35. Qd5+ Kh7 {His check is over, your knight is defended, and you are still a piece up.}
 key: A loose piece plus a possible check means trouble: defend the piece before he checks.
 
 #### JUDGE loose-j1 | 1k5r/1p2Rp2/p4Np1/4n2p/8/PP6/1P3PPP/1K6 b - - 3 28 | move=Rf8 | verdict=blunder | src=game:148531875900-55
@@ -152,7 +152,7 @@ key: A capture changes the position: before you take back, look at what his piec
 
 #### JUDGE clock-j1 | r1bR4/pp3Npk/2p1p2p/5pb1/8/2P5/PPB3PP/5R1K b - - 0 22 | move=Bc1 | verdict=blunder | src=game:166470757312-43
 refute: Rxc1
-why: His rook had just landed on d8, and your bishop could take it. You moved the bishop to c1 in 1 second, where his rook on f1 takes it.
+why: His knight had just taken on f7, and his rook on d8 was there for your bishop to take. You moved the bishop to c1 in 1 second, where his rook on f1 takes it.
 
 #### JUDGE clock-j2 | 8/4k3/p4p1R/1p3P2/6P1/5K2/r7/8 w - - 0 56 | move=Kf4 | verdict=blunder | src=game:164969420132-110
 refute: Ra4+ Kg3 b4

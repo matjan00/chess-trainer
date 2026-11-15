@@ -89,23 +89,11 @@ kbd { font: 600 11px/1 var(--mono); padding: 2px 4px; margin-left: 6px; border: 
 }
 
 section.view { padding-top: 24px; }
-/* Train: one hub, three areas */
-.subswitch { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; margin-top: 18px; max-width: 520px; }
-.subswitch button { flex: 1; min-height: 44px; border: 0; border-radius: 7px; background: none; cursor: pointer; font: 600 15px var(--body); color: var(--ink-2); }
-.subswitch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
-.subswitch + section.view { padding-top: 18px; }
 /* one recommended action at the top of each area */
 .rec { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; flex-wrap: wrap; border-color: var(--accent); margin-top: 18px; }
 .rec h3 { font-size: 22px; }
 .rec p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 62ch; }
 .rec .btn { min-height: 44px; padding-inline: 18px; }
-details.more { margin-top: 22px; }
-details.more > summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 600 16px var(--body); color: var(--ink); }
-details.more > summary::-webkit-details-marker { display: none; }
-details.more > summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .15s; margin-right: 2px; }
-details.more[open] > summary::before { transform: rotate(45deg); }
-details.more > summary .small { font-weight: 400; }
-details.more > .theme-grid { margin-top: 8px; }
 .gl { border: 0; background: none; padding: 0 2px; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
 .backrow { margin-bottom: 12px; }
 .backrow .btn { min-height: 40px; }
@@ -194,7 +182,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 /* exercise buttons: on phones they sit in a bar above the tab bar, in thumb reach */
 @media (max-width: 899px) {
   .actionbar { position: fixed; z-index: 25; left: 0; right: 0; bottom: calc(60px + env(safe-area-inset-bottom, 0px)); margin: 0; padding: 8px 12px; background: color-mix(in srgb, var(--bg) 94%, transparent); border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: nowrap; }
-  .actionbar > .btn, .actionbar .verdict .btn { flex: 1 1 0; min-height: 46px; padding-inline: 6px; white-space: nowrap; }
+  .actionbar > .btn { flex: 1 1 0; min-height: 46px; padding-inline: 6px; white-space: nowrap; }
   .actionbar > .btn.narrow { flex: 0 0 48px; }
   .actionbar:empty { display: none; }
   .play { padding-bottom: 64px; }
@@ -228,40 +216,10 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .movelist .mine { font-weight: 600; }
 .evalgraph { width: 100%; height: 90px; display: block; cursor: pointer; border-radius: 6px; background: var(--eval-black); }
 
-/* drills */
-.drill-top { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; }
-.feedback { font-size: 15px; }
-.feedback .big { font: 600 22px var(--display); display: block; margin-bottom: 4px; }
-.feedback.right .big { color: var(--good); } .feedback.wrong .big { color: var(--blunder); }
-.score-strip { display: flex; gap: 18px; font-size: 14px; color: var(--ink-2); }
-.score-strip b { font: 600 20px var(--display); color: var(--ink); margin-right: 4px; }
 .empty { padding: 40px; text-align: center; color: var(--ink-2); }
 
-/* tactics */
-.mode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; }
-.mode-card { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; font: inherit; color: inherit; }
-.mode-card:hover { border-color: var(--ink-3); }
-.mode-card h3 { font-size: 22px; }
-.mode-card p { margin: 0; font-size: 14px; color: var(--ink-2); }
-.mode-card.primary-mode { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-.theme-card { text-align: left; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; font: inherit; color: inherit; }
-.theme-card:hover { border-color: var(--ink-3); }
-.theme-card .nm { font-weight: 700; }
-.theme-card .ds { font-size: 13px; color: var(--ink-2); }
-.theme-card .you { font-size: 12px; color: var(--mistake); font-weight: 600; }
-.theme-card .st { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.verdict { display: flex; gap: 10px; }
-.verdict .btn { flex: 1; padding: 12px; font-size: 16px; }
 
-/* middlegame */
-.mg-top { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; margin-top: 18px; align-items: start; }
-@media (max-width: 860px) { .mg-top { grid-template-columns: minmax(0, 1fr); } }
-.checklist ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
-.mode-col { display: grid; gap: 14px; }
 
-.trend { margin-top: 14px; }
-.spark { width: 100%; height: 60px; display: block; margin-top: 6px; }
 
 /* today's training */
 .today-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -458,9 +416,6 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .gloss-card dt { font-weight: 700; }
 .gloss-card dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14px; }
 .gloss-card .hit { background: color-mix(in srgb, var(--accent) 12%, transparent); border-radius: 6px; padding: 4px 6px; margin: -4px -6px; }
-.mg-check { margin: 0; }
-.mg-check summary { cursor: pointer; font-weight: 700; min-height: 32px; display: flex; align-items: center; }
-.mg-check ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; }
 @media (max-width: 520px) {
   .brand .who { display: none; }
   .brand h1 { font-size: 22px; }
@@ -470,6 +425,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 /*O2_CSS*/
+/*T2_CSS*/
 </style>
 
 <header class="top">
@@ -653,148 +609,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 <!--O2_HTML-->
   </section>
 
-  <!-- TRAIN: Tactics, Middlegame and Endgames share one tab -->
-  <div class="subswitch" id="train-switch" role="group" aria-label="Training area" hidden>
-    <button data-train="tactics" aria-pressed="true">Tactics</button><button data-train="middle" aria-pressed="false">Middlegame</button><button data-train="endgame" aria-pressed="false">Endgames</button>
-  </div>
-
-  <!-- TACTICS -->
-  <section class="view" id="view-tactics" hidden>
-    <div id="tac-home">
-      <div class="drill-top">
-        <div>
-          <h2>Tactics</h2>
-          <p class="muted" style="margin:6px 0 0;max-width:72ch">Most of your lost games turn on a simple tactic: a piece left undefended, a fork, or an opponent's blunder you didn't punish. Short, daily sessions here fix that faster than anything else.</p>
-        </div>
-        <div class="score-strip"><span><b id="t-rating">–</b><button class="gl" data-term="rating" style="color:inherit">puzzle rating</button></span><span><b id="t-today">0</b>puzzles today</span><span><b id="t-acc">–</b>right first try</span></div>
-      </div>
-      <div class="trend" id="t-trend" hidden></div>
-      <div class="mode-grid">
-        <button class="card mode-card primary-mode" data-mode="mixed" style="grid-column:1/-1"><span class="eyebrow">Recommended</span><h3>Mixed training</h3><p>Puzzles at your level, weighted towards the themes you miss most in your games.</p></button>
-        <button class="card mode-card" data-mode="punish"><span class="eyebrow">From your games</span><h3>Punish the blunder</h3><p id="m-punish"></p></button>
-        <button class="card mode-card" data-mode="check"><span class="eyebrow">From your games</span><h3>Blunder check</h3><p>You see a move you played. Safe, or a blunder? Trains the 5-second check you skip when you play fast.</p></button>
-        <button class="card mode-card" data-mode="mistakes"><span class="eyebrow">From your games</span><h3>Fix my mistakes</h3><p id="m-mistakes"></p></button>
-      </div>
-      <details class="more" id="t-more"><summary>Choose a theme <span class="small muted" id="t-more-n"></span></summary>
-        <div class="theme-grid" id="t-themes"></div>
-      </details>
-    </div>
-
-    <div id="tac-player" class="play" hidden>
-      <div class="backrow"><button class="btn" data-tback>← Tactics</button></div>
-      <div class="viewer">
-        <div class="board-col">
-          <div class="board" id="tboard"></div>
-          <div class="controls" id="tp-nav"><button class="btn" id="tp-back" aria-label="Previous position">◀ Back</button><button class="btn" id="tp-fwd" aria-label="Next position">Forward ▶</button><span class="small muted" id="tp-navinfo" style="align-self:center"></span></div>
-        </div>
-        <div class="side">
-          <div class="card">
-            <div class="eyebrow" id="tp-mode"></div>
-            <h3 id="tp-title" style="margin:6px 0 4px"></h3>
-            <div class="small muted" id="tp-sub"></div>
-          </div>
-          <div class="card feedback" id="tp-feedback"></div>
-          <div class="controls actionbar" id="tp-controls"></div>
-          <div class="score-strip" id="tp-session"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MIDDLEGAME -->
-  <section class="view" id="view-middle" hidden>
-    <div id="mg-home">
-      <h2>Middlegame: finish what you start</h2>
-      <p class="muted" style="margin:6px 0 0;max-width:74ch" id="mg-intro"></p>
-      <div class="mode-col" id="mg-modes">
-      <button class="card mode-card primary-mode" data-mg="convert" style="margin-top:18px"><span class="eyebrow">Recommended</span><h3>Convert the win</h3><p id="mg-convert-p"></p></button>
-      </div>
-      <div class="mg-top">
-        <div class="card checklist">
-          <h3>The winning checklist</h3>
-          <p class="sub">Run through this every move once you're ahead. It takes ten seconds, and you have the time: you usually finish with over 6 minutes left.</p>
-          <ol>
-            <li><strong>What does my opponent threaten?</strong> Checks, captures, attacks on my pieces. Deal with it first.</li>
-            <li><strong>Is anything of mine undefended?</strong> Loose pieces are where tactics start.</li>
-            <li><strong>Can I take something for free?</strong> Then check twice that it really is free.</li>
-            <li><strong>Trade pieces, not pawns.</strong> Every trade makes your extra material count for more.</li>
-            <li><strong>No hurry.</strong> If nothing is urgent, improve your worst piece or make your king safer. Simple beats brilliant.</li>
-          </ol>
-        </div>
-        <div class="mode-col">
-          <button class="card mode-card" data-mg="tech"><span class="eyebrow">Find the right idea</span><h3>Winning technique</h3><p id="mg-tech-p"></p></button>
-        </div>
-      </div>
-      <details class="more"><summary>Practise one idea <span class="small muted">(4)</span></summary>
-        <div class="theme-grid" id="mg-kinds"></div>
-      </details>
-    </div>
-
-    <div id="mg-player" class="play" hidden>
-      <div class="backrow"><button class="btn" id="mg-back">← Middlegame</button></div>
-      <div class="viewer">
-        <div class="board-col">
-          <div class="board-shell"><div class="evalbar" id="mg-evalbar"><span style="height:50%"></span></div><div class="board" id="mgboard"></div></div>
-        </div>
-        <div class="side">
-          <div class="card">
-            <div class="eyebrow" id="mg-mode"></div>
-            <h3 id="mg-title" style="margin:6px 0 4px"></h3>
-            <div class="small muted" id="mg-sub"></div>
-          </div>
-          <div class="card feedback" id="mg-feedback"></div>
-          <div class="controls actionbar" id="mg-controls"></div>
-          <details class="card mg-check" id="mg-check" hidden><summary>The winning checklist</summary><ol></ol></details>
-          <div class="filters" id="mg-level" style="margin:0"></div>
-          <div class="movelist" id="mg-moves" style="grid-template-columns:42px 1fr 1fr"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ENDGAMES -->
-  <section class="view" id="view-endgame" hidden>
-    <h2>Endgames</h2>
-    <p class="muted" style="margin:6px 0 0;max-width:74ch" id="eg-intro"></p>
-    <div class="card rec" id="eg-rec"></div>
-    <div class="mode-grid">
-      <button class="card mode-card" data-eg="own"><span class="eyebrow">From your games</span><h3>Your endgames</h3><p id="eg-own-p"></p></button>
-      <button class="card mode-card" data-eg="puzzles"><span class="eyebrow">Puzzles</span><h3>Endgame puzzles</h3><p id="eg-puz-p"></p></button>
-    </div>
-    <details class="more" id="eg-more"><summary>All essential endgames <span class="small muted" id="eg-more-n"></span></summary>
-      <p class="small muted" style="margin:4px 0 10px">Learn these once, use them forever. Each one is played against Stockfish.</p>
-      <div class="theme-grid" id="eg-lessons"></div>
-    </details>
-  </section>
-
-  <!-- DRILLS -->
-  <section class="view play" id="view-drills" hidden>
-    <div class="backrow"><button class="btn" data-tback>← Tactics</button></div>
-    <div class="drill-top">
-      <div>
-        <h2>Fix my mistakes</h2>
-        <p class="muted" style="margin:6px 0 0;max-width:70ch">Every position here comes from one of your own games, right before you went wrong. Find the move you should have played.</p>
-      </div>
-      <div class="score-strip"><span><b id="d-solved">0</b>solved</span><span><b id="d-streak">0</b>streak</span><span><b id="d-left">0</b>in this set</span></div>
-    </div>
-    <div class="filters">
-      <div class="seg" id="d-phase"><button data-v="all" aria-pressed="true">All phases</button><button data-v="opening">Opening</button><button data-v="middlegame">Middlegame</button><button data-v="endgame">Endgame</button></div>
-      <div class="seg" id="d-sev"><button data-v="blunder" aria-pressed="true">Blunders</button><button data-v="all">Blunders + mistakes</button></div>
-    </div>
-    <div class="viewer">
-      <div class="board-col">
-        <div class="board" id="dboard"></div>
-      </div>
-      <div class="side">
-        <div class="card" id="d-context"></div>
-        <div class="card feedback" id="d-feedback"></div>
-        <div class="controls actionbar">
-          <button class="btn" id="d-hint" data-key="h">Hint<kbd>H</kbd></button>
-          <button class="btn" id="d-show" data-key="s">Show answer<kbd>S</kbd></button>
-          <button class="btn primary" id="d-next" data-key="n">Next<kbd>N</kbd></button>
-        </div>
-      </div>
-    </div>
+  <!-- TRAIN: the T2 tab (train2/ui/t2.html, inlined by build.py) -->
+  <section class="view" id="view-train" hidden>
+<!--T2_HTML-->
   </section>
 </main>
 
@@ -802,20 +619,15 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 <script type="module">
 import { Chessground } from 'https://cdn.jsdelivr.net/npm/chessground@9.2.1/dist/chessground.min.js';
 
-const [GAMES, DRILLS, PUZZLES, PUNISH, CHECK] = await Promise.all([
+// Train (T2): the compiled courses (train2/tools/compile_train2.py), the verified puzzle pool and the cards from your own games
+// (train2/tools/build_puzzles2.py, build_mine2.py); a missing file hides its part of the tab
+const [GAMES, TRAIN2, PUZZLES2, MINE2] = await Promise.all([
   fetch('analysis.json').then(r => r.json()),
-  fetch('drills.json').then(r => r.json()).catch(() => []),
-  fetch('puzzles.json').then(r => r.json()).catch(() => []),
-  fetch('punish.json').then(r => r.json()).catch(() => []),
-  fetch('check.json').then(r => r.json()).catch(() => []),
-]);
-const [CONVERT, TECH, ENDGAMES] = await Promise.all([
-  fetch('convert.json').then(r => r.json()).catch(() => []),
-  fetch('technique.json').then(r => r.json()).catch(() => []),
-  fetch('endgames.json').then(r => r.json()).catch(() => []),
+  fetch('train2.json').then(r => r.json()).catch(() => null),
+  fetch('puzzles2.json').then(r => r.json()).catch(() => null),
+  fetch('mine2.json').then(r => r.json()).catch(() => null),
 ]);
 const TUBE = await fetch('tube.json').then(r => r.json()).catch(() => ({ videos: [] }));
-const ESSENTIALS_DATA = await fetch('essentials.json').then(r => r.json()).catch(() => []);
 // openings: the compiled courses (data/courses2.json, openings2/tools/compile_courses2.py) and Lichess statistics at 1200-1600
 const [O2_DATA, XP] = await Promise.all([
   fetch('courses2.json').then(r => r.json()).catch(() => ({ v: 2, courses: [] })),
@@ -825,6 +637,9 @@ GAMES.sort((a, b) => a.end - b.end);
 
 /* ---------- the Openings tab (O2): plain scripts inlined here by build.py ---------- */
 /*O2_JS*/
+
+/* ---------- the Train tab (T2): plain scripts inlined here by build.py (t2core.js, t2play.js, t2stats.js) ---------- */
+/*T2_JS*/
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -838,7 +653,7 @@ const store = {
    One document per person: data/users/<id>/progress. Every entry carries its own
    timestamp `t`, so the phone and laptop merge key by key instead of overwriting. */
 const DAY = 86400000;
-const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day', 'opx', 'vid', ...O2.KINDS];   // O2.KINDS: the Openings tab (o2c o2l o2g o2t o2m o2d); the old opening kinds (lines, ideas, quiz, og, pos, rep, cl, spd, trp, opx) stay so stored progress still merges; day: how many of Today's 4 tasks are done, read by the phone reminders; vid: videos watched / saved for later
+const KINDS = ['solved', 'lines', 'ideas', 'quiz', 'puz', 'pun', 'chk', 'tr', 'trh', 'cv', 'tq', 'eg', 'eo', 'og', 'pos', 'rep', 'cl', 'spd', 'mg', 'trp', 'day', 'opx', 'vid', ...O2.KINDS, ...T2.KINDS];   // O2.KINDS: the Openings tab (o2c o2l o2g o2t o2m o2d); T2.KINDS: the Train tab (t2c t2l t2x t2k t2p t2d); the old Train kinds (solved, puz, pun, chk, cv, tq, eg, eo, mg) stay so stored progress still merges (T2 reads some once, never rewrites them; tr/trh continue); the old opening kinds (lines, ideas, quiz, og, pos, rep, cl, spd, trp, opx) stay so stored progress still merges; day: how many of Today's 4 tasks are done, read by the phone reminders; vid: videos watched / saved for later
 const progress = Object.fromEntries(KINDS.map(k => [k, {}]));
 function mergeInto(dst, src) {
   for (const k of KINDS) {
@@ -974,10 +789,11 @@ async function accountImport(file) {
   } catch { $('#acc-imp').textContent = 'That file could not be read. Choose the progress file Claude saved for you.'; }
 }
 function record(kind, id, value) { progress[kind][id] = { ...value, t: Date.now() }; noteDay(); sync.save(); }
-// today's score for the reminder job (9:00, 18:00, 21:00): {n: tasks done, left: names of the rest}; keeps two weeks
+// today's score for the reminder job (9:00, 18:00, 21:00): {n: of Today's 4 required tasks done, left: names of the rest}; keeps two weeks
 const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 function noteDay() {
   let tasks; try { tasks = todayTasks(); } catch { return false; }   // the course data may not be loaded yet
+  tasks = tasks.filter(t => !t.opt);   // the optional lesson of the day does not count
   const k = dayKey(), n = tasks.filter(t => t.done).length, left = tasks.filter(t => !t.done).map(t => t.nm);
   const cur = progress.day[k];
   if (cur && cur.n === n && cur.left?.join() === left.join()) return false;
@@ -1023,9 +839,6 @@ function evalWords(e) {
   if (Math.abs(e.cp) < 50) return 'About equal';
   return `${e.cp > 0 ? 'White' : 'Black'} is ${standWords(Math.abs(e.cp))}`;
 }
-// how the side to move stands, from an evaluation stored for White
-const sideWords = (e, fen) => { const s = fen.split(' ')[1] === 'w' ? 1 : -1; return !e ? '' : e.m !== undefined ? standWords(0, e.m * s) : standWords(e.cp * s); };
-const youWords = (cp, mate) => { const w = standWords(cp, mate); return w === 'about equal' ? "It's about equal" : w === 'getting mated' ? "You're getting mated" : `You're ${w}`; };
 const isMine = (g, i) => (i % 2 === 0) === (g.color === 'white');
 const moveAcc = loss => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * loss) - 3.1669));
 
@@ -1070,8 +883,8 @@ const GLOSSARY = [
   ['passed', 'Passed pawn', 'A pawn with no enemy pawns in front of it or on the files next to it. Nothing but pieces can stop it from promoting.'],
   ['rating', 'Puzzle rating', 'Your level in these puzzles. It starts near your chess.com rapid rating and moves up when you solve a puzzle first try, and down when you miss one or use a hint.'],
 ];
-// the Openings tab's words (comments link them with <button class="gl" data-term=...>)
-for (const row of O2.GLOSSARY) if (!GLOSSARY.some(g => g[0] === row[0])) GLOSSARY.push(row);
+// the Openings and Train tabs' words (comments link them with <button class="gl" data-term=...>)
+for (const row of [...O2.GLOSSARY, ...T2.GLOSSARY]) if (!GLOSSARY.some(g => g[0] === row[0])) GLOSSARY.push(row);
 function openGlossary(term) {
   $('#gl-list').innerHTML = GLOSSARY.map(([id, t, d]) => `<div id="gl-${id}"${id === term ? ' class="hit"' : ''}><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('');
   $('#glossary').hidden = false;
@@ -1082,72 +895,42 @@ document.addEventListener('click', e => { const b = e.target.closest('.gl[data-t
 $('#gl-close').onclick = () => { $('#glossary').hidden = true; };
 $('#glossary').onclick = e => { if (e.target.id === 'glossary') $('#glossary').hidden = true; };
 
-/* ---------- last exercise, so Today can offer to pick up where you left off (this device only) ---------- */
-function setLast(kind, label, arg = null) { store.set('last', { kind, label, arg, t: Date.now() }); }
-
 /* ---------- nav ---------- */
-const views = ['today', 'watch', 'report', 'games', 'openings', 'tactics', 'middle', 'endgame', 'drills'];
-const TAB_OF = { today: 'today', watch: 'watch', report: 'stats', games: 'games', openings: 'openings', tactics: 'train', middle: 'train', endgame: 'train', drills: 'train' };
-const VIEW_NAME = { today: 'Today', watch: 'Watch', report: 'Stats', games: 'Games', openings: 'Openings', tactics: 'Tactics', middle: 'Middlegame', endgame: 'Endgames', drills: 'Tactics' };
+const views = ['today', 'watch', 'report', 'games', 'openings', 'train'];
+const TAB_OF = { today: 'today', watch: 'watch', report: 'stats', games: 'games', openings: 'openings', train: 'train' };
+// the old Train pages (Tactics, Middlegame, Endgames, Fix my mistakes) are one Train tab now: their old addresses open it
+const OLD_TRAIN_VIEWS = ['tactics', 'middle', 'endgame', 'drills'];
 // chessground can't draw arrows on a hidden (0x0) board: it produces NaN coordinates
-const boards = () => [gameCg, drillCg, tacCg, mgCg].filter(Boolean);
+const boards = () => [gameCg].filter(Boolean);
 const visibleBoard = cg => cg.state.dom.elements.wrap.offsetWidth > 0;
-let curView = 'today', curTab = 'today', trainView = ['tactics', 'middle', 'endgame'].includes(store.get('train')) ? store.get('train') : 'tactics';
-// where the exercise players' back buttons lead: the page the exercise was started from
-let backView = 'tactics';
-function launchFrom(v) { backView = v; }
-function backLabels() { const t = '← ' + (backView === 'openings' ? 'Back to course' : VIEW_NAME[backView]); document.querySelectorAll('[data-tback], #mg-back').forEach(b => { b.textContent = t; }); }
-function show(v, tabOverride) {
+let curView = 'today';
+function show(v) {
+  if (OLD_TRAIN_VIEWS.includes(v)) v = 'train';
   boards().forEach(cg => cg.setAutoShapes([]));
   views.forEach(x => { $('#view-' + x).hidden = x !== v; });
-  const tab = TAB_OF[tabOverride || v];
+  const tab = TAB_OF[v];
   document.querySelectorAll('#nav button').forEach(b => b.dataset.tab === tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
-  // the Train switch shows on the three training home pages only, not inside an exercise
-  const trainHome = (v === 'tactics' && !$('#tac-home').hidden) || (v === 'middle' && !$('#mg-home').hidden) || v === 'endgame';
-  $('#train-switch').hidden = !trainHome;
-  if (trainHome) { store.set('train', v); document.querySelectorAll('#train-switch button').forEach(b => b.setAttribute('aria-pressed', b.dataset.train === v)); }
-  backLabels();
-  curView = v; curTab = tab;
-  if (tab === 'train') trainView = v;
+  curView = v;
   store.set('view', v);
-  if (v === 'drills') { setLast('drills', 'Fix my mistakes'); if (!drill.cur) nextDrill(); }
-  if (v === 'tactics' && !$('#tac-home').hidden) renderTacticsHome();
-  if (v === 'middle' && !$('#mg-home').hidden) renderMiddleHome();
-  if (v === 'endgame') renderEndgameHome();
   if (v === 'today') renderToday();
   if (v === 'watch') renderWatch();
   if (v === 'openings' && $('#o2-player').hidden) O2.refresh();   // its mini boards were drawn while the tab was hidden
+  if (v === 'train' && $('#t2-player').hidden) T2.refresh();       // the same for the Train tab
   requestAnimationFrame(() => {
-    if (v === 'openings') document.body.dispatchEvent(new Event('chessground.resize'));
+    if (v === 'openings' || v === 'train') document.body.dispatchEvent(new Event('chessground.resize'));
+    if (v === 'train') { const cg = T2.ui.cg; if (cg && visibleBoard(cg)) cg.redrawAll(); }
     boards().forEach(cg => visibleBoard(cg) && cg.redrawAll());
     if (v === 'games' && cur && !explore) goto(ply);                       // restore the viewer's arrows
-    if (v === 'tactics' && tp.kind === 'check' && !tp.done && tp.item && !$('#tac-player').hidden)
-      tacCg?.setAutoShapes([{ orig: tp.item.mv[0], dest: tp.item.mv[1], brush: 'blue' }]);
   });
 }
-// leave an exercise that borrowed the middlegame board (endgames, openings, Today) so the Middlegame page opens on its home
-function mgHome() { $('#mg-player').hidden = true; $('#mg-home').hidden = false; mg.cfg = null; mg.gen++; }
 $('#nav').onclick = e => {
   const b = e.target.closest('button[data-tab]'); if (!b) return;
   const t = b.dataset.tab;
   if (t === 'stats') return show('report');
-  if (t !== 'train') { if (t === 'games' && !$('#view-games').hidden && cur) closeGame(); return show(t); }
-  // Train from another tab returns to where you were in training; tapping it again inside Train goes to that area's home page
-  if (TAB_OF[curView] === 'train' && curTab === 'train') {
-    const area = curView === 'drills' ? 'tactics' : mg.cfg?.from === 'endgame' && curView === 'middle' ? 'endgame' : curView;
-    if (area === 'tactics') tacShow('home');
-    if (area === 'middle' || area === 'endgame') mgHome();
-    return show(area);
-  }
-  let v = trainView;
-  if (v === 'middle' && mg.cfg?.from === 'openings') mgHome();
-  show(v, v === 'middle' && mg.cfg?.from === 'endgame' ? 'endgame' : undefined);
-};
-$('#train-switch').onclick = e => {
-  const b = e.target.closest('[data-train]'); if (!b) return;
-  if (b.dataset.train === 'tactics') tacShow('home', true);
-  if (b.dataset.train === 'middle') mgHome();
-  show(b.dataset.train);
+  if (t === 'games' && !$('#view-games').hidden && cur) closeGame();
+  // tapping Train again inside Train goes back to the Train home page (from an exercise or a course page)
+  if (t === 'train' && curView === 'train') T2.show('home');
+  show(t);
 };
 
 /* ---------- report ---------- */
@@ -1549,8 +1332,6 @@ $('#b-nextmistake').onclick = () => {
   for (let i = ply; i < g.plies.length; i++) if (isMine(g, i) && (g.plies[i].lab === 'blunder' || g.plies[i].lab === 'mistake')) return goto(i + 1);
   for (let i = 0; i < ply; i++) if (isMine(g, i) && (g.plies[i].lab === 'blunder' || g.plies[i].lab === 'mistake')) return goto(i + 1);
 };
-$('#tp-back').onclick = () => tpStep(-1);
-$('#tp-fwd').onclick = () => tpStep(1);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { $('#glossary').hidden = true; $('#account').hidden = true; return; }
   if (!$('#player').hidden) return;   // a video is open: keys belong to the player
@@ -1561,97 +1342,11 @@ document.addEventListener('keydown', e => {
     const b = [...document.querySelectorAll(`button[data-key="${key}"]`)].find(x => x.getClientRects().length && !x.disabled);
     if (b) { b.click(); e.preventDefault(); return; }
   }
-  if (!$('#view-tactics').hidden && !$('#tac-player').hidden && !e.target.matches('input, select, textarea')) {
-    if (e.key === 'ArrowLeft') { tpStep(-1); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { tpStep(1); e.preventDefault(); }
-    return;
-  }
   if ($('#view-games').hidden || !cur || e.target.matches('input, select, textarea')) return;
   if (e.key === 'ArrowLeft') { goto(ply - 1); e.preventDefault(); }
   if (e.key === 'ArrowRight') { goto(ply + 1); e.preventDefault(); }
 });
 window.addEventListener('resize', () => { boards().forEach(cg => visibleBoard(cg) && cg.redrawAll()); if (cur && $('#board').offsetHeight) $('#evalbar').style.height = $('#board').offsetHeight + 'px'; });
-
-/* ---------- drills ---------- */
-let drillCg = null;
-const drill = { phase: 'all', sev: 'blunder', queue: [], cur: null, done: false, streak: 0, gen: 0 };
-function drillPool() { return DRILLS.filter(d => (drill.phase === 'all' || d.ph === drill.phase) && (drill.sev === 'all' || d.lab === 'blunder')); }
-function refillQueue() {
-  const solved = new Set(Object.keys(progress.solved));
-  const pool = drillPool();
-  const fresh = pool.filter(d => !solved.has(d.id)), rest = pool.filter(d => solved.has(d.id));
-  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  drill.queue = [...shuffle(fresh), ...shuffle(rest)];
-}
-function updateScore() {
-  const pool = new Set(drillPool().map(d => d.id));
-  $('#d-solved').textContent = Object.keys(progress.solved).filter(id => pool.has(id)).length;
-  $('#d-streak').textContent = drill.streak;
-  $('#d-left').textContent = pool.size;
-}
-function nextDrill() {
-  drill.gen++;
-  if (!drill.queue.length) refillQueue();
-  drill.cur = drill.queue.shift() || null; drill.done = false;
-  const d = drill.cur;
-  if (!d) { $('#d-context').innerHTML = '<div class="empty">No positions match these filters.</div>'; $('#d-feedback').innerHTML = ''; return; }
-  const c = new Chess(d.fen), color = c.turn() === 'w' ? 'white' : 'black';
-  const opts = { fen: d.fen, orientation: color, turnColor: color, lastMove: d.last || undefined, check: c.in_check(), coordinates: true,
-    movable: { free: false, color, dests: toDests(c), showDests: true, events: { after: onDrillMove } }, drawable: { autoShapes: [] }, animation: { duration: 150 } };
-  if (!drillCg) drillCg = Chessground($('#dboard'), opts); else drillCg.set(opts);
-  const g = GAMES.find(x => x.url === d.url);
-  $('#d-context').innerHTML = `<div class="eyebrow">${d.ph} · ${d.lab === 'blunder' ? 'you blundered here' : 'you made a mistake here'}</div>
-    <h3 style="margin:6px 0 4px">${color === 'white' ? 'White' : 'Black'} to move. Find the best move.</h3>
-    <div class="small muted">From your game vs ${esc(g?.opp)} (${g?.oppRating}), ${g ? fmtDate(g.end) : ''}, move ${d.moveNo}. Before your move: ${evalWords(d.e).toLowerCase()}.</div>`;
-  $('#d-feedback').className = 'card feedback';
-  $('#d-feedback').innerHTML = `<span class="muted">Make your move on the board.</span>`;
-  updateScore();
-}
-function onDrillMove(orig, dest) {
-  const d = drill.cur, c = new Chess(d.fen);
-  const m = c.move({ from: orig, to: dest, promotion: 'q' });
-  if (!m) return;
-  const ok = d.ok.includes(m.san);
-  const fb = $('#d-feedback');
-  if (ok) {
-    if (!drill.done) { drill.streak++; if (!progress.solved[d.id]) record('solved', d.id, {}); }
-    drill.done = true;
-    fb.className = 'card feedback right';
-    fb.innerHTML = `<span class="big">${esc(m.san)} is right</span>${d.ok.length > 1 ? `<div class="small muted">Also good: ${d.ok.filter(x => x !== m.san).map(esc).join(', ')}</div>` : ''}
-      <div class="small" style="margin-top:6px">In the game you played <strong>${esc(d.played)}</strong>${d.refute ? `, and the reply was: <span class="line">${esc(d.refute)}</span>` : '.'}</div>
-      <div class="line small muted" style="margin-top:6px">Engine line: ${esc(d.pv)}</div>`;
-    drillCg.set({ fen: c.fen(), movable: { color: undefined, dests: new Map() }, lastMove: [orig, dest] });
-  } else {
-    if (!drill.done) drill.streak = 0;
-    fb.className = 'card feedback wrong';
-    fb.innerHTML = `<span class="big">${esc(m.san)} is not it</span><div class="small">${m.san === d.played ? 'That is what you played in the game. ' : ''}Try again, or use a hint.</div>`;
-    const g = drill.gen;
-    setTimeout(() => { if (g !== drill.gen) return; const c2 = new Chess(d.fen); drillCg.set({ fen: d.fen, turnColor: c2.turn() === 'w' ? 'white' : 'black', movable: { dests: toDests(c2) }, lastMove: d.last || undefined }); }, 500);
-  }
-  updateScore();
-}
-$('#d-hint').onclick = () => {
-  const d = drill.cur; if (!d) return;
-  const c = new Chess(d.fen), m = c.move(d.ok[0], { sloppy: true });
-  if (m) drillCg.set({ drawable: { autoShapes: [{ orig: m.from, brush: 'yellow' }] } });
-  $('#d-feedback').innerHTML = `<span class="muted">The circled piece makes the best move.</span>`;
-};
-$('#d-show').onclick = () => {
-  const d = drill.cur; if (!d) return;
-  drill.done = true; drill.streak = 0;
-  const c = new Chess(d.fen), m = c.move(d.ok[0], { sloppy: true });
-  if (m) drillCg.set({ drawable: { autoShapes: [{ orig: m.from, dest: m.to, brush: 'green' }] } });
-  $('#d-feedback').className = 'card feedback';
-  $('#d-feedback').innerHTML = `<span class="big">${esc(d.ok[0])}</span><div class="line small muted">Engine line: ${esc(d.pv)}</div><div class="small" style="margin-top:6px">In the game you played <strong>${esc(d.played)}</strong>.</div>`;
-  updateScore();
-};
-$('#d-next').onclick = nextDrill;
-for (const k of ['phase', 'sev']) $('#d-' + k).onclick = e => {
-  const b = e.target.closest('button'); if (!b) return;
-  drill[k] = b.dataset.v;
-  document.querySelectorAll(`#d-${k} button`).forEach(x => x.setAttribute('aria-pressed', x === b));
-  refillQueue(); nextDrill();
-};
 
 /* ---------- openings: the tab is O2 (openings2/ui/o2core.js + o2stats.js, inlined by build.py at the O2_JS placeholder) ---------- */
 // positions by piece placement, side and castling (the en-passant square is left out: chess.js and python-chess write it differently)
@@ -1661,8 +1356,6 @@ for (const [k, v] of Object.entries(XP.stats || {})) { const n = posKey(k); if (
 for (const x of Object.values(XP.courses || {})) for (const t of x.traps || []) t.fen = posKey(t.fen);
 // what players rated 1200-1600 play here (Lichess rapid + blitz), or null when the weekly statistics have no data
 const statsAt = fen => { const s = XP.stats?.[posKey(fen)]; return s && s.n >= 30 ? s : null; };
-// the last move actually played on this board (undefined for a position set up from scratch), so an old highlight never lingers
-const lastMoveOf = chess => { const h = chess.history({ verbose: true }); const m = h[h.length - 1]; return m ? [m.from, m.to] : undefined; };
 /* ---- sounds, made on the spot (no files, so they work offline too); the switch is remembered */
 const sfx = {
   on: store.get('sound', true), ctx: null,
@@ -1718,310 +1411,10 @@ const plyLabel = ply => `${Math.ceil(ply / 2)}${ply % 2 ? '.' : '...'}`;
 // games of one course (for Stats and Watch): analysis.json games that entered it
 const courseGames = id => { const c = O2.courses().find(x => x.id === id); return c && O2.stats ? O2.stats.analyse(c).games.map(x => x.pg.g) : []; };
 
-/* ---------- tactics ---------- */
-let tacCg = null;
+/* ---------- what your mistakes were about (tags from analyze.py), used by the coach's notes and Watch ---------- */
 const myWhy = {};
 for (const g of GAMES) g.plies.forEach((p, i) => { if (isMine(g, i) && (p.lab === 'blunder' || p.lab === 'mistake')) (p.why || []).forEach(t => myWhy[t] = (myWhy[t] || 0) + 1); });
-const THEMES = [
-  { id: 'hanging', name: 'Free pieces', tags: ['hangingPiece'], w: 3, ds: 'Spot and take a piece your opponent left undefended.', you: myWhy['hung piece'] && `You left a piece undefended ${myWhy['hung piece']} times` },
-  { id: 'fork', name: 'Forks', tags: ['fork'], w: 3, ds: 'One piece attacks two at once.', you: myWhy['fork'] && `You walked into ${myWhy['fork']} forks` },
-  { id: 'defend', name: 'Find the defence', tags: ['defensiveMove'], w: 2.5, ds: 'Your opponent threatens something. Stop it.', you: myWhy['allowed mate'] && `You allowed a mating attack ${myWhy['allowed mate']} times` },
-  { id: 'pin', name: 'Pins', tags: ['pin'], w: 1.5, ds: 'A piece can\'t move without exposing something bigger.' },
-  { id: 'mate1', name: 'Mate in 1', tags: ['mateIn1'], w: 1.5, ds: 'Find the checkmate.' },
-  { id: 'mate2', name: 'Mate in 2', tags: ['mateIn2'], w: 1.5, ds: 'A check, then mate.', you: myWhy['missed mate'] && `You missed ${myWhy['missed mate']} checkmates` },
-  { id: 'backrank', name: 'Back-rank mate', tags: ['backRankMate'], w: 1, ds: 'The king is trapped behind its own pawns.' },
-  { id: 'discovered', name: 'Discovered attacks', tags: ['discoveredAttack', 'doubleCheck'], w: 1, ds: 'Move one piece to unleash another.' },
-  { id: 'skewer', name: 'Skewers', tags: ['skewer'], w: 1, ds: 'Attack a big piece; win the one behind it.' },
-  { id: 'removal', name: 'Remove the defender', tags: ['capturingDefender'], w: 1, ds: 'Take the piece that guards the target.', you: myWhy['lost material'] && `You lost material in a trade ${myWhy['lost material']} times` },
-  { id: 'deflection', name: 'Deflection & decoy', tags: ['deflection', 'attraction'], w: 1, ds: 'Drag a defender away from its job.' },
-  { id: 'trapped', name: 'Trapped pieces', tags: ['trappedPiece'], w: 1, ds: 'A piece with no safe square.' },
-  { id: 'intermezzo', name: 'In-between moves', tags: ['intermezzo'], w: 1, ds: 'Before recapturing, find something stronger.' },
-  { id: 'promotion', name: 'Pawn promotion', tags: ['promotion', 'advancedPawn'], w: 1, ds: 'Push a pawn through to queen.' },
-];
-for (const t of THEMES) t.pool = PUZZLES.filter(p => p.themes.some(x => t.tags.includes(x)));
-// a new puzzle rating starts near your chess.com rapid rating; an existing one is never changed
-const tacRating = () => progress.tr.me?.r ?? MY_RATING;
 const startOfDay = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
-
-function renderTacticsHome() {
-  // the top numbers cover every tactics mode: puzzles, punish the blunder and blunder check
-  const res = [...Object.values(progress.puz), ...Object.values(progress.pun), ...Object.values(progress.chk)];
-  const score = kind => { const v = Object.values(progress[kind]); return v.length ? ` Your score: ${v.filter(r => r.ok).length}/${v.length} right.` : ''; };
-  $('#t-rating').textContent = Math.round(tacRating());
-  const hist = Object.entries(progress.trh).sort(([a], [b]) => a.localeCompare(b)).slice(-60);
-  $('#t-trend').hidden = hist.length < 2;
-  if (hist.length >= 2) {
-    const rs = hist.map(([, v]) => v.r), lo = Math.min(...rs) - 10, hi = Math.max(...rs) + 10, W = 600, H = 60;
-    const pts = rs.map((r, i) => `${(i / (rs.length - 1) * W).toFixed(1)},${(H - (r - lo) / (hi - lo) * H).toFixed(1)}`).join(' ');
-    const diff = rs[rs.length - 1] - rs[0];
-    $('#t-trend').innerHTML = `<div class="small muted">Puzzle rating over your last ${hist.length} training days: <strong style="color:var(${diff >= 0 ? '--good' : '--loss'})">${diff >= 0 ? '+' : ''}${diff}</strong></div>
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="spark"><polyline points="${pts}" fill="none" stroke="${cssVar('--accent')}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
-  }
-  $('#t-today').textContent = res.filter(r => r.t >= startOfDay()).length;
-  $('#t-acc').textContent = res.length ? Math.round(res.filter(r => r.ok).length / res.length * 100) + '%' : '–';
-  const missed = PUNISH.filter(d => d.missed).length;
-  $('#m-punish').textContent = `Your opponent just blundered. Find the move that makes them pay. ${PUNISH.length} positions from your games; you missed ${missed} of them at the time.${score('pun')}`;
-  document.querySelector('[data-mode=check] p').textContent = `You see a move you played. Safe, or a blunder? Trains the 5-second check you skip when you play fast.${score('chk')}`;
-  document.querySelector('[data-mode=mixed] p').textContent = `Puzzles at your level, weighted towards the themes you miss most in your games.${score('puz')}`;
-  $('#m-mistakes').textContent = `${DRILLS.length} positions right before you went wrong. Find the move you should have played. ${Object.keys(progress.solved).length} solved so far.`;
-  $('#t-more-n').textContent = `(${THEMES.length})`;
-  $('#t-themes').innerHTML = THEMES.map(t => {
-    const done = t.pool.filter(p => progress.puz[p.id]), ok = done.filter(p => progress.puz[p.id].ok).length;
-    return `<button class="card theme-card" data-theme="${t.id}"><span class="nm">${esc(t.name)}</span><span class="ds">${esc(t.ds)}</span>${t.you ? `<span class="you">${esc(t.you)}</span>` : ''}<span class="st">${done.length ? `${ok}/${done.length} solved · ` : ''}${t.pool.length} puzzles</span></button>`;
-  }).join('');
-}
-$('#t-themes').onclick = e => { const b = e.target.closest('[data-theme]'); if (b) launchFrom('tactics'), startPuzzles(THEMES.find(t => t.id === b.dataset.theme)); };
-document.querySelector('.mode-grid').onclick = e => {
-  const b = e.target.closest('[data-mode]'); if (!b) return;
-  const m = b.dataset.mode; launchFrom('tactics');
-  if (m === 'mixed') startPuzzles(null);
-  else if (m === 'punish') startPunish();
-  else if (m === 'check') startCheck();
-  else show('drills');
-};
-document.querySelectorAll('[data-tback]').forEach(b => b.onclick = () => { tacShow('home'); if (backView === 'middle') mgHome(); show(backView); });
-function tacShow(w) { tp.gen++; tacCg?.setAutoShapes([]); $('#tac-home').hidden = w !== 'home'; $('#tac-player').hidden = w !== 'player'; if (w === 'home') renderTacticsHome(); else { $('#train-switch').hidden = true; backLabels(); requestAnimationFrame(() => tacCg?.redrawAll()); } window.scrollTo({ top: 0 }); }
-
-const tp = { kind: null, theme: null, item: null, chess: null, sol: [], step: 0, failed: false, done: false, side: 'white', ses: { n: 0, ok: 0, streak: 0 }, seen: new Set(), queue: [], gen: 0, hist: [], view: null };
-function tpFeedback(html, cls = '') { const f = $('#tp-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
-function tpBoard(extra = {}) {
-  const color = tp.chess.turn() === 'w' ? 'white' : 'black';
-  const canMove = !tp.done && !tp.busy && color === tp.side && tp.kind !== 'check';
-  const opts = { fen: tp.chess.fen(), orientation: tp.side, turnColor: color, check: tp.chess.in_check(), coordinates: true, animation: { duration: 200 },
-    movable: { free: false, color: canMove ? tp.side : undefined, dests: canMove ? toDests(tp.chess) : new Map(), showDests: true, events: { after: onTacMove } },
-    drawable: { autoShapes: [] }, lastMove: lastMoveOf(tp.chess), ...extra };
-  if (!tacCg) tacCg = Chessground($('#tboard'), opts); else tacCg.set(opts);
-  // remember every position of this exercise so you can step back through it
-  const fen = extra.fen ?? tp.chess.fen();
-  if (!tp.hist.length || tp.hist[tp.hist.length - 1].fen !== fen) tp.hist.push({ fen, last: opts.lastMove, shapes: extra.drawable?.autoShapes || [] });
-  tp.view = null; tpNavUI();
-}
-function tpNavUI() {
-  $('#tp-back').disabled = tp.hist.length < 2 || tp.view === 0;
-  $('#tp-fwd').disabled = tp.view == null;
-  $('#tp-navinfo').textContent = tp.view == null ? '' : `Earlier position (${tp.view + 1} of ${tp.hist.length}). Press ▶ to return.`;
-}
-function tpStep(dir) {
-  if (!tp.hist.length || $('#tac-player').hidden) return;
-  if (dir < 0) { if (tp.hist.length < 2 || tp.view === 0) return; tp.view = tp.view == null ? tp.hist.length - 2 : tp.view - 1; }
-  else { if (tp.view == null) return; tp.view++; }
-  if (tp.view != null && tp.view >= tp.hist.length - 1) {   // back to the live position
-    const h = tp.hist[tp.hist.length - 1];
-    tp.view = null;
-    return tpBoard({ fen: h.fen, lastMove: h.last, drawable: { autoShapes: h.shapes } });
-  }
-  const h = tp.hist[tp.view];
-  tacCg.set({ fen: h.fen, lastMove: h.last, check: false, movable: { color: undefined, dests: new Map() }, drawable: { autoShapes: [] } });
-  tpNavUI();
-}
-function tpSession() { $('#tp-session').innerHTML = `<span><b>${tp.ses.ok}/${tp.ses.n}</b>this session</span><span><b>${tp.ses.streak}</b>streak</span>${tp.kind === 'puzzle' ? `<span><b>${Math.round(tacRating())}</b>rating</span>` : ''}`; }
-function tpControls(kind) {
-  $('#tp-controls').innerHTML = kind === 'check'
-    ? `<div class="verdict" style="width:100%"><button class="btn" id="v-safe" data-key="s">Safe<kbd>S</kbd></button><button class="btn" id="v-bl" data-key="b">Blunder<kbd>B</kbd></button></div>`
-    : `<button class="btn" id="tp-hint" data-key="h">Hint<kbd>H</kbd></button><button class="btn" id="tp-show" data-key="s">Show solution<kbd>S</kbd></button><button class="btn" id="tp-next" data-key="n">Skip<kbd>N</kbd></button>`;
-  if (kind === 'check') { $('#v-safe').onclick = () => judge(true); $('#v-bl').onclick = () => judge(false); }
-  else { $('#tp-hint').onclick = tpHint; $('#tp-show').onclick = tpShowSolution; $('#tp-next').onclick = tpNext; }
-}
-// once an exercise is finished, its Skip button becomes the main Next button
-function nextReady(id) { const b = $('#' + id); if (b) { b.classList.add('primary'); b.firstChild.textContent = 'Next'; } }
-function tpNext() { tp.kind === 'puzzle' ? nextPuzzle() : tp.kind === 'punish' ? nextPunish() : nextCheck(); }
-function scoreResult(ok) { tp.ses.n++; if (ok) { tp.ses.ok++; tp.ses.streak++; } else tp.ses.streak = 0; tpSession(); }
-
-// --- Lichess puzzles
-function startPuzzles(theme) { setLast('puzzles', theme ? `Puzzles: ${theme.name}` : 'Mixed training puzzles', theme?.id ?? null); tp.kind = 'puzzle'; tp.theme = theme; tp.ses = { n: 0, ok: 0, streak: 0 }; tpControls('puzzle'); tacShow('player'); nextPuzzle(); }
-// puzzles you have been shown (solved or not, even skipped) are remembered on this device, so nothing comes back until the whole pool has been used
-const puzSeen = store.get('puzseen', {});
-function markPuzzleSeen(id) {
-  puzSeen[id] = Date.now();
-  const ids = Object.keys(puzSeen);
-  if (ids.length > 6000) { ids.sort((a, b) => puzSeen[a] - puzSeen[b]).slice(0, ids.length - 5000).forEach(k => delete puzSeen[k]); }
-  store.set('puzseen', puzSeen);
-}
-const puzLast = id => Math.max(puzSeen[id] || 0, progress.puz[id]?.t || 0);   // when you last saw it, 0 = never
-function pickPuzzle() {
-  const r = tacRating();
-  const isNew = p => !progress.puz[p.id] && !puzSeen[p.id] && !tp.seen.has(p.id);
-  const pickFrom = (theme) => {
-    const fresh = theme.pool.filter(isNew);
-    for (const width of [150, 300, 600, 2000]) {
-      const near = fresh.filter(p => Math.abs(p.rating - r) <= width);
-      if (near.length) return near[Math.random() * near.length | 0];
-    }
-    return null;
-  };
-  let theme = tp.theme;
-  if (!theme) {
-    // mixed: weighted by your weak themes, never the same theme twice in a row, and skip themes that have run out of new puzzles
-    const opts = THEMES.filter(t => t.pool.some(isNew) && t.id !== tp.lastTheme);
-    const list = opts.length ? opts : THEMES.filter(t => t.pool.some(isNew));
-    if (list.length) { const tot = list.reduce((s, t) => s + t.w, 0); let x = Math.random() * tot; theme = list.find(t => (x -= t.w) < 0) || list[0]; }
-    else theme = THEMES[Math.random() * THEMES.length | 0];
-  }
-  tp.lastTheme = theme.id;
-  const p = pickFrom(theme);
-  if (p) return { p, theme };
-  // everything in this theme has been seen: bring back the one you saw longest ago, preferring ones you got wrong, close to your level
-  const pool = theme.pool.filter(q => !tp.seen.has(q.id));
-  const rank = q => puzLast(q.id) + (progress.puz[q.id]?.ok === 0 ? -14 * 864e5 : 0) + Math.abs(q.rating - r) * 3e5;
-  const cands = (pool.length ? pool : theme.pool).slice().sort((a, b) => rank(a) - rank(b)).slice(0, 8);
-  return { p: cands[Math.random() * cands.length | 0], theme };
-}
-function nextPuzzle() {
-  tp.hist = []; tp.view = null;
-  const { p, theme } = pickPuzzle();
-  tp.item = p; tp.seen.add(p.id); markPuzzleSeen(p.id); tp.sol = p.moves; tp.step = 0; tp.failed = false; tp.done = false; tp.busy = true;
-  tp.chess = new Chess(p.fen);
-  tp.side = tp.chess.turn() === 'w' ? 'black' : 'white';   // the first move is the opponent's
-  $('#tp-mode').textContent = tp.theme ? `Theme: ${tp.theme.name}` : 'Mixed training';
-  $('#tp-title').textContent = `Find the best move for ${tp.side === 'white' ? 'White' : 'Black'}`;
-  $('#tp-sub').textContent = `Puzzle rated ${p.rating}${tp.theme ? '' : ' · the theme is shown once you solve it'}`;
-  tpFeedback('<span class="muted">Watch your opponent\'s move, then find the best reply.</span>');
-  tpBoard(); tpSession();
-  const g = ++tp.gen;
-  setTimeout(() => g === tp.gen && playSol(), 600);
-}
-function uciMove(chess, u) { return chess.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || 'q' }); }
-function playSol() {
-  const mv = uciMove(tp.chess, tp.sol[tp.step]); if (!mv) return;
-  tp.step++; tp.busy = false;
-  tpBoard({ lastMove: [mv.from, mv.to] });
-}
-function onTacMove(orig, dest) {
-  if (tp.kind === 'punish') return onPunishMove(orig, dest);
-  const want = tp.sol[tp.step];
-  const test = new Chess(tp.chess.fen());
-  const mv = test.move({ from: orig, to: dest, promotion: want && want.slice(0, 4) === orig + dest ? (want[4] || 'q') : 'q' });
-  if (!mv) return tpBoard();
-  const right = (orig + dest) === want.slice(0, 4) || test.in_checkmate();
-  if (!right) {
-    if (!tp.failed) { tp.failed = true; ratePuzzle(false); }
-    tpBoard();
-    tpFeedback(`<span class="big">${esc(mv.san)} isn't it</span><div class="small">Try again, or show the solution.</div>`, 'wrong');
-    return;
-  }
-  uciMove(tp.chess, tp.sol[tp.step] && (orig + dest) === want.slice(0, 4) ? want : orig + dest + (mv.promotion || ''));
-  tp.step++;
-  if (tp.step >= tp.sol.length || tp.chess.in_checkmate()) return puzzleSolved([orig, dest]);
-  tp.busy = true; tpBoard({ lastMove: [orig, dest] });
-  tpFeedback(`<span class="big" style="color:var(--good)">${esc(mv.san)} ✓</span><div class="small">Keep going.</div>`, 'right');
-  const g = tp.gen;
-  setTimeout(() => g === tp.gen && playSol(), 450);
-}
-function ratePuzzle(ok) {
-  const cur = progress.tr.me || { r: MY_RATING, n: 0 };
-  const exp = 1 / (1 + Math.pow(10, (tp.item.rating - cur.r) / 400));
-  const k = cur.n < 30 ? 32 : 20;
-  const r = cur.r + k * ((ok ? 1 : 0) - exp), d = new Date();
-  record('tr', 'me', { r, n: cur.n + 1 });
-  record('trh', `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, { r: Math.round(r) });   // one rating per day for the trend line
-  if (!progress.puz[tp.item.id]) record('puz', tp.item.id, { ok: ok ? 1 : 0 });
-  scoreResult(ok);
-}
-function puzzleSolved(last) {
-  tp.done = true; nextReady('tp-next');
-  if (!tp.failed) ratePuzzle(true);
-  tpBoard({ lastMove: last });
-  const tags = tp.item.themes.filter(t => !['short', 'long', 'middlegame', 'endgame', 'opening', 'crushing', 'advantage', 'master', 'masterVsMaster', 'superGM', 'oneMove', 'mate', 'equality'].includes(t));
-  tpFeedback(`<span class="big">${tp.failed ? 'Solved, with help' : 'Solved!'}</span>${tp.failed ? '<div class="small muted">Saved as a miss for your rating, because of the wrong move or hint. It still counts in today’s puzzles.</div>' : ''}<div class="small">Themes: ${tags.map(t => `<span class="tag">${esc(t.replace(/([A-Z])/g, ' $1').toLowerCase())}</span>`).join('')}</div>
-    <div class="small muted" style="margin-top:6px">Rating now ${Math.round(tacRating())} · <a href="https://lichess.org/training/${esc(tp.item.id)}" target="_blank" rel="noopener" style="color:var(--accent)">Puzzle on Lichess ↗</a></div>`, 'right');
-}
-function tpHint() {
-  if (tp.done || tp.busy || !tp.chess) return;
-  if (tp.kind === 'punish') { const m = new Chess(tp.chess.fen()).move(tp.item.ok[0], { sloppy: true }); if (m) tacCg.set({ drawable: { autoShapes: [{ orig: m.from, brush: 'yellow' }] } }); return; }
-  if (!tp.failed) { tp.failed = true; ratePuzzle(false); }
-  tacCg.set({ drawable: { autoShapes: [{ orig: tp.sol[tp.step].slice(0, 2), brush: 'yellow' }] } });
-  tpFeedback('<span class="muted">The circled piece moves. (Using a hint counts as a miss for your rating.)</span>');
-}
-function tpShowSolution() {
-  if (tp.done || !tp.chess) return;
-  if (tp.kind === 'punish') return punishReveal(false);
-  if (!tp.failed) { tp.failed = true; ratePuzzle(false); }
-  tp.busy = true; tpBoard();
-  const g = ++tp.gen;
-  const step = () => {
-    if (g !== tp.gen) return;
-    if (tp.step >= tp.sol.length) { tp.busy = false; return puzzleSolved(null); }
-    const mv = uciMove(tp.chess, tp.sol[tp.step]); tp.step++;
-    tpBoard({ lastMove: [mv.from, mv.to] });
-    setTimeout(step, 700);
-  };
-  step();
-}
-
-// --- punish the blunder (own games)
-function startPunish() { setLast('punish', 'Punish the blunder'); tp.kind = 'punish'; tp.ses = { n: 0, ok: 0, streak: 0 }; const fresh = PUNISH.filter(d => !progress.pun[d.id]?.ok); tp.queue = [...fresh.sort(() => Math.random() - .5), ...PUNISH.filter(d => progress.pun[d.id]?.ok)]; tpControls('punish'); tacShow('player'); nextPunish(); }
-function nextPunish() {
-  tp.hist = []; tp.view = null;
-  tp.gen++;
-  if (!tp.queue.length) tp.queue = PUNISH.slice().sort(() => Math.random() - .5);
-  const d = tp.item = tp.queue.shift(); tp.failed = false; tp.done = false; tp.busy = false;
-  tp.chess = new Chess(d.fen); tp.side = tp.chess.turn() === 'w' ? 'white' : 'black';
-  const g = GAMES.find(x => x.url === d.url);
-  $('#tp-mode').textContent = `Punish the blunder · ${PUNISH.length} positions`;
-  $('#tp-title').textContent = `Your opponent just played ${d.opp}. Make them pay.`;
-  $('#tp-sub').textContent = `From your game vs ${g?.opp} (${g ? fmtDate(g.end) : ''}), move ${d.moveNo}`;
-  tpFeedback('<span class="muted">First ask: what did that move leave undefended, and what does it allow?</span>');
-  tpBoard({ lastMove: d.last }); tpSession();
-}
-function onPunishMove(orig, dest) {
-  const d = tp.item, test = new Chess(tp.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
-  if (!mv) return tpBoard();
-  if (d.ok.includes(mv.san)) {
-    tp.chess.move(mv.san); tpBoard({ lastMove: [orig, dest] });
-    punishReveal(true, mv.san);
-  } else {
-    if (!tp.failed) { tp.failed = true; scoreResult(false); record('pun', d.id, { ok: 0 }); }
-    tpBoard({ lastMove: d.last });
-    tpFeedback(`<span class="big">${esc(mv.san)} doesn't punish it</span><div class="small">${mv.san === d.played ? 'That is what you played in the game. ' : ''}Look for checks, captures and threats.</div>`, 'wrong');
-  }
-}
-function punishReveal(ok, san) {
-  const d = tp.item; tp.done = true; nextReady('tp-next');
-  if (ok && !tp.failed) { scoreResult(true); record('pun', d.id, { ok: 1 }); }
-  if (!ok && !tp.failed) { tp.failed = true; scoreResult(false); record('pun', d.id, { ok: 0 }); }
-  if (!ok) { const m = new Chess(d.fen).move(d.ok[0], { sloppy: true }); tacCg.set({ drawable: { autoShapes: m ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [] } }); }
-  tpFeedback(`<span class="big">${ok ? `${esc(san)} ✓` : `The answer: ${esc(d.ok[0])}`}</span>
-    ${d.ok.length > 1 ? `<div class="small muted">Also winning: ${d.ok.filter(x => x !== (san || d.ok[0])).map(esc).join(', ')}</div>` : ''}
-    <div class="line small muted" style="margin-top:6px">Engine line: ${esc(d.pv)}</div>
-    <div class="small" style="margin-top:6px">${d.missed ? `In the game you played <strong>${esc(d.played)}</strong> and let them off the hook.` : `In the game you found it too (${esc(d.played)}).`}</div>`, ok ? 'right' : '');
-}
-
-// --- blunder check (own games)
-function startCheck() { setLast('check', 'Blunder check');
-  tp.kind = 'check'; tp.ses = { n: 0, ok: 0, streak: 0 };
-  const fresh = CHECK.filter(c => !progress.chk[c.id]);
-  tp.queue = (fresh.length ? fresh : CHECK).slice().sort(() => Math.random() - .5);
-  tpControls('check'); tacShow('player'); nextCheck();
-}
-function nextCheck() {
-  tp.hist = []; tp.view = null;
-  tp.gen++;
-  if (!tp.queue.length) tp.queue = CHECK.slice().sort(() => Math.random() - .5);
-  const c = tp.item = tp.queue.shift(); tp.done = false;
-  tp.chess = new Chess(c.fen); tp.side = tp.chess.turn() === 'w' ? 'white' : 'black';
-  tpControls('check');
-  const g = GAMES.find(x => x.url === c.url);
-  $('#tp-mode').textContent = 'Blunder check';
-  $('#tp-title').textContent = `You're about to play ${c.moveNo} ${c.san}. Safe?`;
-  $('#tp-sub').textContent = `From your game vs ${g?.opp} (${g ? fmtDate(g.end) : ''}). Take five seconds: what can your opponent capture, check or threaten after this move?`;
-  tpFeedback('<span class="muted">Decide, then press Safe or Blunder.</span>');
-  tpBoard({ drawable: { autoShapes: [{ orig: c.mv[0], dest: c.mv[1], brush: 'blue' }] } }); tpSession();
-}
-function judge(saidSafe) {
-  if (tp.done) return nextCheck();
-  const c = tp.item, ok = saidSafe === c.safe; tp.done = true;
-  scoreResult(ok); record('chk', c.id, { ok: ok ? 1 : 0 });
-  const verdict = c.safe ? 'It was safe.' : 'It was a blunder.';
-  const detail = c.safe ? `<div class="small">${c.best && c.best !== c.san ? `The engine slightly preferred ${esc(c.best)}, but your move was fine.` : 'The engine agrees with your move.'}</div>`
-    : `<div class="small">Your opponent's best reply: <span class="line">${esc(c.refute)}</span></div>${c.best ? `<div class="small" style="margin-top:4px">Better was <strong>${esc(c.best)}</strong>.</div>` : ''}${(c.why || []).filter(t => t !== 'walked into check').map(t => `<span class="tag">${esc(t)}</span>`).join('')}`;
-  tpFeedback(`<span class="big">${ok ? 'Right.' : 'Not quite.'} ${verdict}</span>${detail}`, ok ? 'right' : 'wrong');
-  if (!c.safe && c.refute) {
-    const b = new Chess(c.fen); b.move(c.san, { sloppy: true }); const r = b.move(c.refute.replace(/^\d+\.+\s*/, '').split(' ')[0], { sloppy: true });
-    tpBoard({ fen: b.fen(), lastMove: r ? [r.from, r.to] : undefined, drawable: { autoShapes: r ? [{ orig: r.from, dest: r.to, brush: 'red' }] : [] }, movable: { color: undefined, dests: new Map() } });
-  }
-  $('#tp-controls').innerHTML = `<button class="btn primary" id="tp-cnext" data-key="n">Next position<kbd>N</kbd></button>`;
-  $('#tp-cnext').onclick = nextCheck;
-}
 
 /* ---------- in-page Stockfish (for playing positions out) ----------
    Stockfish 10 compiled to WebAssembly (served next to this page); falls back to the
@@ -2075,278 +1468,6 @@ const engine = {
     });
   },
 };
-const scoreWin = s => s.mate !== undefined ? (s.mate > 0 ? 100 : 0) : winPctWhite({ cp: s.cp }, 0);   // for the side the score belongs to
-const scoreText = s => s.mate !== undefined ? (s.mate > 0 ? '+' : '-') + 'M' + Math.abs(s.mate) : (s.cp > 0 ? '+' : '') + (s.cp / 100).toFixed(1);
-
-/* ---------- middlegame ---------- */
-let mgCg = null;
-const KIND_INFO = {
-  defend: { name: 'Deal with their threat first', ds: 'You\'re ahead, but your opponent threatens something. Stop it before anything else.' },
-  take: { name: 'Take the free material', ds: 'Something is hanging or can be won. Grab it, safely.' },
-  trade: { name: 'Trade down', ds: 'When you\'re ahead, swapping pieces makes the win easier.' },
-  finish: { name: 'Finish them off', ds: 'There\'s a forced mate. Find it.' },
-};
-const LEVELS = [{ id: 'club', name: 'Club player', skill: 4, ms: 500 }, { id: 'strong', name: 'Strong', skill: 12, ms: 800 }, { id: 'max', name: 'Full strength', skill: 20, ms: 1200 }];
-const mg = { kind: null, item: null, chess: null, side: 'white', busy: false, done: false, hist: [], level: store.get('mglevel', 'club'), queue: [], techKind: null, failed: false, gen: 0 };
-
-function renderMiddleHome() {
-  $('#mg-intro').textContent = `You reached a clearly winning position in ${WINNING.length} of your games but won only ${WINNING_WON}. Winning a won game is a skill of its own: slow down, check threats, and simplify.`;
-  const cvDone = Object.values(progress.cv).filter(v => v.ok).length;
-  $('#mg-convert-p').textContent = `${CONVERT.length} practice positions taken from those games, starting with the ones you didn't win. Play each one out against Stockfish until you win or the advantage slips.${cvDone ? ` Converted so far: ${cvDone}.` : ''}`;
-  const tqDone = Object.values(progress.tq), tqOk = tqDone.filter(v => v.ok).length;
-  $('#mg-tech-p').textContent = `${TECH.length} moments from your games where you were ahead. Find the move that keeps it that way.${tqDone.length ? ` ${tqOk}/${tqDone.length} right so far.` : ''}`;
-  $('#mg-kinds').innerHTML = Object.entries(KIND_INFO).map(([k, v]) => {
-    const items = TECH.filter(t => t.kind === k), missed = items.filter(t => !t.playedOk).length;
-    return `<button class="card theme-card" data-kind="${k}"><span class="nm">${v.name}</span><span class="ds">${v.ds}</span>${missed ? `<span class="you">You got ${missed} of ${items.length} wrong in your games</span>` : ''}<span class="st">${items.length} positions</span></button>`;
-  }).join('');
-}
-$('#mg-home').onclick = e => { const b = e.target.closest('[data-mg]'); if (!b) return; launchFrom('middle'); b.dataset.mg === 'convert' ? startConvert() : startTech(null); };
-$('#mg-kinds').onclick = e => { const b = e.target.closest('[data-kind]'); if (b) { e.stopPropagation(); launchFrom('middle'); startTech(b.dataset.kind); } };
-$('#mg-back').onclick = () => {
-  const to = backView; mgHome(); window.scrollTo({ top: 0 });
-  if (to === 'tactics') tacShow('home');
-  show(to);
-};
-function mgShowPlayer() { $('#mg-home').hidden = true; $('#mg-player').hidden = false; $('#train-switch').hidden = true; backLabels(); window.scrollTo({ top: 0 }); requestAnimationFrame(() => mgCg?.redrawAll()); }
-// the winning checklist from the Middlegame page, kept at hand while you play a winning position
-$('#mg-check ol').innerHTML = document.querySelector('.checklist ol').innerHTML;
-function mgChecklist(on) { const d = $('#mg-check'); d.hidden = !on; if (on && matchMedia('(min-width: 900px)').matches) d.open = true; }
-function mgFeedback(html, cls = '') { const f = $('#mg-feedback'); f.className = 'card feedback ' + cls; f.innerHTML = html; }
-function mgBoard(extra = {}) {
-  const color = mg.chess.turn() === 'w' ? 'white' : 'black';
-  const can = !mg.busy && !mg.done && color === mg.side;
-  const opts = { fen: mg.chess.fen(), orientation: mg.side, turnColor: color, check: mg.chess.in_check(), coordinates: true, animation: { duration: 200 },
-    movable: { free: false, color: can ? mg.side : undefined, dests: can ? toDests(mg.chess) : new Map(), showDests: true, events: { after: onMgMove } },
-    drawable: { autoShapes: [] }, lastMove: lastMoveOf(mg.chess), ...extra };
-  if (!mgCg) mgCg = Chessground($('#mgboard'), opts); else mgCg.set(opts);
-  if ($('#mgboard').offsetHeight) $('#mg-evalbar').style.height = $('#mgboard').offsetHeight + 'px';
-  $('#mg-evalbar').classList.toggle('flip', mg.side === 'black');
-}
-function mgEvalBar(myWin) { const whiteShare = mg.side === 'white' ? myWin : 100 - myWin; $('#mg-evalbar span').style.height = whiteShare + '%'; }
-function mgMoves() {
-  const ml = $('#mg-moves'); const h = mg.chess.history(); const startBlack = mg.item.fen.split(' ')[1] === 'b';
-  const start = +mg.item.fen.split(' ')[5];
-  const cells = startBlack ? ['…', ...h] : h;
-  let html = '';
-  for (let i = 0; i < cells.length; i += 2) html += `<div class="no">${start + i / 2}.</div><span style="padding:4px 8px">${esc(cells[i])}</span><span style="padding:4px 8px">${esc(cells[i + 1] || '')}</span>`;
-  ml.innerHTML = html; ml.hidden = !h.length; ml.scrollTop = ml.scrollHeight;
-}
-
-// --- play a position out against the engine (Convert the win, endgames)
-// cfg: { id, fen, store: progress kind, goal: 'win'|'draw', mate, promote, hold, maxMoves, engineFirst, fixedLevel,
-//        mode, title, sub, intro, onNext, from: 'middle'|'endgame' }
-function startConvert() { setLast('convert', 'Convert the win');
-  const notDone = CONVERT.filter(c => !progress.cv[c.id]?.ok);
-  mg.queue = (notDone.length ? notDone : CONVERT).slice();   // lost/drawn games come first (build order)
-  mgShowPlayer(); nextConvert();
-}
-function nextConvert() {
-  if (!mg.queue.length) mg.queue = CONVERT.slice();
-  const c = mg.queue.shift(), g = GAMES.find(x => x.url === c.url);
-  const res = c.result === 'win' ? 'You won that game.' : c.result === 'loss' ? 'You went on to lose that game.' : 'That game ended in a draw.';
-  loadPlay({ id: c.id, fen: c.fen, store: 'cv', goal: 'win', eval: c.eval, mode: `Convert the win · ${CONVERT.length} positions`,
-    title: `You're ${sideWords(c.eval, c.fen)}. Bring it home.`,
-    sub: `From your game vs ${g?.opp} (${g ? fmtDate(g.end) : ''}), move ${c.moveNo}. ${res}`,
-    intro: 'You win this exercise by checkmating, or by getting so far ahead that the engine would resign. If most of your advantage slips away, the exercise ends.',
-    onNext: nextConvert, from: 'middle' });
-}
-function levelUI() {
-  $('#mg-level').hidden = mg.kind !== 'play' || !!mg.cfg?.fixedLevel;
-  $('#mg-level').innerHTML = `<span class="small muted">Opponent:</span><div class="seg">${LEVELS.map(l => `<button data-lv="${l.id}" aria-pressed="${l.id === mg.level}">${l.name}</button>`).join('')}</div>`;
-  $('#mg-level').onclick = e => { const b = e.target.closest('[data-lv]'); if (!b) return; mg.level = b.dataset.lv; store.set('mglevel', mg.level); levelUI(); };
-}
-function loadPlay(cfg) {
-  mg.gen++; mg.base = null;
-  mg.kind = 'play'; mg.cfg = cfg;
-  Object.assign(mg, { item: cfg, chess: new Chess(cfg.fen), busy: false, done: false, hist: [], myMoves: 0 });
-  mg.side = (mg.chess.turn() === 'w') !== !!cfg.engineFirst ? 'white' : 'black';
-  mg.queens0 = mg.chess.board().flat().filter(p => p && p.type === 'q' && p.color === mg.side[0]).length;
-  $('#mg-mode').textContent = cfg.mode; $('#mg-title').textContent = cfg.title; $('#mg-sub').textContent = cfg.sub;
-  $('#mg-controls').innerHTML = `<button class="btn" id="mg-hint" data-key="h">Hint<kbd>H</kbd></button><button class="btn" id="mg-restart" data-key="r">Restart<kbd>R</kbd></button><button class="btn" id="mg-next" data-key="n">${cfg.goal === 'spar' ? 'Done' : 'Skip'}<kbd>N</kbd></button>`;
-  $('#mg-hint').onclick = mgHint; $('#mg-restart').onclick = () => loadPlay(cfg); $('#mg-next').onclick = cfg.onNext;
-  levelUI(); mgChecklist(cfg.goal === 'win' && cfg.store !== 'eg');
-  mgFeedback(`<span class="muted">${esc(cfg.intro)} Starting the engine…</span>`);
-  if (cfg.eval) { const w0 = winPctWhite(cfg.eval, 0); mgEvalBar(mg.side === 'white' ? w0 : 100 - w0); } else mgEvalBar(cfg.goal === 'win' ? 85 : 50);
-  mgBoard(); mgMoves();
-  const gen = mg.gen;   // a restart before the engine is ready must not start a second first move
-  engine.start().then(ok => {
-    if (gen !== mg.gen || mg.hist.length) return;
-    if (!ok) return mgFeedback(`<span class="big">The engine couldn't start in this browser.</span><div class="small">Try reloading the page.</div>`, 'wrong');
-    if (cfg.engineFirst) engineReply(null);
-    else if (cfg.goal === 'win') {
-      // rate the start with the same engine, so the failure line matches what it sees (not the deeper analysis)
-      engine.go(mg.chess.fen(), { movetime: 700, skill: 20 }).then(r => { if (gen === mg.gen && !mg.hist.length && r) mg.base = scoreWin(r.score); }).catch(() => {});
-    }
-    else mgFeedback(`<span class="muted">${esc(cfg.intro)} Your move.</span>`);
-  });
-}
-function playEnd(ok, msg) {
-  mg.done = true; mg.busy = false; mgBoard();
-  const cfg = mg.cfg;
-  if (cfg.store) record(cfg.store, cfg.id, { ok: ok ? 1 : (progress[cfg.store][cfg.id]?.ok || 0) });
-  let worst = null;
-  if (!ok && mg.hist.length > 1) { let prev = null; for (const h of mg.hist) { const drop = (prev ?? h.myWin) - h.myWin; if (!worst || drop > worst.drop) worst = { ...h, drop }; prev = h.myWin; } }
-  const advice = cfg.tip || (cfg.goal === 'win' ? 'Restart and try a calmer plan: check threats, then trade pieces.' : 'Restart and keep your king in front of the pawns.');
-  mgFeedback(`<span class="big">${esc(msg)}</span>${!ok && worst && worst.drop > 5 ? `<div class="small">The biggest drop came after your move <strong>${esc(worst.san)}</strong>. ${esc(advice)}</div>` : !ok ? `<div class="small">${esc(advice)}</div>` : ''}
-    <div class="controls" style="margin-top:10px"><button class="btn" id="mg-again">Try again</button><button class="btn primary" id="mg-next2">Next</button></div>`, ok ? 'right' : 'wrong');
-  nextReady('mg-next');
-  $('#mg-again').onclick = () => loadPlay(cfg); $('#mg-next2').onclick = cfg.onNext;
-}
-function drawOnBoard() { return mg.chess.in_stalemate() || mg.chess.insufficient_material() || mg.chess.in_threefold_repetition() || mg.chess.in_draw(); }
-async function onMgMove(orig, dest) {
-  if (mg.kind === 'tech') return onTechMove(orig, dest);
-  const mv = mg.chess.move({ from: orig, to: dest, promotion: 'q' });
-  if (!mv) return mgBoard();
-  mg.myMoves++;
-  mg.busy = true; mgBoard({ lastMove: [orig, dest] }); mgMoves();
-  const cfg = mg.cfg;
-  if (mg.chess.in_checkmate()) return playEnd(true, 'Checkmate! Well done.');
-  if (drawOnBoard()) return cfg.goal !== 'win' ? playEnd(true, cfg.goal === 'spar' ? 'The game ended in a draw.' : 'Draw! You held it.')
-    : playEnd(false, mg.chess.in_stalemate() ? 'Stalemate! The win slipped away. With a big advantage, always check that your opponent still has a legal move.' : 'The game ended in a draw.');
-  if (cfg.maxMoves && mg.myMoves >= cfg.maxMoves) return playEnd(false, `Too slow: no mate within ${cfg.maxMoves} moves.`);
-  engineReply(mv);
-}
-async function engineReply(mv) {
-  const cfg = mg.cfg, g = mg.gen;
-  mg.busy = true; mgBoard();
-  mgFeedback('<span class="muted">Opponent is thinking…</span>');
-  const lv = cfg.fixedLevel ? LEVELS.find(l => l.id === 'max') : LEVELS.find(l => l.id === mg.level);
-  const r = await engine.go(mg.chess.fen(), { movetime: lv.ms, skill: lv.skill }).catch(() => null);
-  if (g !== mg.gen) return;   // the exercise was restarted, changed or left meanwhile
-  if (!r) return mgFeedback('<span class="big">The engine stopped responding.</span><div class="small">Reload the page to try again.</div>', 'wrong');
-  const myWin = 100 - scoreWin(r.score);    // the engine reports its own point of view
-  const myCp = r.score.mate !== undefined ? (r.score.mate < 0 ? 10000 : -10000) : -r.score.cp;
-  if (mv) mg.hist.push({ san: mv.san, myWin });
-  mgEvalBar(myWin);
-  if (mv && cfg.goal !== 'spar') {
-    const queens = mg.chess.board().flat().filter(p => p && p.type === 'q' && p.color === mg.side[0]).length;
-    if (cfg.goal === 'win' && !cfg.mate && myCp >= 600 && mg.myMoves >= (cfg.promote ? 1 : 4) && (!cfg.promote || queens > mg.queens0))
-      return playEnd(true, cfg.promote ? 'Promoted, and the win is certain. Well done!' : "You're winning easily. The engine resigns: converted!");
-    const line = Math.min(cfg.failBelow ?? (cfg.mate || cfg.promote ? 90 : 62), mg.base != null ? mg.base - 20 : 100);
-    if (cfg.goal === 'win' && myWin < line) return playEnd(false, `The win slipped away after ${mv.san}.`);
-    if (cfg.goal === 'draw' && myWin < 25) return playEnd(false, `After ${mv.san} the position is lost.`);
-    if (cfg.goal === 'draw' && mg.myMoves >= (cfg.hold || 20)) return playEnd(true, `You held it for ${mg.myMoves} moves. That's a draw.`);
-  }
-  const reply = mg.chess.move({ from: r.best.slice(0, 2), to: r.best.slice(2, 4), promotion: r.best[4] || 'q' });
-  if (!reply) { mg.busy = false; return mgFeedback('<span class="big">The engine got out of step.</span><div class="small">Press Restart to try again.</div>', 'wrong'); }
-  mg.busy = false; mgBoard({ lastMove: [reply.from, reply.to] }); mgMoves();
-  if (mg.chess.in_checkmate()) return playEnd(false, 'You got checkmated.');
-  if (drawOnBoard()) return cfg.goal !== 'win' ? playEnd(true, cfg.goal === 'spar' ? 'The game ended in a draw.' : 'Draw! You held it.') : playEnd(false, 'The game ended in a draw.');
-  const adv = r.score.mate !== undefined ? youWords(0, -r.score.mate) : youWords(myCp);
-  const goalText = cfg.goal === 'spar' ? `${adv}.` : cfg.goal === 'draw' ? `Hold on: ${Math.max(0, (cfg.hold || 20) - mg.myMoves)} more moves.` : cfg.mate ? `Mate needed${cfg.maxMoves ? ` within ${cfg.maxMoves - mg.myMoves} moves` : ''}.` : `${adv}.`;
-  mgFeedback(`<span class="muted">Opponent played <strong>${esc(reply.san)}</strong>. ${goalText} What does ${esc(reply.san)} threaten?</span>`);
-}
-async function mgHint() {
-  if (mg.done || mg.busy) return;
-  mgFeedback('<span class="muted">Thinking…</span>');
-  const g = mg.gen, fen = mg.chess.fen();
-  const r = await engine.go(fen, { movetime: 1200, skill: 20 }).catch(() => null);
-  if (!r || g !== mg.gen || fen !== mg.chess.fen()) return;   // you moved or left before the hint arrived
-  mgCg.set({ drawable: { autoShapes: [{ orig: r.best.slice(0, 2), brush: 'yellow' }] } });
-  mgFeedback(`<span class="muted">The circled piece has the engine's best move.${mg.cfg?.tip ? ' ' + esc(mg.cfg.tip) : ''}</span>`);
-}
-
-// --- winning technique: find the right idea
-function startTech(kind) { setLast('tech', kind ? `Winning technique: ${KIND_INFO[kind].name}` : 'Winning technique', kind);
-  mg.kind = 'tech'; mg.cfg = null; mg.techKind = kind;
-  const pool = TECH.filter(t => !kind || t.kind === kind);
-  const fresh = pool.filter(t => !progress.tq[t.id]);
-  mg.queue = [...fresh.sort(() => Math.random() - .5), ...pool.filter(t => progress.tq[t.id]).sort(() => Math.random() - .5)];
-  mgShowPlayer(); nextTech();
-}
-function nextTech() {
-  mg.gen++;
-  if (!mg.queue.length) return startTech(mg.techKind);
-  const t = mg.item = mg.queue.shift();
-  Object.assign(mg, { chess: new Chess(t.fen), busy: false, done: false, failed: false, hist: [] });
-  mg.side = mg.chess.turn() === 'w' ? 'white' : 'black';
-  const g = GAMES.find(x => x.url === t.url);
-  $('#mg-mode').textContent = `Winning technique${mg.techKind ? ' · ' + KIND_INFO[mg.techKind].name : ''}`;
-  $('#mg-title').textContent = mg.techKind ? KIND_INFO[t.kind].ds : 'You\'re ahead. Find the move that keeps it that way.';
-  $('#mg-sub').textContent = `From your game vs ${g?.opp} (${g ? fmtDate(g.end) : ''}), move ${t.moveNo}.`;
-  $('#mg-controls').innerHTML = `<button class="btn" id="mg-thint" data-key="h">Hint<kbd>H</kbd></button><button class="btn" id="mg-tshow" data-key="s">Show answer<kbd>S</kbd></button><button class="btn" id="mg-tnext" data-key="n">Next<kbd>N</kbd></button>`;
-  $('#mg-thint').onclick = () => { const m = new Chess(t.fen).move(t.ok[0], { sloppy: true }); if (m) mgCg.set({ drawable: { autoShapes: [{ orig: m.from, brush: 'yellow' }] } }); mgFeedback(`<span class="muted">Idea: ${KIND_INFO[t.kind].name.toLowerCase()}. The circled piece moves.</span>`); mg.failed = true; };
-  $('#mg-tshow').onclick = () => techReveal(false);
-  $('#mg-tnext').onclick = nextTech;
-  levelUI(); mgChecklist(true);
-  mgFeedback('<span class="muted">Run the checklist, then make your move.</span>');
-  mgEvalBar(winPctWhite({ cp: t.cp }, 0));
-  mgBoard(); $('#mg-moves').hidden = true;
-}
-function onTechMove(orig, dest) {
-  const t = mg.item, test = new Chess(mg.chess.fen()), mv = test.move({ from: orig, to: dest, promotion: 'q' });
-  if (!mv) return mgBoard();
-  if (t.ok.includes(mv.san)) { mg.chess.move(mv.san); mgBoard({ lastMove: [orig, dest] }); techReveal(true, mv.san); }
-  else {
-    mg.failed = true; mgBoard();
-    mgFeedback(`<span class="big">${esc(mv.san)} lets the advantage slip</span><div class="small">${mv.san === t.played ? 'That is what you played in the game. ' : ''}Try again: ${t.kind === 'defend' ? 'what is your opponent threatening?' : 'look at checks, captures and threats.'}</div>`, 'wrong');
-  }
-}
-function techReveal(ok, san) {
-  const t = mg.item; if (mg.done) return; mg.done = true; nextReady('mg-tnext');
-  record('tq', t.id, { ok: ok && !mg.failed ? 1 : 0 });
-  if (!ok) { const m = new Chess(t.fen).move(t.ok[0], { sloppy: true }); mgBoard({ drawable: { autoShapes: m ? [{ orig: m.from, dest: m.to, brush: 'green' }] : [] } }); }
-  const others = t.ok.filter(x => x !== (san || t.ok[0]));
-  mgFeedback(`<span class="big">${ok ? esc(san) + ' ✓' : 'The answer: ' + esc(t.ok[0])}</span>
-    <div class="small"><span class="tag">${KIND_INFO[t.kind].name}</span> ${esc(KIND_INFO[t.kind].ds)}</div>
-    ${others.length ? `<div class="small muted">Also good: ${others.map(esc).join(', ')}</div>` : ''}
-    <div class="line small muted" style="margin-top:6px">Engine line: ${esc(t.pv)}</div>
-    <div class="small" style="margin-top:6px">${t.playedOk ? `In the game you found it (${esc(t.played)}).` : `In the game you played <strong>${esc(t.played)}</strong>.`}</div>`, ok ? 'right' : '');
-}
-
-/* ---------- endgames ---------- */
-// The essential endings live in essentials.json (each position checked with Stockfish).
-const ESSENTIALS = ESSENTIALS_DATA;
-const EG_THEME = { id: 'endgame', name: 'Endgame puzzles', tags: ['endgame', 'rookEndgame', 'pawnEndgame', 'queenEndgame'], w: 1 };
-EG_THEME.pool = PUZZLES.filter(p => p.themes.some(t => EG_THEME.tags.includes(t)));
-function renderEndgameHome() {
-  const reached = GAMES.filter(g => g.plies.some(p => p.ph === 'endgame'));
-  const egBl = GAMES.reduce((s, g) => s + g.plies.filter((p, i) => isMine(g, i) && p.ph === 'endgame' && p.lab === 'blunder').length, 0);
-  $('#eg-intro').textContent = `${reached.length} of your ${GAMES.length} games reached an endgame, and you made ${egBl} blunders in them. Most endgames are decided by a handful of known ideas: the opposition, active kings, and a few rook-ending set-ups. Each exercise is played against Stockfish.`;
-  const won = ENDGAMES.filter(e => e.goal === 'win').length;
-  const ownDone = Object.values(progress.eo).filter(v => v.ok).length;
-  $('#eg-own-p').textContent = `${ENDGAMES.length} endgames from your games: ${won} where you were winning, and ${ENDGAMES.length - won} level ones that you lost. Play them again, properly.${ownDone ? ` Done so far: ${ownDone}.` : ''}`;
-  const pz = EG_THEME.pool.filter(p => progress.puz[p.id]);
-  $('#eg-puz-p').textContent = `${EG_THEME.pool.length} endgame puzzles at your level.${pz.length ? ` ${pz.filter(p => progress.puz[p.id].ok).length}/${pz.length} solved.` : ''}`;
-  // one recommended next step: the first essential endgame not done yet, else your own endgames
-  const nextEss = ESSENTIALS.find(e => !progress.eg[e.id]?.ok);
-  const essDone = ESSENTIALS.filter(e => progress.eg[e.id]?.ok).length;
-  $('#eg-more-n').textContent = `(${essDone}/${ESSENTIALS.length} done)`;
-  $('#eg-rec').innerHTML = nextEss
-    ? `<div><span class="eyebrow">Recommended · essential endgame ${ESSENTIALS.indexOf(nextEss) + 1} of ${ESSENTIALS.length}</span><h3 style="margin-top:4px">${esc(nextEss.name)}</h3><p>${esc(nextEss.lesson.split('. ')[0])}.${/opposition/i.test(nextEss.lesson) ? ' <button class="gl" data-term="opposition">What is the opposition?</button>' : ''}</p></div><button class="btn primary" id="eg-rec-go">Start this ending</button>`
-    : `<div><span class="eyebrow">Recommended</span><h3 style="margin-top:4px">Your endgames</h3><p>All ${ESSENTIALS.length} essential endgames done. Now replay the endgames from your own games.</p></div><button class="btn primary" id="eg-rec-go">Play your endgames</button>`;
-  $('#eg-rec-go').onclick = () => { launchFrom('endgame'); nextEss ? playEssential(nextEss) : playOwnEndgame(); };
-  $('#eg-lessons').innerHTML = ESSENTIALS.map(e => {
-    const st = progress.eg[e.id];
-    return `<button class="card theme-card" data-ess="${e.id}"><span class="nm">${st?.ok ? '✓ ' : ''}${esc(e.name)}</span><span class="ds">${esc(e.lesson.split('. ')[0])}.</span><span class="st">${e.goal === 'win' ? (e.mate ? 'Goal: checkmate' : 'Goal: win') : 'Goal: hold the draw'}${st ? (st.ok ? ' · done' : ' · not yet') : ''}</span></button>`;
-  }).join('');
-}
-function playEssential(e) { setLast('ess', `Essential endgame: ${e.name}`, e.id);
-  const i = ESSENTIALS.indexOf(e);
-  show('middle', 'endgame'); mgShowPlayer();
-  loadPlay({ ...e, store: 'eg', fixedLevel: true, from: 'endgame', mode: `Essential endgames · ${i + 1} of ${ESSENTIALS.length}`, title: e.name, sub: e.lesson,
-    intro: e.goal === 'draw' ? `Goal: hold the draw${e.hold ? ` for ${e.hold} moves` : ''}.` : e.mate ? `Goal: checkmate within ${e.maxMoves} moves.` : 'Goal: promote the pawn and win.',
-    onNext: () => playEssential(ESSENTIALS[(i + 1) % ESSENTIALS.length]) });
-}
-let egQueue = [];
-function playOwnEndgame() { setLast('egown', 'Your endgames');
-  if (!egQueue.length) { const nd = ENDGAMES.filter(e => !progress.eo[e.id]?.ok); egQueue = (nd.length ? nd : ENDGAMES).slice(); }
-  const e = egQueue.shift(), g = GAMES.find(x => x.url === e.url);
-  show('middle', 'endgame'); mgShowPlayer();
-  loadPlay({ id: e.id, fen: e.fen, store: 'eo', goal: e.goal, hold: 20, eval: e.eval, from: 'endgame', mode: `Your endgames · ${ENDGAMES.length} positions`,
-    title: e.goal === 'win' ? `You're ${sideWords(e.eval, e.fen)} here. Win it.` : `This endgame is about equal. You lost it in the game. Hold it now.`,
-    sub: `From your game vs ${g?.opp} (${g ? fmtDate(g.end) : ''}), move ${e.moveNo}. ${e.result === 'win' ? 'You won that game.' : e.result === 'loss' ? 'You lost that game.' : 'It was drawn.'}`,
-    intro: e.goal === 'win' ? 'Win by checkmate or by getting so far ahead that the engine would resign. If most of your advantage slips away, the exercise ends.' : 'Hold for 20 moves without the position becoming lost.',
-    tip: e.goal === 'win' ? 'Activate your king, push your passed pawns, and trade pieces, not pawns.' : 'Activate your king and keep your rook active. Passive defence usually loses.',
-    onNext: playOwnEndgame });
-}
-$('#eg-lessons').onclick = e => { const b = e.target.closest('[data-ess]'); if (b) launchFrom('endgame'), playEssential(ESSENTIALS.find(x => x.id === b.dataset.ess)); };
-document.querySelector('#view-endgame .mode-grid').onclick = e => {
-  const b = e.target.closest('[data-eg]'); if (!b) return;
-  launchFrom('endgame');
-  if (b.dataset.eg === 'own') playOwnEndgame();
-  else { show('tactics'); startPuzzles(EG_THEME); }
-};
 
 /* ---------- coach's notes: worked out from the analysed games, so they stay current after updates ---------- */
 function renderCoachNotes() {
@@ -2377,12 +1498,12 @@ function renderCoachNotes() {
   const eg = GAMES.filter(g => g.plies.some(p => p.ph === 'endgame'));
   const egBl = eg.filter(g => g.plies.some((p, i) => isMine(g, i) && p.ph === 'endgame' && p.lab === 'blunder')).length;
   const items = [];
-  if (winning.length) items.push(`<strong>You let winning games slip away.</strong> You reached a clearly winning position in ${winning.length} games but won only ${wW} of them. That's ${wL} losses and ${wD} draws from positions you should have won.${slipAt ? ` It usually goes wrong around move ${slipAt}.` : ''} When you're winning, slow down, look for your opponent's threats first, and trade pieces to simplify. Practise with Train → Middlegame → Convert the win.`);
+  if (winning.length) items.push(`<strong>You let winning games slip away.</strong> You reached a clearly winning position in ${winning.length} games but won only ${wW} of them. That's ${wL} losses and ${wD} draws from positions you should have won.${slipAt ? ` It usually goes wrong around move ${slipAt}.` : ''} When you're winning, slow down, look for your opponent's threats first, and trade pieces to simplify. Practise with Train → Win the won game, and play your own won positions out against Stockfish.`);
   if (finals.length) items.push(`<strong>${avgLeft > 240 ? 'You play too fast.' : 'Watch your clock.'}</strong> You finish your games with ${Math.floor(avgLeft / 60)}:${String(Math.round(avgLeft % 60)).padStart(2, '0')} left on average${lostOnTime ? ` and lost ${lostOnTime} on time` : ', and you never lost on time'}. Half your moves take under ${Math.max(1, Math.round(medianT))} seconds. ${avgLeft > 240 ? 'That spare time should go to a quick check before each move: which pieces are undefended? What checks and captures does my opponent have?' : ''}`);
-  if (simple) items.push(`<strong>Most blunders are simple tactics.</strong> ${simple} of your mistakes were leaving a piece undefended, walking into a fork, or losing material in a trade. These are exactly what the quick check catches. Train → Tactics → Blunder check and Fix my mistakes train it with your own positions.`);
-  if (oppBl) items.push(`<strong>You miss your opponents' blunders too.</strong> Your opponents blundered ${oppBl} times, and ${notPunished} times (${pct(notPunished, oppBl)}%) you didn't take advantage. Always ask: "What did that last move leave hanging?" Train → Tactics → Punish the blunder uses exactly those positions.`);
+  if (simple) items.push(`<strong>Most blunders are simple tactics.</strong> ${simple} of your mistakes were leaving a piece undefended, walking into a fork, or losing material in a trade. These are exactly what the quick check catches. Train → Think first (Safe or blunder?) and My mistakes train it with your own positions.`);
+  if (oppBl) items.push(`<strong>You miss your opponents' blunders too.</strong> Your opponents blundered ${oppBl} times, and ${notPunished} times (${pct(notPunished, oppBl)}%) you didn't take advantage. Always ask: "What did that last move leave hanging?" Train → Think first (Punish it or not?) uses exactly those positions.`);
   if (jb) items.push(`<strong>Your White opening ${jb.w10 >= 52 ? 'works, but the plan after it matters most' : 'needs work'}.</strong> With the Jobava London you average a ${Math.round(jb.w10)}% winning chance after 10 moves, and you score ${jb.sc}% in those ${jb.n} games.${ck ? ` Your Caro-Kann as Black scores ${ck.sc}% over ${ck.n} games.` : ''} The Openings courses cover both, including the plans that follow.`);
-  if (eg.length) items.push(`<strong>Endgames matter more than you might think.</strong> ${eg.length} of your ${n} games reached an endgame, and you blundered in ${egBl} of them. The essential endgames under Train → Endgames pay off quickly.`);
+  if (eg.length) items.push(`<strong>Endgames matter more than you might think.</strong> ${eg.length} of your ${n} games reached an endgame, and you blundered in ${egBl} of them. Train → Essential endgames pays off quickly.`);
   // what is going well: progress in your games and in training, not only what to fix
   const good = [];
   if (last.myRating > first.myRating) good.push(`<strong>Your rating is up ${last.myRating - first.myRating} points</strong> in this period, from ${first.myRating} to ${last.myRating}.`);
@@ -2401,54 +1522,51 @@ function renderCoachNotes() {
 }
 
 /* ---------- Today: the home screen ---------- */
+// "Pick up where you left off" remembers the last exercise of the old Train pages (this device only, 14 days):
+// each old kind opens the matching part of the new Train tab
 function resumeLast(last) {
-  launchFrom('today');
-  const k = last.kind;
-  if (k === 'puzzles') { show('tactics'); startPuzzles(last.arg === 'endgame' ? EG_THEME : THEMES.find(t => t.id === last.arg) || null); }
-  else if (k === 'punish') { show('tactics'); startPunish(); }
-  else if (k === 'check') { show('tactics'); startCheck(); }
-  else if (k === 'drills') show('drills');
-  else if (k === 'convert') { mgHome(); show('middle'); startConvert(); }
-  else if (k === 'tech') { mgHome(); show('middle'); startTech(last.arg); }
-  else if (k === 'ess') playEssential(ESSENTIALS.find(e => e.id === last.arg) || ESSENTIALS[0]);
-  else if (k === 'egown') playOwnEndgame();
+  const k = last.kind, course = id => { show('train'); T2.show('course', id); };
+  if (k === 'puzzles') { show('train'); const g = T2.groups().findIndex(x => x.id === last.arg); T2.startPuzzles(g >= 0 ? g : null); }
+  else if (k === 'drills') { show('train'); T2.startMistakes(); }
+  else if (k === 'punish' || k === 'check') course('think');
+  else if (k === 'convert' || k === 'tech') course('convert');
+  else if (k === 'ess' || k === 'egown') course('endgames');
+  else { show('train'); T2.show('home'); }
 }
+const RESUME_LABEL = { puzzles: 'Puzzles', drills: 'My mistakes', punish: 'Think first', check: 'Think first', convert: 'Win the won game', tech: 'Win the won game', ess: 'Essential endgames', egown: 'Essential endgames' };
+// Today's list: the Openings review plus the Train tab's daily blocks (T2.todayTasks). The lesson or play-out of the day is
+// optional ("one more thing"), so the day counts as complete after the other 4 (the phone reminders read that count).
 function todayTasks() {
   const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
   const o2 = O2.dueSummary(), due = o2.n;
   const reviewedToday = today('o2c').length;
-  const tactics = today('puz').length + today('pun').length + today('solved').length;
-  const checks = today('chk').length;
-  const played = today('cv').length + today('eg').length + today('eo').length + today('tq').length;
-  const tasks = [
+  const train = T2.todayTasks().map(x => ({ ...x, go: () => { show('train'); x.go(); } }));
+  if (train.length) train[train.length - 1].opt = true;
+  return [
     { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due · about ${o2.mins} min` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && (reviewedToday > 0 || Object.keys(progress.o2c).length > 0),
       go: () => { show('openings'); if (due) O2.startDaily(); else O2.show('home'); } },
-    { nm: '10 tactics', ct: `${Math.min(tactics, 10)}/10 puzzles, punish or mistake positions`, done: tactics >= 10, go: () => { launchFrom('today'); show('tactics'); startPuzzles(null); } },
-    { nm: '5 blunder checks', ct: `${Math.min(checks, 5)}/5 · the habit that saves games`, done: checks >= 5, go: () => { launchFrom('today'); show('tactics'); startCheck(); } },
-    { nm: 'Play out a winning position', ct: played ? `${played} done today` : 'Convert a win against Stockfish', done: played > 0,
-      go: () => { launchFrom('today'); mgHome(); show('middle'); startConvert(); } },
+    ...train,
   ];
-  return tasks;
 }
 function renderToday() {
   const tasks = todayTasks(), sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
   if (noteDay()) sync.save();
-  const firstOpen = tasks.findIndex(t => !t.done);
-  $('#today-list').innerHTML = tasks.map((t, i) => `<div class="task${t.done ? ' done' : ''}"><span class="tick">${t.done ? '✓' : ''}</span><span class="nm">${t.nm}</span><button class="btn${i === firstOpen ? ' primary' : ''}" data-task="${i}">${t.done ? 'More' : 'Start'}</button><span class="ct">${esc(t.ct)}</span></div>`).join('');
+  const firstOpen = tasks.findIndex(t => !t.done && !t.opt);
+  $('#today-list').innerHTML = tasks.map((t, i) => `<div class="task${t.done ? ' done' : ''}${t.opt ? ' opt' : ''}"><span class="tick">${t.done ? '✓' : ''}</span><span class="nm">${esc(t.nm)}${t.opt ? ' <span class="small muted">· optional</span>' : ''}</span><button class="btn${i === firstOpen ? ' primary' : ''}" data-task="${i}">${t.done ? 'More' : 'Start'}</button><span class="ct">${esc(t.ct)}</span></div>`).join('');
   $('#today-list').onclick = e => { const b = e.target.closest('[data-task]'); if (b) tasks[+b.dataset.task].go(); };
   // streak: consecutive days (ending today or yesterday) with any training recorded
   const days = new Set(KINDS.filter(k => k !== 'day').flatMap(k => Object.values(progress[k]).map(v => v.t)).filter(t => t > 1e12).map(t => new Date(t).toDateString()));
   let streak = 0; const d = new Date();
   if (!days.has(d.toDateString())) d.setDate(d.getDate() - 1);
   while (days.has(d.toDateString())) { streak++; d.setDate(d.getDate() - 1); }
-  const doneCount = tasks.filter(t => t.done).length;
-  $('#today-streak').textContent = `${doneCount}/4 done`;
+  const need = tasks.filter(t => !t.opt), doneCount = need.filter(t => t.done).length, all = doneCount === need.length;
+  $('#today-streak').textContent = `${doneCount}/${need.length} done`;
   $('#today-lead').textContent = `${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}${streak ? ` · ${streak}-day training streak` : ''}`;
-  // all four done: a small celebration, animated only the first time you see it each day
+  // all done: a small celebration, animated only the first time you see it each day
   const todayKey = new Date().toDateString(), seen = store.get('cheered') === todayKey;
   const still = seen ? ' style="animation:none;stroke-dashoffset:0"' : '';
-  $('#today-cheer').innerHTML = doneCount === 4 ? `<div class="cheer"><span class="medal"${seen ? ' style="animation:none"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"${still}><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><strong>All four done. That's a full training day.</strong><span class="small muted">${streak > 1 ? `${streak} days in a row now. ` : ''}Anything more today is a bonus.</span></div></div>` : '';
-  if (doneCount === 4) store.set('cheered', todayKey);
+  $('#today-cheer').innerHTML = all ? `<div class="cheer"><span class="medal"${seen ? ' style="animation:none"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"${still}><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><strong>All ${need.length === 4 ? 'four' : need.length} done. That's a full training day.</strong><span class="small muted">${streak > 1 ? `${streak} days in a row now. ` : ''}Anything more today is a bonus.</span></div></div>` : '';
+  if (all) store.set('cheered', todayKey);
   // out of book: you left one of your courses in a recent game
   const alerts = bookAlerts(), ba = $('#today-book');
   ba.hidden = !alerts.length;
@@ -2457,32 +1575,27 @@ function renderToday() {
     ba.innerHTML = `<div><span class="eyebrow" style="color:var(--mistake)">Out of book · ${agoWords(g.end)}</span><h3 style="margin-top:4px">You left your ${esc(c.title)} course at ${plyLabel(d.ply)}${esc(d.san)}</h3><p class="small" style="margin:4px 0 0">Against ${esc(g.opp)} (${g.oppRating}), ${g.result === 'win' ? 'you won' : g.result === 'loss' ? 'you lost' : 'a draw'}. The course plays <strong>${esc(d.courseSans.join(' or '))}</strong>. Open Your games and use Fix it: about a minute.${alerts.length > 1 ? ` <span class="muted">${alerts.length - 1} more game${alerts.length > 2 ? 's' : ''} after this one.</span>` : ''}</p></div><button class="btn primary" id="today-book-go">Fix it now</button>`;
     $('#today-book-go').onclick = () => { store.set('o2tab.' + c.id, 'games'); show('openings'); O2.show('course', c.id); };
   }
-  // pick up where you left off
+  // pick up where you left off (an exercise of the old Train pages, kept for 14 days)
   const last = store.get('last', null);
   $('#today-resume').hidden = !last || Date.now() - last.t > 14 * DAY;
   if (!$('#today-resume').hidden) {
-    $('#today-resume').innerHTML = `<div><h3>Pick up where you left off</h3><div class="small muted">${esc(last.label)}</div></div><button class="btn" id="today-resume-go">Continue</button>`;
+    $('#today-resume').innerHTML = `<div><h3>Pick up where you left off</h3><div class="small muted">${esc(last.label)} · now in Train → ${esc(RESUME_LABEL[last.kind] || 'Train')}</div></div><button class="btn" id="today-resume-go">Continue</button>`;
     $('#today-resume-go').onclick = () => resumeLast(last);
   }
   renderTodayWatch();
-  // what you did today
-  const okOf = arr => arr.filter(v => v.ok).length;
-  const puz = today('puz'), pun = today('pun'), chk = today('chk'), cv = today('cv'), tq = today('tq'), eg = today('eg'), eo = today('eo');
-  const learned = today('lines').filter(v => v.box === 1).length, reviewed = today('lines').length - learned;
-  const dk = new Date(), key = `${dk.getFullYear()}-${String(dk.getMonth() + 1).padStart(2, '0')}-${String(dk.getDate()).padStart(2, '0')}`;
-  const hist = Object.entries(progress.trh).sort(([a], [b]) => a.localeCompare(b)), ti = hist.findIndex(([k]) => k === key);
-  const rDiff = ti > 0 ? hist[ti][1].r - hist[ti - 1][1].r : null;
+  // what you did today: Train's daily totals (t2d) and the opening reviews
   const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const td = progress.t2d[dayKey(new Date(T2.now()))] || {};
+  const o2 = today('o2c').length;
+  const hist = Object.entries(progress.trh).sort(([a], [b]) => a.localeCompare(b)), ti = hist.findIndex(([k]) => k === dayKey());
+  const rDiff = ti > 0 ? hist[ti][1].r - hist[ti - 1][1].r : null;
   const items = [
-    puz.length && `${plural(puz.length, 'puzzle')}, ${okOf(puz)} right first try${rDiff ? ` (puzzle rating ${rDiff > 0 ? '+' : ''}${rDiff})` : ''}`,
-    pun.length && `${plural(pun.length, 'opponent blunder')} to punish, ${okOf(pun)} found`,
-    today('solved').length && `${plural(today('solved').length, 'mistake')} from your games fixed`,
-    chk.length && `${plural(chk.length, 'blunder check')}, ${okOf(chk)} judged right`,
-    learned && `${plural(learned, 'new opening line')} learned`,
-    reviewed && `${plural(reviewed, 'opening line')} reviewed`,
-    cv.length && `${plural(cv.length, 'winning position')} played out, ${okOf(cv)} converted`,
-    tq.length && `${plural(tq.length, 'technique position')}, ${okOf(tq)} right`,
-    (eg.length + eo.length) && `${plural(eg.length + eo.length, 'endgame')} played, ${okOf(eg) + okOf(eo)} done right`,
+    o2 && `${plural(o2, 'opening move')} reviewed`,
+    td.rev && `${plural(td.rev, 'Train review')}`,
+    td.new && `${plural(td.new, 'new puzzle')}${rDiff ? ` (puzzle rating ${rDiff > 0 ? '+' : ''}${rDiff})` : ''}`,
+    td.think && `${plural(td.think, 'Think-first position')}, ${td.thinkOk || 0} right`,
+    td.less && `${plural(td.less, 'lesson')} finished`,
+    td.play && `${plural(td.play, 'position')} played out against Stockfish`,
   ].filter(Boolean);
   $('#today-sum').hidden = !items.length;
   $('#today-sum').innerHTML = items.length ? `<h3>Today you did</h3><ul>${items.map(t => `<li>${t}</li>`).join('')}</ul>` : '';
@@ -2696,12 +1809,9 @@ function renderTodayWatch() {
 onProgressChanged = () => {
   if (!$('#view-today').hidden) renderToday();
   if (!$('#view-watch').hidden && $('#player').hidden) renderWatch();
-  if (!$('#view-endgame').hidden) renderEndgameHome();
   if (!$('#view-report').hidden) renderCoachNotes();
-  if (!$('#mg-home').hidden && !$('#view-middle').hidden) renderMiddleHome();
   if (!$('#view-openings').hidden && $('#o2-player').hidden) O2.refresh();
-  if (!$('#tac-home').hidden && !$('#view-tactics').hidden) renderTacticsHome();
-  updateScore();
+  if (!$('#view-train').hidden && $('#t2-player').hidden) T2.refresh();
 };
 
 $('#acc-signin').onclick = accountSignIn;
@@ -2714,9 +1824,28 @@ $('#acc-file').onchange = e => { const f = e.target.files[0]; if (f) accountImpo
 /* ---------- boot ---------- */
 O2.init({ root: $('#o2'), data: O2_DATA, hooks: { Chessground, record, progress, store, sfx, confetti, statsAt, games: GAMES, engine,
   onChange: () => { if (!$('#view-today').hidden) renderToday(); } } });
+// Train (T2): "Open the game" opens it here in the Games tab; "Analyse" opens the position in the game it came from with
+// "Try your own move" (Stockfish), or on Lichess when it is not from one of your games
+function openGameUrl(url) {
+  const g = GAMES.find(x => x.url === url);
+  if (!g) return window.open(url, '_blank', 'noopener');
+  show('games'); openGame(g);
+}
+function analysePosition(fen) {
+  const key = posKey(fen);
+  for (let gi = GAMES.length - 1; gi >= 0; gi--) {
+    const g = GAMES[gi]; prepGame(g);
+    const k = g._fens.findIndex(f => posKey(f) === key);
+    if (k >= 0) { show('games'); openGame(g); goto(k); startExplore(); return; }
+  }
+  window.open('https://lichess.org/analysis/' + fen.replace(/ /g, '_'), '_blank', 'noopener');
+}
+T2.init({ root: $('#t2'), data: { train: TRAIN2, puzzles: PUZZLES2, mine: MINE2 }, hooks: { Chessground, record, progress, store, sfx, confetti, games: GAMES, engine,
+  myRating: MY_RATING, openGame: openGameUrl, analyse: analysePosition,
+  onChange: () => { if (!$('#view-today').hidden) renderToday(); } } });
 renderReport(); renderCoachNotes(); setupFilters(); renderList(); sync.start();
-// the app opens on Today (a #view in the address still opens that page)
+// the app opens on Today (a #view in the address still opens that page; the old #tactics #middle #endgame #drills open Train)
 const startView = location.hash.slice(1);
-show(views.includes(startView) ? startView : 'today');
-if (location.hostname === 'localhost') window.__ct = { tp, progress, mg, O2, engine, get game() { return gameCg; }, get explore() { return explore; }, get tac() { return tacCg; }, get mgb() { return mgCg; } };   // local testing only
+show(views.includes(startView) || OLD_TRAIN_VIEWS.includes(startView) ? startView : 'today');
+if (location.hostname === 'localhost') window.__ct = { progress, O2, T2, engine, get game() { return gameCg; }, get explore() { return explore; } };   // local testing only
 </script>

@@ -1,0 +1,177 @@
+# COURSE convert | Win the won game
+sub: Seven short habits for the moment you are winning, so that winning positions become wins.
+why: In your 175 analysed games you reached a winning position in 108 and won 74 of them. "Threw away a win" is your most common mistake: 91 times. This is the most common way 1400 players lose won games, and it is the easiest rating to win back.
+
+## CHAPTER convert | Converting an advantage | theme=defend
+> Seven lessons, one rule each. The examples are moments from your own games where the win slipped away. The cards are your own positions too.
+
+### LESSON stillgame | Winning is not won
+goal: Keep asking about his threats when you are ahead.
+rule: When you are ahead, your first question is still: what is his threat?
+> When you are winning, it is natural to relax and look only at your own plans. That is exactly when his one trick works. Before each move, look at his pieces first: what can he check, capture or attack next? Then make your move.
+
+#### EX stillgame-a | 4r1k1/5pp1/7p/Q7/P7/1P3PP1/2PK1b2/8 w - - 1 37 | src=game:166167260924-72
+> Your game against yanis4dja, 19 Mar 2026. Your queen is stronger than his rook and bishop. You played ((37.g4)) after 3 seconds.
+37. Qb5! {First ask about his threat. His bishop can check from e1, and then it takes your queen behind the king: ((37.g4 Be1+ 38.Kd3 Bxa5)). Move the queen off that line. [r:e1] [g:e1-a5]} Rd8+ 38. Ke2 Bxg3 39. a5 {His bishop took a pawn, but your queen is safe and your a-pawn is running.}
+key: Ahead or not, look at his checks first: one check can cost you the queen.
+
+#### EX stillgame-b | r5k1/6p1/p2b2qp/1pp5/6P1/1NP5/PP1Q1P2/R5K1 w - - 0 24 | src=game:166427192152-46
+> Your game against LicMenchaca, 25 Mar 2026. You had a winning move here, but you played ((24.Nxc5)) and took a pawn.
+24. Qd5+! {His threat was ((24.Nxc5 Qxg4+)): his queen starts checking your king. Answer with a check of your own that also hits the rook on a8. [g:d2-d5] [r:a8]} Kh7 25. Qxa8 Qxg4+ 26. Qg2 {Your queen comes back to guard your king. You are a rook up and his attack is over.}
+key: Before you grab a pawn, check what his next check would do to your king.
+
+#### JUDGE stillgame-j1 | r1bqk1nr/p4p1p/2pb2p1/3pp1Q1/3P4/2P2N2/PP3PPP/RNB1K2R b KQkq - 1 10 | move=e4 | verdict=blunder | src=game:187114519440-19
+refute: Qxd8+ Kxd8 Ne5 Ke8 Nxc6
+why: After your pawn push he swaps queens with check, his knight jumps to e5 and takes on c6. Look at his checks and captures before you push.
+
+#### JUDGE stillgame-j2 | r2q1rk1/pp3ppp/2np4/2b2n2/5B2/2N1PN1P/PPP2PP1/R2QK2R w KQ - 0 11 | move=Nb5 | verdict=blunder | src=game:148400724424-20
+refute: Qa5+ Nc3 Ba3
+why: His queen checks from a5 and hits your loose knight on b5 at the same time. Ask what he can check before you send a piece forward.
+
+#### MINE tq | kind=defend | n=8
+
+#### MINE cv | result=loss,draw | n=1
+
+### LESSON trade | Trade pieces, keep pawns
+goal: Make the win simpler by swapping pieces when you are ahead.
+rule: Ahead in material: swap pieces (not pawns), every fair trade makes the win simpler.
+> When you are a piece up, every trade of equal pieces makes your extra piece count for more. Fewer pieces also means fewer tricks for him. So when he offers a fair trade, usually take it. Keep your pawns: they are what you will promote in the end.
+
+#### EX trade-a | 1r6/5pk1/2p5/R2pPP1p/p5pP/P2PK3/1rR5/8 w - - 0 37 | src=game:147290324214-72 | side=black
+> Your game against matteoborgio, 28 Dec 2025. You are Black with an extra pawn. Watch where his king goes.
+37. Kd2? {Now his rook on c2 is next to his king. [r:c2]} Rxc2+! {Swap the rooks. In the game you played ((37...Rb1)) and most of your advantage was gone. [g:b2-c2]} 38. Kxc2 g3 {With one rook each gone, your g-pawn runs, and his rook is too far away to stop it.}
+key: When he offers a trade and you are ahead, take it unless it costs you something.
+
+#### EX trade-b | 4rr1k/ppQ3pp/8/5N1n/4P3/3P3P/PPPq1bP1/R4R1K b - - 0 22 | src=game:167478525646-43 | side=white
+> Your game against Alaa93Salman, 18 Apr 2026. You are White. Black offers to trade queens.
+22... Qf4? {He offers the trade, but look: his bishop on f2 is attacked by your rook on f1. [r:f2]} 23. Qxf4! {Take the trade. [g:c7-f4]} Nxf4 24. Rxf2 {With the queens gone, the bishop falls as well. Three pawns up with no queens on the board is an easy win.}
+key: A queen trade when you are ahead takes away his best attacker and his tricks.
+
+#### JUDGE trade-j1 | 1r1r2k1/pp1R4/2n2b1p/4p3/8/2P1P2P/PP3PP1/3R2K1 b - - 6 23 | move=Rxd7 | verdict=safe | src=game:166040002438-45
+why: You have two extra pieces for three pawns. Swapping the rooks takes away his only active piece, and his rook on d1 takes back. Simple and safe.
+
+#### JUDGE trade-j2 | r6r/5Qk1/4B1p1/3R3p/4nq2/7P/P4PP1/6K1 b - - 0 31 | move=Qxf7 | verdict=safe | src=game:147549122260-61
+why: You are well ahead. Taking his queen means he takes back with the bishop and the queens are gone. With no queens, your extra piece is easy to use.
+
+#### MINE tq | kind=trade | n=6
+
+#### MINE cv | n=1
+
+### LESSON counterplay | Kill his counterplay first
+goal: Stop his one active idea before you go after more.
+rule: Before you win more, take away his only active idea: the open file, the passed pawn, the attack on your king.
+> When you are winning, he usually has just one hope: a passed pawn, a rook on your back rank or checks against your king. Find that one idea and stop it. After that, your extra material wins by itself.
+
+#### EX counterplay-a | 2R5/4k3/p4p1p/1p3P2/1P1R2P1/8/P1p1r3/6K1 w - - 6 49 | src=game:164969420132-96
+> Your game against JHSistemas, 20 Feb 2026. You are a rook up, but his pawn on c2 is one step from a new queen. You played ((49.Rd5)) after 3 seconds.
+49. Rc7+! {His only hope is the c-pawn. After ((49.Rd5 Re1+ 50.Kf2 c1=Q)) he gets a new queen. Check first, then your rook stands behind the pawn. [r:c2] [g:c8-c7]} Ke8 50. Kf1 {Your king attacks his rook and comes towards the pawn. [g:g1-f1]}
+key: Find his one hope, often a passed pawn, and stop it before anything else.
+
+#### EX counterplay-b | r7/2Q2pk1/7R/5pp1/Pq6/1P1P4/2P2P1P/6K1 w - - 1 39 | src=game:166024223244-76
+> Your game against AgapelosLiberty, 16 Mar 2026. You are winning, but your king has few defenders. You played ((39.Qc6)).
+39. Rb6! {His only idea is checks against your king: after ((39.Qc6 Ra6 40.Qxa6 Qg4+)) his queen gives check after check. So hit his queen first. [g:h6-b6] [r:b4]} Qg4+ 40. Qg3 {Your queen blocks the check and offers a trade.} Rc8 41. Qxg4 fxg4 {The queens are gone, and so are his checks. Your extra pawns now win.}
+key: Checks against your king are his counterplay: trade his attacking queen before you go after more.
+
+#### JUDGE counterplay-j1 | 8/3RRpk1/4p1p1/3p1r2/1r6/5P2/5KP1/8 b - - 1 44 | move=d4 | verdict=blunder | src=game:172995377076-87
+refute: Rxe6 d3 Kg3
+why: Your pawn runs, but his rook takes on e6 and both his rooks stay deep in your position. Push your pawns after his rooks are stopped, not before.
+
+#### MINE tq | kind=defend | n=8
+
+#### MINE cv | n=1
+
+### LESSON takefree | Take what is free — after a check for the catch
+goal: Grab free material, but only after checking that it is really free.
+rule: Free material makes the win easier, if nothing is hanging at home.
+> More material makes winning easier, so do not be shy: if something is free, take it. But "free" needs one check. Is the piece really undefended? Does your capture leave something of yours hanging? And is there a bigger thing to take?
+
+#### EX takefree-a | rq3r1k/1p3pp1/2b1p2p/4P3/pRR1P3/4B1QP/P1P2PP1/6K1 w - - 7 32 | src=game:184671744490-62
+> Your game against Zendop75, 1 Oct 2026. You played ((32.Rxa4)) after 5 seconds: the pawn looked free, but his bishop on c6 guards a4.
+32. Rxc6! {The bishop is the real prize. If his pawn takes back, your other rook takes the queen on b8. [g:c4-c6] [r:b8]} bxc6 33. Rxb8 Rfxb8 {You have won a bishop.}
+key: Before taking, check who guards the square, and look for the bigger capture.
+
+#### EX takefree-b | r1b2rk1/p1Q1qp1p/1p2p1p1/2N5/5P2/5B2/PPP3PP/3R1RK1 b - - 0 19 | src=game:148349502866-37
+> Your game against Sergei-501, 22 Jan 2026. His queen on c7 is undefended. You played ((19...Qxc5+)) and took the knight with check instead.
+19... Qxc7! {Take the biggest free thing. After ((19...Qxc5+ 20.Qxc5 bxc5 21.Bxa8)) you lose your rook too. [g:e7-c7]} 20. Bxa8 bxc5 {His bishop took your rook, but you have taken his queen and his knight.}
+key: Count what each capture wins, and take the biggest one first.
+
+#### JUDGE takefree-j1 | r2qk2r/p4p1p/6p1/3pP3/2pN1QP1/5P1P/4B3/R3K2b b Qkq - 0 22 | move=Bxf3 | verdict=blunder | src=game:167342166800-43
+refute: Bxf3
+why: The pawn looked free, but his bishop on e2 guards f3. You gave a bishop for a pawn. Check the defenders before you take.
+
+#### JUDGE takefree-j2 | 6k1/8/p4p2/1p1p1nq1/4r1P1/2PQ3P/PP4K1/5R2 w - - 0 30 | move=Rxf5 | verdict=safe | src=game:186478283682-58
+why: Your rook takes the knight. If his queen takes back, your pawn on g4 takes the queen. Nothing of yours is left hanging.
+
+#### MINE tq | kind=take | n=8
+
+#### MINE cv | n=1
+
+### LESSON allpieces | Bring everyone
+goal: Use all your pieces, and your king, before the final attack.
+rule: Before the final attack, the worst-placed piece joins; in the endgame that includes the king.
+> An attack with two pieces often runs out of steam; with three it usually wins. Before you start the final push, find your worst piece: the one doing nothing. Bring it closer first. In the endgame the king is a strong piece, so walk it towards the action.
+
+#### EX allpieces-a | 8/3R1pk1/4R3/6p1/1r1p1rP1/5PK1/8/8 b - - 0 47 | src=game:172995377076-93
+> Your game against traCys-Rarity, 14 Aug 2026. You are Black and your rook on b4 is doing nothing.
+47... Rb3! {Your second rook joins the attack on the pawn on f3. Two rooks against one defender. [g:b3-f3] [r:f3]} 48. Kg2 Rbxf3 {You found this in the game: your pawn is now the only passed pawn on the board.}
+key: Before you attack, ask which piece is doing nothing, and bring it in.
+
+#### CARD allpieces-1 | 1r3rk1/5ppp/4p3/pq1pPn2/1b1p1BP1/1R1N3P/2P2P2/R4QK1 b - - 0 25 | src=game:173276312788-49 | last=g2g4
+sol: Nh4
+why: His pawn attacks your knight. Send it forward to h4, close to his king, instead of back. You found this in the game against IsaacFeny.
+also: Ne7 | Also good: the knight goes back to guard your king.
+wrong: Nh6 | ((25...Nh6 26.Bxh6 gxh6)) His bishop takes the knight and your king is left open.
+
+#### JUDGE allpieces-j1 | 2r5/R3kpp1/4p3/3p4/3Pr2p/3K4/8/8 b - - 3 35 | move=Kf6 | verdict=safe | src=game:146831151632-69
+why: Far ahead in an ending, your king is a fighting piece. This king move brings it forward and still guards the pawn on f7.
+
+#### MINE cv | n=1
+
+### LESSON simplest | Choose the simplest win
+goal: Prefer the safe, simple way to win.
+rule: A clearly won endgame you know beats a flashy attack you have to calculate.
+> When you are winning, you do not need the fastest win, only a safe one. Swapping into an endgame you know is often the best way. The Essential endgames course shows the ones to know: mate with queen or two rooks, the outside passed pawn, and the Lucena position.
+
+#### EX simplest-a | 8/p6p/8/6pk/5P2/8/1r6/2rRK3 b - - 6 46 | src=game:186479451862-91 | side=black
+> Your game against Miky_il, 3 Nov 2026. You are a rook up.
+46... Rxd1+! {Swap off his last piece. You played this in the game. [g:c1-d1]} 47. Kxd1 gxf4 {Now he has no pieces left, and your rook and pawns win easily.}
+key: When you are far ahead, swap off his last pieces and win the simple ending.
+
+#### CARD simplest-1 | 5rk1/1b3pp1/1p4qp/p2p4/3P1Pp1/P1P1P1RQ/1P5P/R5K1 w - - 0 26 | src=game:186521152480-50
+sol: Qxg4 Qxg4 Rxg4
+why: Take the pawn with your queen. If he swaps queens, your rook takes back and his attack is gone. The rook capture is fine too.
+also: Rxg4 | Also good: the rook takes the pawn and keeps the queens on.
+wrong: f5 | ((26.f5 Qxf5)) The pawn push just loses a pawn, and his queen becomes active.
+
+#### JUDGE simplest-j1 | r4k2/4b1p1/3N1n1p/q1Q5/Pn4P1/1bN1B2P/2P2P2/2KR4 w - - 0 28 | move=Qxa5 | verdict=safe | src=game:168882144530-54
+why: Swapping queens is the simple choice here. His rook takes back, and your pawn then takes the bishop on b3. Fewer pieces, fewer tricks.
+
+#### JUDGE simplest-j2 | R6r/2p5/2kp4/p5N1/1bP2PK1/6P1/8/8 w - - 0 43 | move=Rxh8 | verdict=safe | src=game:167429907938-84
+why: His rook attacks yours along the back rank, so swap them now. You played it in under 2 seconds, and here the quick move was right.
+
+#### MINE cv | n=1
+
+### LESSON finish | Finish the job
+goal: Turn a big advantage into checkmate, and never give stalemate.
+rule: Far ahead: look for mate with checks, and never stalemate.
+> When you are far ahead, look at every check first: often there is a mate. And before every move, look at his king once more. If it has no move and he has no other move, it is stalemate, a draw. The Essential endgames lesson on stalemate shows the trap.
+
+#### EX finish-a | 8/8/8/2K4p/7k/8/6Q1/8 w - - 2 56 | src=game:146765906038-110
+> Your game against TRylo, 15 Dec 2025. You played ((56.Kd4)) in 2 seconds. His king had no move and his pawn was blocked: stalemate, a draw.
+56. Qg6! {Before you move, look at his king. Your queen move leaves him the square h3, so the game goes on. [g:h4-h3]} Kh3 57. Kd4 {Now your king can come closer: his king still has squares to go to.} h4 58. Ke3 Kh2 59. Kf2 h3 60. Qg1# {Your king guards g1, and the queen gives mate.}
+key: Before every move in a won ending, check that his king will still have a move.
+
+#### EX finish-b | 2r5/p5pp/4pp2/6k1/6N1/1P1q3P/P2P2Q1/K7 b - - 6 32 | src=game:165205199000-63
+> Your game against mohammedabukassem, 25 Feb 2026. You are Black. You played ((32...Kf4)) and missed a mate.
+32... Rc1+! {Start with the checks. [g:c8-c1]} 33. Kb2 Rc2+ 34. Ka3 Qd6+ 35. Ka4 Rxa2+ 36. Kb5 a6+ 37. Kc4 Rc2# {Every move was a check, and his king was driven up the board into mate.}
+key: Far ahead, look at every check first: checks are how mates start.
+
+#### CARD finish-1 | 8/8/8/8/8/1pk5/1r1p4/K6R b - - 7 67 | src=composed | last=b1a1
+sol: Kc2
+why: From your game against Patrick_BEV, one check later than the moment you missed. His king is stuck in the corner. Your king steps to c2 and takes away b1. Next move your rook mates on a2.
+also: Ra2+ | Another check also wins, a little more slowly.
+wrong: d1=Q+ | ((67...d1=Q+ 68.Rxd1)) His rook takes your new queen, and it is only a draw.
+
+#### MINE tq | kind=finish | n=6
+
+#### MINE cv | n=1

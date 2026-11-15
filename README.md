@@ -25,9 +25,13 @@ Personal chess training app for Janczu00, published at https://claude.ai/artifac
 | `app.html` | The web page (all sections) |
 | `openings2/courses/<id>.txt` | Opening courses (Openings tab); `openings2/tools/compile_courses2.py` checks every move with Stockfish (`verify_course.py`) and writes `data/courses2.json`. Rebuild one course: `python openings2/tools/compile_courses2.py <id>`, then `python build.py --skip-drills`. See `openings2/BLUEPRINT.md` and `openings2/tools/README.md` |
 | `openings2/ui/` | The Openings tab: `o2core.js`, `o2stats.js`, `o2.css`, `o2.html`, inlined into the page by `build.py` (placeholders `/*O2_JS*/`, `/*O2_CSS*/`, `<!--O2_HTML-->` in `app.html`); `dev.html` is a test page for it |
-| `data/essentials.json` | Essential endgame lessons |
-| `analyze.py`, `build*.py` | Game analysis and exercise builders |
-| `update.py` / `update.bat` | Pull new games and rebuild everything |
+| `train2/courses/<id>.txt` | Train courses (Tactics ABC, Think first, Win the won game, Essential endgames); `train2/tools/compile_train2.py` checks them (Stockfish + Lichess tablebase, `verify_lessons.py`) and writes `data/train2.json`. Rebuild: `python train2/tools/compile_train2.py`, then `python build.py`. See `train2/BLUEPRINT.md` and `train2/tools/README.md` |
+| `train2/ui/` | The Train tab: `t2core.js`, `t2play.js`, `t2stats.js`, `t2.css`, `t2.html`, inlined into the page by `build.py` (placeholders `/*T2_JS*/`, `/*T2_CSS*/`, `<!--T2_HTML-->` in `app.html`); `dev.html` is a test page for it |
+| `data/puzzles2.json` | The Train puzzle pool (about 12,000 checked Lichess puzzles with explanations); built once by `train2/tools/fetch_puzzles2.py` → `verify_puzzles.py` → `build_puzzles2.py` |
+| `data/mine2.json` | Train cards, Think-first judgements, play-outs and statistics from your own games; `train2/tools/build_mine2.py` (nightly, cached in `train2/cache/mine_evals.jsonl`) |
+| `analyze.py` | Game analysis (Stockfish) → `data/analysis.json` |
+| `update.py` / `update.bat` | Pull new games, analyse them, rebuild the Train cards (`build_mine2.py --max-minutes 20`) and the page (`build.py`) |
+| `build_tactics.py`, `build_middlegame.py`, `build_endgame.py`, `fetch_puzzles.py`, `data/drills.json`, `puzzles.json`, `punish.json`, `check.json`, `convert.json`, `technique.json`, `endgames.json`, `essentials.json` | The old Train pages (replaced by `train2/`); no longer used by the page, `build.py` or the nightly job (kept for reference) |
 | `courses.txt`, `compile_courses.py`, `build_openings.py`, `data/structures.json` | The old Openings tab (replaced by `openings2/`); no longer used by the page or `build.py` |
 | `build_explorer.py` | What 1200-1600 players play (Lichess), traps, extra lines, longer lines, model games (`data/explorer.json`); runs weekly in the GitHub job "Opening statistics" with the `LICHESS_TOKEN` secret |
 | Coach's notes | Worked out by the page from `data/analysis.json` (no manual editing needed) |

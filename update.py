@@ -90,11 +90,11 @@ def main():
         print("Nothing new to analyse.")
         return
     run("analyze.py", "--depth", "14", "--workers", str(max(1, (os.cpu_count() or 2) - 1)))   # only analyses games it hasn't seen
-    run("build.py")                                         # mistakes drills + page
-    run("build_tactics.py")
-    run("build_middlegame.py")
-    run("build_endgame.py")
-    run("build.py", "--skip-drills")                        # copy the fresh data files into dist/
+    # Train tab: cards, Think-first judgements, play-outs and statistics from your games (data/mine2.json). Positions already
+    # searched are cached (train2/cache/mine_evals.jsonl), so a normal night takes seconds; it stops cleanly after 20 minutes
+    # and carries on in the next run. (This replaces build_tactics.py, build_middlegame.py, build_endgame.py and the drills step.)
+    run("train2/tools/build_mine2.py", "--max-minutes", "20")
+    run("build.py")                                         # the page + every data file into dist/ and docs/
     print("\nDone. Double-click publish.bat to put the new version online (the phone app updates itself).")
 
 

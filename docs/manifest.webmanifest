@@ -11,7 +11,7 @@
  "orientation": "any",
  "background_color": "#e9eeec",
  "theme_color": "#16201d",
- "description": "Personal chess trainer: openings, tactics, middlegame and endgames from your own games.",
+ "description": "Personal chess trainer: openings, tactics, endgames and winning technique from your own games.",
  "icons": [
   {
    "src": "icon-192.png",

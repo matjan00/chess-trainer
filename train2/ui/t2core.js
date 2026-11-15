@@ -184,6 +184,10 @@ const T2 = (() => {
   function prepMine(d) {
     if (!d) return null;
     const m = { cards: d.cards || [], judges: d.judges || [], plays: d.plays || [], stats: d.stats || null };
+    // lead review (T8): an own-game position that a lesson already uses as a card or example is not asked twice (R2)
+    const pk = fen => String(fen || '').split(' ').slice(0, 3).join(' '), used = new Set();
+    for (const c of COURSES) { for (const k of Object.values(c.cards || {})) used.add(pk(k.fen)); for (const l of Object.values(c.lessons || {})) for (const s of l.steps || []) if (s.t === 'ex') used.add(pk(s.fen)); }
+    m.cards = m.cards.filter(c => !used.has(pk(c.fen)));
     m.cards.sort((a, b) => (b.end || 0) - (a.end || 0));
     m.cardById = new Map(m.cards.map(c => [c.id, c]));
     m.judgeById = new Map(m.judges.map(j => [j.id, j]));
@@ -330,6 +334,11 @@ const T2 = (() => {
   /** puzzles reserved by practice sets that are not finished yet */
   function reservedSet() {
     const r = new Set();
+    // lead review (T8): a pool puzzle used as a lesson card or example is never served by the stream (R2/R3)
+    for (const c of COURSES) {
+      for (const k of Object.values(c.cards || {})) if (String(k.src || '').startsWith('lichess:')) r.add(String(k.src).slice(8));
+      for (const l of Object.values(c.lessons || {})) for (const s of l.steps || []) if (s.t === 'ex' && String(s.src || '').startsWith('lichess:')) r.add(String(s.src).slice(8));
+    }
     for (const c of COURSES) for (const id of c.order) { const l = c.lessons[id]; if ((PG('t2l')[`${c.id}/${id}`]?.st || 0) >= 2) continue; for (const s of l.sets) (s.ids || []).forEach(x => r.add(String(x))); }
     return r;
   }

@@ -99,10 +99,63 @@ def good_moves(res, min_best, gap, max_ok=2, ok_within=3.0, w4_below=90.0, need_
     return (lines, W, k), None
 
 
-def fix_wording(text, n_ok):
-    """explain.py's fallback says 'the only good move' - not true when two moves are ok."""
-    if n_ok > 1:
-        text = text.replace("It is the only good move here.", "It is one of the two good moves here.")
+def key_fact(fen, uci):
+    """One plain fact about the key move, or '': moves the attacked piece away / defends the attacked piece / attacks a piece."""
+    try:
+        b = chess.Board(fen)
+        mv = chess.Move.from_uci(uci)
+        me, opp = b.turn, not b.turn
+        mover = b.piece_at(mv.from_square)
+
+        def threatened(bd):
+            out = {}
+            for sq in chess.SquareSet(bd.occupied_co[me]):
+                pc = bd.piece_at(sq)
+                if pc.piece_type == chess.KING:
+                    continue
+                atk = bd.attackers(opp, sq)
+                if not atk:
+                    continue
+                low = min(VAL[bd.piece_at(a).piece_type] for a in atk if bd.piece_at(a).piece_type != chess.KING)                     if any(bd.piece_at(a).piece_type != chess.KING for a in atk) else 99
+                if not bd.is_attacked_by(me, sq) or low < VAL[pc.piece_type]:
+                    out[sq] = pc
+            return out
+        before = threatened(b)
+        a = b.copy()
+        a.push(mv)
+        a.turn = me                                   # look at the position as if it were still our move
+        if mv.from_square in before and mover.piece_type != chess.KING and not b.is_capture(mv):
+            return f"moves your {ex.NAME[mover.piece_type]} away from the attack"
+        after = threatened(a)
+        saved = [sq for sq in before if sq not in after and sq != mv.from_square]
+        if saved:
+            sq = max(saved, key=lambda q: VAL[before[q].piece_type])
+            return f"defends your {ex.NAME[before[sq].piece_type]} on {chess.square_name(sq)}"
+        if mover.piece_type != chess.KING:
+            tgt = []
+            for sq in a.attacks(mv.to_square):
+                pc = a.piece_at(sq)
+                if pc and pc.color == opp and pc.piece_type != chess.KING and                         (VAL[pc.piece_type] > VAL[mover.piece_type] or not a.is_attacked_by(opp, sq)):
+                    tgt.append((VAL[pc.piece_type], sq, pc))
+            if tgt:
+                _, sq, pc = max(tgt, key=lambda t: t[0])
+                return f"attacks the {ex.NAME[pc.piece_type]} on {chess.square_name(sq)}"
+    except Exception:
+        pass
+    return ""
+
+
+def fix_wording(text, n_ok, fen=None, uci=None):
+    """explain.py's fallback says 'the only good move' - it says nothing; say what the key move does, or drop it."""
+    fact = key_fact(fen, uci) if fen and uci else ""
+    for old in ("It is the only good move here.", "It is one of the two good moves here."):
+        if old in text:
+            if fact:
+                text = text.replace(old, f"It {fact}.")
+            elif n_ok > 1:
+                text = text.replace(old, "It is one of the two good moves here.")
+            else:
+                text = text.replace(old, "").strip()
     return text
 
 
@@ -180,7 +233,7 @@ def worth(n):
     return {1: "a pawn", 2: "two pawns", 3: "a piece", 5: "a rook", 9: "a queen"}.get(n)
 
 
-def reply_sentence(board_after, ucis, me):
+def reply_sentence(board_after, ucis, me, loss=None, w_before=None):
     """What his opponent's best reply costs him, as a phrase: 'answers Qe4 and wins a piece'.  Facts from the line."""
     if not ucis:
         return ""
@@ -196,7 +249,18 @@ def reply_sentence(board_after, ucis, me):
     w = worth(net)
     if w and net >= 1:
         return f"answers {first} and wins {w}"
-    return f"answers {first} and you are much worse"
+    if loss is None:
+        return f"answers {first} and you are worse"
+    after = (w_before - loss) if w_before is not None else None
+    if loss < 20:
+        tail = "you have lost a little"
+    elif after is not None and after < 35:
+        tail = "you are losing"
+    elif w_before is not None and w_before >= 55 and after < 50:
+        tail = "you have lost your advantage"
+    else:
+        tail = "you have lost a good deal"
+    return f"answers {first} and {tail}"
 
 
 # ------------------------------------------------------------------ candidates from the stored analysis
@@ -221,13 +285,13 @@ def scan(games):
             lab = p.get("lab")
             # --- fix / thr (his mistakes)
             if mine and lab and p.get("best") != p["san"] and p["loss"] >= 10 and p.get("why") is not None:
-                C["fix"].append({**base, "fen": fen, "loss": p["loss"], "tags": p.get("why", []), "refute": p.get("refute", ""),
+                C["fix"].append({**base, "fen": fen, "loss": p["loss"], "w": w, "tags": p.get("why", []), "refute": p.get("refute", ""),
                                  "pv": p.get("pv", ""), "lab": lab,
                                  "prev": (b.peek().uci() if b.move_stack else None)})
             # --- his blunder judgement (no search needed: stored analysis)
             if mine and lab == "blunder" and p.get("refute") and i >= 8 and (w is not None and w >= 30) and not b.is_check() or \
                     (mine and lab == "blunder" and p.get("refute") and i >= 8 and w is not None and w >= 30):
-                C["chk_blunder"].append({**base, "fen": fen, "refute": p["refute"], "tags": p.get("why", [])})
+                C["chk_blunder"].append({**base, "fen": fen, "loss": p["loss"], "w": w, "refute": p["refute"], "tags": p.get("why", [])})
             # --- thr: before his blunder, he is not in check
             if mine and lab == "blunder" and p.get("best") != p["san"] and p.get("why") is not None and not b.is_check() and i >= 2:
                 nb = b.copy()
@@ -376,8 +440,8 @@ def build(args):
         fixres[(x["gid"], x["i"])] = (lines, W, k)
         best = lines[0]
         text = explain_text(x["fen"], best["pv"], None)
-        rs = reply_sentence_for_move(b, x["mv"], x["refute"], b.turn)
-        text = fix_wording(text, len(oks))
+        rs = reply_sentence_for_move(b, x["mv"], x["refute"], b.turn, x["loss"], x.get("w"))
+        text = fix_wording(text, len(oks), x["fen"], best["m"])
         why_t = f"{text} You played {x['san']}." + (f" Your opponent {rs}." if rs else "")
         card = {"id": f"fix/{x['gid']}-{x['i']}", "type": "fix", "fen": x["fen"], "side": "white" if b.turn else "black",
                 "last": x["prev"], "sol": [best["m"]], "ok": oks, "played": x["san"], "refute": x["refute"],
@@ -398,7 +462,7 @@ def build(args):
         lines, W, k = got
         b = chess.Board(x["fen"])
         best = lines[0]
-        text = fix_wording(explain_text(x["fen"], best["pv"], None), k)
+        text = fix_wording(explain_text(x["fen"], best["pv"], None), k, x["fen"], best["m"])
         card = {"id": f"pun/{x['gid']}-{x['i']}", "type": "pun", "fen": x["fen"], "side": "white" if b.turn else "black",
                 "last": x["lastmv"], "sol": [best["m"]], "ok": [l["m"] for l in lines[:k]], "played": x["played"],
                 "refute": san_line(b, best["pv"][:6]), "why": f"Your opponent just blundered with {x['oppsan']}. {text}",
@@ -532,7 +596,7 @@ def build(args):
             drops["tq"]["no kind"] += 1
             continue
         oks = [l["m"] for l in lines[:k]]
-        text = fix_wording(explain_text(x["fen"], top["pv"], None), len(oks))
+        text = fix_wording(explain_text(x["fen"], top["pv"], None), len(oks), x["fen"], top["m"])
         tail = " You found it." if x["mv"] in oks else f" You played {x['san']}."
         card = {"id": f"tq/{x['gid']}-{x['i']}", "type": "tq", "kind": kind, "fen": x["fen"],
                 "side": "white" if b.turn else "black", "last": x["prev"], "sol": [top["m"]], "ok": oks, "played": x["san"],
@@ -547,7 +611,7 @@ def build(args):
         mvo = chess.Move.from_uci(x["mv"])
         a = b.copy()
         a.push(mvo)
-        rs = reply_sentence_for_move(b, x["mv"], x["refute"], x["me"])
+        rs = reply_sentence_for_move(b, x["mv"], x["refute"], x["me"], x.get("loss"), x.get("w"))
         judges[f"chk/{x['gid']}-{x['i']}"] = {"id": f"chk/{x['gid']}-{x['i']}", "who": "me", "fen": x["fen"], "mv": x["mv"],
                                               "san": x["san"], "verdict": "blunder", "refute": x["refute"],
                                               "why": f"After {x['san']} your opponent " + (f"{rs}." if rs else "has a strong reply."),
@@ -575,6 +639,31 @@ def build(args):
                        "url": x["url"], "opp": x["opp"], "end": x["end"]}
 
     stats = build_stats(games)
+    # R2 (lead review, T8): one card per position ACROSS types too. A threat card, a technique card, a punish card and a
+    # fix card on the same position ask the same question; keep the richest (thr > tq > pun > fix) and merge the tags.
+    PRIO = {"thr": 0, "tq": 1, "pun": 2, "fix": 3}
+    by_pos = {}
+    for c in sorted(cards.values(), key=lambda c: (PRIO.get(c["type"], 9), -c["end"], c["id"])):
+        k = pos_key(c["fen"])
+        first = by_pos.get(k)
+        if first is None:
+            by_pos[k] = c
+            continue
+        first["tags"] = list(dict.fromkeys(list(first.get("tags") or []) + list(c.get("tags") or [])))
+        if not first.get("group") and c.get("group"):
+            first["group"] = c["group"]
+        if c.get("missed"):
+            first["missed"] = True
+        cards.pop(c["id"], None)
+        drops[c["type"]]["same position as a richer card"] += 1
+    def one_per_pos(items, rank):
+        keep_ = {}
+        for it in sorted(items.values(), key=rank):
+            keep_.setdefault(pos_key(it["fen"]), it)
+        return {it["id"]: it for it in keep_.values()}
+    # same rule for judgements (a blunder beats a safe move) and play-outs: one item per position, newest game wins
+    judges = one_per_pos(judges, lambda j: (j["verdict"] != "blunder", -j["end"], j["id"]))
+    plays = one_per_pos(plays, lambda p: (-p["end"], p["id"]))
     out_cards = sorted(cards.values(), key=lambda c: (-c["end"], c["id"]))
     out = {"v": 1, "built": int(time.time()), "cards": out_cards,
            "judges": sorted(judges.values(), key=lambda j: (-j["end"], j["id"])),
@@ -598,7 +687,7 @@ def build(args):
     return out
 
 
-def reply_sentence_for_move(board, mv_uci, refute, me):
+def reply_sentence_for_move(board, mv_uci, refute, me, loss=None, w_before=None):
     """'then Qe4 wins a piece' from the stored refutation line (SAN variation of the opponent's best reply)."""
     try:
         b = board.copy()
@@ -611,7 +700,7 @@ def reply_sentence_for_move(board, mv_uci, refute, me):
             m = bb.parse_san(t)
             ucis.append(m.uci())
             bb.push(m)
-        return reply_sentence(b, ucis, me)
+        return reply_sentence(b, ucis, me, loss, w_before)
     except Exception:
         return ""
 

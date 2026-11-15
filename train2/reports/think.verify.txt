@@ -1,0 +1,2 @@
+Train 2 verification: course think (Think first)
+6 lessons, 38 items; 0 FAIL, 0 WARN; 0.0 s, 0 engine searches, 0 tablebase probes

@@ -1,5 +1,5 @@
 # COURSE endgames | Essential endgames
-sub: The endings every club player must know, checked move by move with the tablebase.
+sub: The endings every club player must know, checked move by move against a database of perfect play.
 why: Many of your games are decided in the endgame, and most of them reach one of a handful of standard positions. Learn these and you stop throwing away won endings and stop losing drawn ones.
 
 ## CHAPTER mates | Basic checkmates | theme=mate2
@@ -397,6 +397,170 @@ wrong: Kb4 | ((1.Kb4 h3)) You wasted a move: now both pawns queen together.
 #### PLAY race-p | 8/8/8/6P1/1p3K2/8/8/5k2 w - - 0 1 | goal=win | finish=promote | max=30
 > You are White. Count the race first: whose pawn queens, and can your king catch his?
 
+## CHAPTER pawns | More pawns | theme=pawnEndgame
+> With more pawns on the board, ideas decide the game, not only counting. An active king, a passed pawn far from the kings and a pawn majority win most pawn endings. These five lessons show how.
+
+### LESSON activeking | The king is a fighting piece
+goal: Use your king as an attacker as soon as the endgame starts.
+rule: In the endgame, walk your king to the centre and into his half before you push pawns.
+> In the middlegame the king hides. In the endgame there is little left to attack it, so it becomes a strong piece. A king in the centre can go to either side and eat pawns; a king on the edge only watches. When the queens come off, bring your king forward at once. With equal pawns, the side whose king arrives first usually wins.
+
+#### EX activeking-a | 6k1/1p4p1/8/8/8/8/1P2K1P1/8 w - - 0 1 | src=composed
+> White to move. The pawns are equal and mirror each other. Only the kings are different.
+1. Kd3! {Your king is closer to the centre: use that at once. Pawn moves can wait. [g:e2-d3]} Kf7 2. Kc4! {Head for the side his king has left.} Ke6 3. Kc5! {Your king is deep in his half and his b-pawn is the target. His king has to defend, yours attacks: that difference wins the game. [g:c5-b6]}
+key: With equal pawns, the king that reaches the centre first decides the game.
+
+#### CARD activeking-1 | 6k1/1p4p1/8/8/8/8/1P3KP1/8 w - - 0 1 | src=composed | goal=win
+sol: Ke3
+why: The king goes to the centre first. From e3 it can go to either side, while his king is still stuck on the back rank.
+wrong: g4 | ((1.g4 Kf7)) A pawn move that does nothing. His king reaches the centre too, and it is a draw.
+
+#### CARD activeking-2 | 1k6/1p4p1/8/8/8/8/1P1K2P1/8 w - - 0 1 | src=composed | goal=win
+sol: Ke3
+also: Kd3 | Also towards the centre, just as good.
+why: The same position seen from the other side: his king is on b8, so walk yours to the centre and then towards his g-pawn.
+wrong: g4 | ((1.g4 Kc7)) His king walks to the centre while you push a pawn: a draw.
+
+#### CARD activeking-3 | 8/1pk3p1/8/8/8/3K4/1P4P1/8 w - - 0 1 | src=composed | goal=win
+sol: Ke4
+why: His king went to the queenside, so your king goes the other way, towards his g-pawn, through the centre.
+wrong: Kc4 | ((1.Kc4 Kd6)) You walk into his king, which blocks your way: a draw.
+
+#### CARD activeking-4 | 8/1p3kp1/8/8/8/4K3/1P4P1/8 w - - 0 1 | src=composed | goal=win
+sol: Kd4
+why: His king is on the kingside, so your king heads for his b-pawn through the centre.
+wrong: Kf4 | ((1.Kf4 Kf6)) His king meets yours face to face and you cannot get past: a draw.
+
+#### PLAY activeking-p | 8/1p2k1p1/8/8/8/8/1P4P1/6K1 b - - 0 1 | goal=win | finish=promote | max=60
+> You are Black. His king is far from the centre: march yours to the centre and into his half, then go after his pawns.
+
+### LESSON outside | The outside passed pawn
+goal: Win a pawn ending with a passed pawn far from the kings.
+rule: Push the far passed pawn to pull his king away, then let your king eat his pawns on the other side.
+> A passed pawn has no enemy pawn in front of it or on the files next to it. When it is far from the kings, it works as a decoy, which means it pulls his king away from the real fight. Push it, and his king must run after it. While he is busy, your king walks to the other side and eats his pawns. You give up one pawn and win two.
+
+#### EX outside-a | 8/8/4k2p/6p1/P3K3/7P/8/8 w - - 0 1 | src=composed
+> White to move. Your a-pawn is passed and far from both kings.
+1. a5! {Push the far pawn: his king has to go after it. [g:a4-a5]} Kd6 2. Kf5! {Now your king goes the other way, to his pawns. [g:e4-f5]} Kc5 3. Kg6 Kb5 4. Kxh6 Kc5 5. Kxg5 {His king will take your a-pawn, but you have taken both his pawns. Your h-pawn queens long before his king can come back.}
+key: Push the far pawn to drag his king away, then eat his pawns on the other side.
+
+#### CARD outside-1 | 8/8/5k1p/6p1/P3K3/7P/8/8 w - - 0 1 | src=composed | goal=win
+sol: a5
+why: His king guards his pawns, so your king cannot get in yet. Push the a-pawn: he must go after it, and then your king gets in.
+wrong: h4 | ((1.h4 Ke6)) His king heads for your a-pawn and the kingside pawns will come off. With one pawn each it is a draw.
+
+#### CARD outside-2 | 8/8/p1k5/1p6/3K3P/P7/8/8 w - - 0 1 | src=composed | goal=win
+sol: h5
+why: The same plan on the other wing. Your h-pawn is the far pawn: push it, and his king has to leave his pawns.
+wrong: a4 | ((1.a4 Kd6)) The queenside pawns will come off, and with one pawn each it is a draw.
+
+#### CARD outside-3 | 8/8/3k3p/6p1/P3K3/7P/8/8 w - - 0 1 | src=composed | goal=win
+sol: Kf5
+why: His king has already left his pawns to watch your a-pawn. Do not wait: walk straight to his pawns and eat them.
+wrong: h4 | ((1.h4 gxh4)) This trades off the pawns your king wanted to eat, and his h-pawns are free: a draw.
+
+#### CARD outside-4 | 8/8/p4k2/1p6/3K3P/P7/8/8 w - - 0 1 | src=composed | goal=win
+sol: Kc5
+why: Your h-pawn keeps his king on the kingside, so your king can go and eat his queenside pawns right now.
+wrong: a4 | ((1.a4 bxa4)) This trades off the pawns your king wanted to eat: a draw.
+
+#### PLAY outside-p | 8/5kpp/8/8/8/P7/5KPP/8 w - - 0 1 | goal=win | finish=promote | max=60 | failBelow=70
+> You are White, a pawn up. Push the a-pawn to drag his king away, then eat his kingside pawns.
+
+### LESSON protpass | The protected passed pawn
+goal: Win with a protected passed pawn: it ties his king down while yours attacks.
+rule: A protected passed pawn ties his king down; leave it where it is and attack with your king.
+> A protected passed pawn is a passed pawn guarded by one of your pawns. His king cannot take it, but must stay near it to stop it. So his king is tied down and yours is free. Do not rush the pawn forward: once it leaves the protection of your other pawn, his king takes it. Walk your king to his other pawns instead and eat them.
+
+#### EX protpass-a | 8/8/3k4/2pP3p/2P5/3K4/8/8 w - - 0 1 | src=composed
+> White to move. Your d5 pawn is passed and protected by the c4 pawn.
+1. Ke4! {Your king goes up the board towards his h-pawn. [g:d3-e4]} Kc7 2. Kf4 Kd6 3. Kg5 Ke5 {His king cannot take d5, because the c4 pawn protects it.} 4. Kxh5 {You are a pawn up, and his king still has to watch your d-pawn. The rest is a matter of time.}
+key: Leave the protected pawn where it is and use your free king to eat his pawns.
+
+#### CARD protpass-1 | 8/8/3k4/2pP4/2P4p/3K4/8/8 w - - 0 1 | src=composed | goal=win
+sol: Ke4 h3 Kf3
+why: Walk your king out towards his h-pawn, and when the pawn runs, catch it. His king cannot help, because it must watch your d-pawn.
+wrong: Kc3 | ((1.Kc3 h3)) Wrong way: his h-pawn runs and your king cannot catch it.
+
+#### CARD protpass-2 | 8/8/5k2/2pP3p/2P5/3K4/8/8 w - - 0 1 | src=composed | goal=win
+sol: Ke4
+why: Your king goes forward. Your d-pawn stays where it is, protected and safe.
+wrong: d6 | ((1.d6 Ke6)) On d6 the pawn is no longer protected by the c4 pawn, and his king wins it.
+
+#### CARD protpass-3 | 8/8/5k2/2pP4/2P1K2p/8/8/8 w - - 0 1 | src=composed | goal=win
+sol: Kf4
+why: Head for his h-pawn. His king cannot go with you, because then your d-pawn runs.
+wrong: Kf3 | ((1.Kf3 Kf5)) His king steps in front of yours and you can no longer reach the h-pawn: a draw.
+
+#### CARD protpass-4 | 8/8/3k4/2pP2p1/2P5/3K4/8/8 w - - 0 1 | src=composed | goal=win
+sol: Ke4
+why: Your king goes forward at once, towards his g-pawn. His king must stay near your d-pawn.
+wrong: Ke3 | ((1.Ke3 Ke5)) His king takes the e5 square first and blocks your way: a draw.
+
+#### PLAY protpass-p | 8/pp3kpp/8/2pP4/2P5/8/PP3KPP/8 w - - 0 1 | goal=win | finish=promote | max=80 | failBelow=62
+> You are White. Your d-pawn ties his king down: use your king to win his other pawns.
+
+### LESSON majority | Make a passed pawn from a majority
+goal: Turn a pawn majority into a passed pawn.
+rule: With more pawns on one side, push first the pawn that has no enemy pawn in front of it.
+> A majority means you have more pawns than he has on one side of the board. A majority can make a passed pawn, but the order matters. Push first the pawn with no enemy pawn in front of it; it is called the candidate. The other pawns follow and support it. Push the wrong pawn first and you waste a move, or your pawns get stuck.
+
+#### EX majority-a | 8/5k2/p7/7p/PP6/4K3/8/8 w - - 0 1 | src=composed
+> White to move. You have two pawns against one on the queenside. Which one goes first?
+1. b5! {The b-pawn has no enemy pawn in front of it, so it goes first. [g:b4-b5]} axb5 2. a5! {Now your a-pawn is passed, and his king is too far away to catch it. [g:a4-a5]} b4 3. Kd2 {Stop his b-pawn first.} Ke6 4. a6 Kd5 5. a7 Kc5 6. a8=Q {The majority has made a new queen.}
+key: Push the pawn with no enemy pawn in front of it first, and a passed pawn appears.
+
+#### CARD majority-1 | 8/8/1p4k1/7p/1PP5/4K3/8/8 w - - 0 1 | src=composed | goal=win
+sol: c5 bxc5 b5
+why: The c-pawn has no enemy pawn in front of it, so it goes first. When he takes, do not take back: push the b-pawn and it is passed.
+wrong: Kf4 | ((1.Kf4 Kf6)) His king guards the h-pawn, and you have wasted the move your pawns needed: a draw.
+
+#### CARD majority-2 | 8/8/1k4p1/p7/5PP1/3K4/8/8 w - - 0 1 | src=composed | goal=win
+sol: f5
+why: The same on the kingside: the f-pawn has no enemy pawn in front of it, so it goes first.
+wrong: Kc4 | ((1.Kc4 Kc6)) His king guards the a-pawn, and you have wasted the move your pawns needed: a draw.
+
+#### CARD majority-3 | 8/8/p4k2/7p/PP6/4K3/8/8 w - - 0 1 | src=composed | goal=win
+sol: b5 axb5 a5
+why: Your a-pawn has his a-pawn in front of it; your b-pawn does not, so the b-pawn goes first. When he takes, push the a-pawn: it is passed.
+wrong: a5 | ((1.a5 Ke6)) Wrong pawn: you wasted a move, his king comes closer and stops your pawns. A draw.
+
+#### PLAY majority-p | 8/5k2/p7/7p/PP6/5K2/8/8 w - - 0 1 | goal=win | finish=promote | max=40
+> You are White. Make a passed pawn with the right pawn first, and do not forget his h-pawn.
+
+### LESSON breakthru | Pawn breakthrough
+goal: Break through with three pawns against three when his king is far away.
+rule: Push the middle pawn; when he captures, push the pawn on the other side, and one pawn queens.
+> Three pawns facing three pawns look blocked. But when his king is far away, you can give up two pawns to make the third a queen. Push the middle pawn first. Whatever he takes with, push the pawn on the other side, and he cannot stop both. Count first: it only works when his king cannot catch the last pawn. If he is to move, he stops it by pushing his own middle pawn.
+
+#### EX breakthru-a | 1k6/5ppp/8/5PPP/8/8/8/1K6 w - - 0 1 | src=composed
+> White to move. Both kings are far away on the queenside.
+1. g6! {The middle pawn goes first. If he ignores it, it takes on f7 or h7 and queens. [g:g5-g6]} hxg6 2. f6! {Push the pawn on the other side of his capture. After ((2...gxh5 3.fxg7)) the g-pawn queens. [g:f5-f6]} gxf6 3. h6 {Nothing can stop the h-pawn now: his king is five files away.}
+key: Middle pawn first, then the pawn on the other side of his capture: one of them queens.
+
+#### CARD breakthru-1 | 7k/1pp5/1p6/P1P5/8/8/8/7K w - - 0 1 | src=book | goal=win | last=a7b6
+sol: c6 bxc6 a6
+why: He took with the a-pawn, so push the c-pawn on the other side. When he takes again, your a-pawn runs through.
+wrong: axb6 | ((1.axb6 cxb6)) Taking back ends the breakthrough: nothing gets through and it is a draw.
+
+#### CARD breakthru-2 | 7k/pp6/1p6/P1P5/8/8/8/7K w - - 0 1 | src=book | goal=win | last=c7b6
+sol: a6 bxa6 c6
+why: He took with the c-pawn, so push the a-pawn on the other side. When he takes again, your c-pawn runs through.
+wrong: cxb6 | ((1.cxb6 axb6)) Taking back ends the breakthrough: it is a draw.
+
+#### CARD breakthru-3 | k7/6pp/6p1/5P1P/8/8/8/K7 w - - 0 1 | src=book | goal=win | last=f7g6
+sol: h6 gxh6 f6
+why: The same idea on the kingside. He took with the f-pawn, so push the h-pawn; when he takes, the f-pawn queens.
+wrong: fxg6 | ((1.fxg6 hxg6)) Taking back gives up the breakthrough, and it is a draw.
+
+#### CARD breakthru-4 | 7k/ppp5/8/PPP5/8/8/8/7K b - - 0 1 | src=composed | tag=hold | goal=draw
+sol: b6
+why: You are to move, so stop the breakthrough before it starts: push your own middle pawn. Now his pawns can be met one by one.
+wrong: Kg7 | ((1...Kg7 2.b6)) Too slow: the breakthrough starts and your king is too far away to catch the last pawn.
+
+#### PLAY breakthru-p | 7k/ppp5/8/PPP5/8/8/8/7K w - - 0 1 | goal=win | finish=promote | max=15 | failBelow=75
+> You are White. Push the middle pawn, then the pawn on the other side of his capture.
+
 ## CHAPTER pieces | Queen and bishops | theme=promotion
 > A queen against a pawn about to queen, a bishop that cannot help its pawn, and bishops on opposite colours. In each one the material count lies: you must know which positions win and which are draws.
 
@@ -578,13 +742,13 @@ wrong: a6 | ((1.a6 Ra5)) His rook gets behind your pawn and wins it or holds the
 
 ### LESSON r7th | The active rook
 goal: Use your rook actively: attack pawns and take the seventh rank.
-rule: Put your rook where it attacks: on the seventh rank or behind his pawns, never on passive defence.
+rule: Put your rook where it attacks, on the seventh rank or behind his pawns, and make his rook the one that defends.
 > A rook that attacks pawns or stands on the seventh rank ties his whole army down. A rook that only guards pawns is a bad piece. In rook endings ask: where does my rook attack something? That square is usually the right one, even if it costs a pawn.
 
-#### EX r7th-a | 6k1/8/2p5/4r2R/8/8/6PP/6K1 w - - 0 1 | src=composed
-> White to move. Black's rook is active too, so you must act first.
-1. Rh3! {The rook swings to the third rank: it guards your pawns from the side and stays free to attack. [g:h5-h3]} c5 2. Kf2 {Now the king comes up. Your rook is active and his pawn is a target.}
-key: Attack with the rook first, defend with it only when you must.
+#### EX r7th-a | 2r3k1/2p5/8/8/8/8/6PP/4R1K1 w - - 0 1 | src=composed
+> White to move. You are a pawn up, but his pawn on c7 is ready to run. Where does your rook attack something?
+1. Re7! {The rook jumps to the seventh rank. It attacks the pawn on c7 and keeps his king on the back rank. His rook must stay on c8 to guard the pawn: it has become a passive piece. [g:e1-e7] [r:c7]} Kf8 {He attacks your rook.} 2. Rh7! {Stay on the seventh rank. The rook still attacks the pawn, and his king is still shut in. [g:e7-h7]} Kg8 3. Rd7 {The rook stays on the rank. He cannot free his rook without losing the pawn on c7.}
+key: A rook on the seventh rank attacks his pawns from the side and turns his rook into a guard.
 
 #### CARD r7th-1 | 2r3k1/8/2p5/8/8/8/4R1PP/6K1 w - - 0 1 | src=composed | goal=win
 sol: Re7
@@ -602,8 +766,8 @@ also: Kf2 | The king step also keeps the win.
 why: The rook on the seventh rank keeps his king on the back rank and gets ready to attack the pawn.
 wrong: h3 | ((1.h3 Kf7)) His king walks out and the pawn is safe: a draw.
 
-#### PLAY r7th-p | 2r3k1/8/2p5/8/8/8/6PP/4R1K1 w - - 0 1 | goal=win | finish=eval:200 | max=60
-> You are White. Find the active rook move and win.
+#### PLAY r7th-p | 2r3k1/2p5/8/8/8/8/6PP/3R2K1 w - - 0 1 | goal=win | finish=eval:300 | max=40
+> You are White. Put your rook on the seventh rank and go after the pawn on c7. Then bring your king and pawns forward.
 
 
 ### LESSON cutoff | Cut the king off
@@ -661,11 +825,11 @@ also: Kd5 | Also escapes the checks and wins.
 why: Walk your king towards your rook on the fourth rank. The next check can be blocked.
 wrong: Rc4 | ((1.Rc4 Rxc4+)) The rook blocks too early, without protection, and is lost.
 
-#### CARD lucena-3 | 8/3k2P1/5K2/8/4R3/8/5r2/8 w - - 0 1 | src=book | goal=win
-sol: Kg5
-also: Ke5 | Also walks towards the rook and wins.
-why: Walk your king down towards your rook on the fourth rank. The next check can be blocked.
-wrong: Rf4 | ((1.Rf4 Rxf4+)) The rook blocks too early, without protection, and is lost.
+#### CARD lucena-3 | 8/2PK1k2/8/8/4R3/8/3r4/8 w - - 0 1 | src=book | goal=win
+sol: Kc6
+also: Kc8 | Also keeps the win, but you have to start again.
+why: The same idea with a c-pawn: step out of the check towards your rook. The checks run out once your rook can block on the fourth rank.
+wrong: Rd4 | ((1.Rd4 Rxd4+)) The rook blocks too early, without protection, and is lost.
 
 #### CARD lucena-4 | 8/3k1KP1/8/8/4R3/8/5r2/8 w - - 0 1 | src=book | goal=win
 sol: Kg6

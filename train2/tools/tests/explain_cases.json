@@ -55,7 +55,7 @@
 "trappedPiece"
 ],
 "group": "trapped",
-"why": "Trapped piece: the queen on h5 has no safe square left, so you win it. You win a queen for a knight."
+"why": "Trapped piece: the queen on h5 has no safe square left, so you win it. You win a queen for a knight and a pawn."
 },
 {
 "id": "bj08J",
@@ -263,7 +263,7 @@
 "short"
 ],
 "group": "intermezzo",
-"why": "In-between move: instead of taking back on g6 at once, your bishop goes to d4 with check first. You win a knight and a bishop."
+"why": "In-between move: instead of taking back on g6 at once, your bishop goes to d4 with check first. You win a knight and a bishop for a pawn."
 },
 {
 "id": "C2J7v",
@@ -332,7 +332,7 @@
 "queensideAttack"
 ],
 "group": "pin",
-"why": "The key is moving your rook to a3. You win a queen."
+"why": "The key is moving your rook to a3. You win a queen for a rook."
 },
 {
 "id": "Su7T8",
@@ -373,7 +373,7 @@
 "trappedPiece"
 ],
 "group": "trapped",
-"why": "Trapped piece: the rook on b6 has no safe square left, so you win it. You win a rook."
+"why": "Trapped piece: the rook on b6 has no safe square left, so you win it. You win a rook for a pawn."
 },
 {
 "id": "zQ78K",

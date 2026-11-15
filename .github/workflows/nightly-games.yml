@@ -1,4 +1,5 @@
-# Every night: pull new rapid games from chess.com, analyse them with Stockfish, rebuild the exercises and
+# Every night: pull new rapid games from chess.com, analyse them with Stockfish, rebuild the Train cards from them
+# (train2/tools/build_mine2.py, at most 20 minutes) and
 # publish the app. If there are no new games nothing changes and nothing is published.
 # Runs on GitHub's computers (free for public repositories); no laptop needed. Can also be started by hand
 # from the Actions tab ("Run workflow").
@@ -46,7 +47,7 @@ jobs:
         run: |
           git config user.name "chess-trainer-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A data docs
+          git add -A data docs train2/cache/mine_evals.jsonl   # the own-games search cache (build_mine2.py), so the next night carries on
           if git diff --cached --quiet; then
             echo "No new games - nothing to publish."
           else

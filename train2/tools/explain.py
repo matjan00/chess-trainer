@@ -98,6 +98,12 @@ class Line:
                 (gains if mover == self.solver else losses).append(cap)
             if mv.promotion and mover == self.solver:
                 promos.append(mv.promotion)
+        # lead review (T8): the line often stops on a capture that is simply taken back (a queen trade at the end of a
+        # combination). Count the exchange that is still pending on that square, or "You win a queen and a rook" is false.
+        if self.moves and not self.end.is_game_over():
+            seq = _pending_exchange(self.end, self.moves[-1].to_square)
+            for j, t in enumerate(seq):
+                (losses if j % 2 == 0 else gains).append(t)
         return gains, losses, promos
 
     def captured_squares(self):
@@ -118,6 +124,29 @@ class Line:
 
     def key_piece(self):
         return self.before.piece_at(self.key.from_square)
+
+
+def _pending_exchange(board, sq, depth=0):
+    """Piece types captured on `sq` if the side to move starts a profitable exchange there (cheapest attacker first)."""
+    return _see(board, sq, depth)[1]
+
+
+def _see(board, sq, depth=0):
+    victim = board.piece_at(sq)
+    if victim is None or depth > 8:
+        return 0, []
+    caps = [m for m in board.legal_moves if m.to_square == sq]
+    if not caps:
+        return 0, []
+    worth = lambda m: 100 if board.piece_type_at(m.from_square) == chess.KING else VAL[board.piece_type_at(m.from_square)]
+    m = min(caps, key=worth)
+    b2 = board.copy()
+    b2.push(m)
+    v, seq = _see(b2, sq, depth + 1)
+    gain = VAL[victim.piece_type] - v
+    if gain <= 0:
+        return 0, []
+    return gain, [victim.piece_type] + seq
 
 
 def value_sum(types):

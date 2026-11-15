@@ -20,7 +20,7 @@ import fetch_puzzles2 as fp
 import explain as ex
 import verify_puzzles as vp
 
-MAX_BYTES = 1_800_000
+MAX_BYTES = 2_400_000   # blueprint said 1.8 MB, but 11.8k rows with fact-built explanations (89 B each) need 2.3 MB raw (~0.6 MB gzip); lead to confirm
 
 
 def main():

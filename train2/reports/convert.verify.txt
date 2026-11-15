@@ -1,0 +1,2 @@
+Train 2 verification: course convert (Win the won game)
+7 lessons, 37 items; 0 FAIL, 0 WARN; 0.1 s, 0 engine searches, 13 tablebase probes
