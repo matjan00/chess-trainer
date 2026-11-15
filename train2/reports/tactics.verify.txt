@@ -1,5 +1,5 @@
 Train 2 verification: course tactics (Tactics ABC)
-17 lessons, 157 items; 0 FAIL, 30 WARN; 0.3 s, 0 engine searches, 4 tablebase probes
+17 lessons, 157 items; 0 FAIL, 30 WARN; 0.4 s, 0 engine searches, 4 tablebase probes
 
 == WARN (30)
 [L7] loose / loose-1: the most tempting wrong move may be Qc4 (engine's best alternative); it is not among the wrong: lines

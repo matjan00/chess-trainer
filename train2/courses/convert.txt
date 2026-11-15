@@ -80,7 +80,7 @@ why: Your pawn runs, but his rook takes on e6 and both his rooks stay deep in yo
 
 #### MINE cv | n=1
 
-### LESSON takefree | Take what is free — after a check for the catch
+### LESSON takefree | Take what is free, after a check for the catch
 goal: Grab free material, but only after checking that it is really free.
 rule: Free material makes the win easier, if nothing is hanging at home.
 > More material makes winning easier, so do not be shy: if something is free, take it. But "free" needs one check. Is the piece really undefended? Does your capture leave something of yours hanging? And is there a bigger thing to take?

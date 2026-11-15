@@ -405,12 +405,13 @@ const T2 = (() => {
   const groupNames = gs => (gs || []).map(g => PUZ?.groups[g]?.name).filter(Boolean);
   const uniq = a => [...new Set(a.filter(Boolean))];
   const gameChip = m => m.opp ? `Your game vs ${m.opp}${m.end ? ', ' + dateText(m.end) : ''}` : 'Your game';
+  let chipG = null;   // group index of the running theme stream (chip shows it instead of the puzzle's first group)
   function itemFor(id) {
     const src = srcOf(id);
     if (src === 'pz') {
       const p = PUZ?.byId.get(id.slice(3)); if (!p) return null;
       return { key: id, kind: 'card', src, fen: p.fen, setup: p.moves[0], sol: p.moves.slice(1), side: other(sideOf(p.fen)), ok: [p.moves[1]], alt: p.alt, slow: [], also: {}, wrong: {}, wrongLine: {},
-               why: p.why, rating: p.rating, groups: p.g, chip: `Puzzle · ${groupNames(p.g)[0] || 'tactics'} · rated ${p.rating}` };
+               why: p.why, rating: p.rating, groups: p.g, chip: `Puzzle · ${groupNames(chipG != null && p.g.includes(chipG) ? [chipG] : p.g)[0] || 'tactics'} · rated ${p.rating}` };
     }
     if (src === 'ls') {
       const [cid, ...rest] = id.slice(3).split('.'), kid = rest.join('.');
@@ -799,12 +800,22 @@ const T2 = (() => {
     P.last = last ? (typeof last === 'string' ? [last.slice(0, 2), last.slice(2, 4)] : last) : null;
     P.shapes = []; draw();
   }
+  const boardSized = () => { const el = $('#t2board'); return !!el && el.clientWidth > 0 && el.clientHeight > 0; };
+  let boardRO = null;
+  function watchBoard() {
+    if (boardRO || typeof ResizeObserver === 'undefined') return;
+    const el = $('#t2board'); if (!el) return;
+    let was = boardSized();
+    boardRO = new ResizeObserver(() => { const now = boardSized(); if (now && !was && P.chess && P.shapes.length) draw(); was = now; });
+    boardRO.observe(el);
+  }
   function draw() {
     if (!P.chess) return;
+    watchBoard();
     const turn = P.chess.turn() === 'w' ? 'white' : 'black', can = !!P.expect && !P.busy;
     const opts = { fen: P.chess.fen(), orientation: orientation(), turnColor: turn, check: P.chess.in_check(), lastMove: P.last || undefined, coordinates: true, animation: { enabled: true, duration: 220 },
       movable: { free: false, color: can ? turn : undefined, dests: can ? toDests(P.chess) : new Map(), showDests: true, events: { after: onUserMove } },
-      premovable: { enabled: false }, drawable: { enabled: true, autoShapes: P.shapes } };
+      premovable: { enabled: false }, drawable: { enabled: true, autoShapes: boardSized() ? P.shapes : [] } };
     if (!cg) cg = H.Chessground($('#t2board'), opts); else cg.set(opts);
   }
   function playUci(u) {
@@ -1147,7 +1158,7 @@ const T2 = (() => {
       const r = pickPuzzle(env); if (!r) return null;
       env.served.add(r.p.id); env.last = r.gi;
       if (r.repeat) env.reused?.(r.p.id);
-      const it = itemFor('pz/' + r.p.id); if (it) it.repeat = r.repeat;
+      chipG = group; const it = itemFor('pz/' + r.p.id); chipG = null; if (it) it.repeat = r.repeat;
       return it;
     };
   }
@@ -1338,20 +1349,23 @@ const T2 = (() => {
       const inSet = !wasFinished && (st1.n || 0) > 0;
       const S = { asked: 0, ok: 0 };
       if (!inSet) {
-        const items = [...l.cards.map(k => itemFor(`ls/${c.id}.${k}`)), ...l.judges.map(j => judgeItem(`ls/${c.id}.${j}`))].filter(Boolean);
+        let items = [...l.cards.map(k => itemFor(`ls/${c.id}.${k}`)), ...l.judges.map(j => judgeItem(`ls/${c.id}.${j}`))].filter(Boolean);
         for (const ms of l.mines) items.push(...(MINE?.cards || []).filter(m => mineMatch(m, ms)).slice(0, ms.n || 3).map(m => m.type === 'pun' ? punqItem('mine/' + m.id) : itemFor('mine/' + m.id)).filter(Boolean));
+        const wrongIds = new Set(wasFinished ? [] : (st1.iw || []));
+        const lessonCards = items.filter(it => it.src === 'ls' && it.kind === 'card');
+        const skip = wasFinished ? 0 : Math.min(st1.ik || 0, items.length);
+        if (skip) items = items.slice(skip);
         if (items.length) {
-          fb(`<span class="eyebrow">Practise</span><h3>Now you find the moves</h3><p class="small muted">${plural(items.length, 'position')}. ${wasFinished ? 'Practice only: your reviews do not change.' : 'Afterwards the cards join your reviews: they come back tomorrow.'}</p>`);
+          fb(`<span class="eyebrow">Practise</span><h3>Now you find the moves</h3><p class="small muted">${plural(items.length, 'position')}${skip ? ` left (${skip} done already)` : ''}. ${wasFinished ? 'Practice only: your reviews do not change.' : 'Afterwards the cards join your reviews: they come back tomorrow.'}</p>`);
           board(items[0].fen, items[0].side); await cont('Start'); chk();
-          const wrongIds = new Set();
-          const lessonCards = items.filter(it => it.src === 'ls' && it.kind === 'card');
           // lesson cards: practice (they enter the SRS together below); judgements and own-game cards record as usual
           const R = await runSession({ label: `${label} · Practise`, title: () => title, items: items.map(it => ({ ...it, chip: it.src === 'ls' ? '' : it.chip })), summary: false,
-            how: wasFinished ? 'practice' : 'lesson', practice: wasFinished }, chk);
+            how: wasFinished ? 'practice' : 'lesson', practice: wasFinished,
+            onItem: (k, it, res) => { if (res.result === 'wrong') wrongIds.add(it.key); if (!wasFinished) put('t2l', lkey(c, l), { st: 1, n: 0, ik: skip + k, iw: [...wrongIds] }); } }, chk);
           R.wrong.forEach(w => wrongIds.add(w.key));
           S.asked += R.asked; S.ok += R.ok;
           if (!wasFinished) srsLearn(lessonCards.map(it => it.key), wrongIds);
-        }
+        } else if (!wasFinished && skip) srsLearn(lessonCards.map(it => it.key), wrongIds);
       }
       for (const set of l.sets) {
         const ids = (set.ids || []).map(String).filter(id => PUZ?.byId.has(id));

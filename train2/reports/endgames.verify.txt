@@ -1,2 +1,2 @@
 Train 2 verification: course endgames (Essential endgames)
-26 lessons, 156 items; 0 FAIL, 0 WARN; 0.4 s, 0 engine searches, 595 tablebase probes
+26 lessons, 156 items; 0 FAIL, 0 WARN; 0.5 s, 0 engine searches, 595 tablebase probes

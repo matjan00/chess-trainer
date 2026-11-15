@@ -174,7 +174,7 @@
         btns();
         const r = await Promise.race([ask, cmd]);
         chk();
-        if (r === 'restart' || r === 'quit') { cur = null; if (r === 'quit') return { aborted: true }; outcome = 'restart'; break; }
+        if (r === 'restart' || r === 'quit') { cur = null; if (r === 'quit') return { ok: false, gaveUp: true }; outcome = 'restart'; break; }
         // snapshot of the position before his move (rebuilt by undoing on a copy)
         S.snaps.push({ fen: fenBefore, last: lastBefore, san: S.san.length, hist: S.hist.length, moves: S.moves });
         S.moves++; lastMove(r.mv); S.san.push(r.mv.san); renderPanel();
