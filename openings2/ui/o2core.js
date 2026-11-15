@@ -785,16 +785,18 @@ const O2 = (() => {
     }
     return [...m.values()].filter(g => g.line).sort((a, b) => COURSES.indexOf(a.c) - COURSES.indexOf(b.c) || (a.c.orderIdx.get(a.line.id) ?? 0) - (b.c.orderIdx.get(b.line.id) ?? 0));
   }
-  function startReview(items, { label = 'Review', practice = false, back, scope } = {}) {
+  // onDone/nextLabel: part of Today's session; the summary then offers "Next" (onDone) and "Stop for today" (back)
+  function startReview(items, { label = 'Review', practice = false, back, scope, onDone, nextLabel } = {}) {
     run(async () => {
       const all = items.slice(), batch = all.slice(0, CAP), rest = all.slice(CAP);
       const first = batch[0]?.c || curCourse || COURSES[0];
       const chk = begin(first, practice ? 'drill' : 'review', back || (() => show(curCourse ? 'course' : 'home', curCourse?.id)));
+      P.onDone = onDone || null;
       const groups = buildGroups(batch);
       const total = groups.reduce((s, g) => s + g.ids.size, 0);
       const S = { asked: 0, ok: 0, wrong: [], answered: new Set() };
       let qn = 0;
-      if (!total) { fb('<p>Nothing to review right now.</p>'); actions('none'); return; }
+      if (!total) { if (onDone) return onDone(); fb('<p>Nothing to review right now.</p>'); actions('none'); return; }
       for (let gi = 0; gi < groups.length; gi++) {
         const g = groups[gi], c = g.c; P.c = c; P.ctxLine = g.line.id;
         const seq = c.seq[g.line.id];
@@ -856,12 +858,14 @@ const O2 = (() => {
       fb(`<span class="eyebrow">${practice ? 'Drill finished' : 'Review finished'}</span><h3>${S.ok} of ${S.asked} right · ${pct(acc)}</h3>
         <p>${more && !practice ? `${plural(more, 'move')} still due.` : nd ? `Next review: ${whenText(nd)}.` : ''}</p>
         ${S.wrong.length ? `<p class="small muted">Missed (tap to study the position):</p><div class="o2-missed">${S.wrong.map(w => `<button class="o2-drow" data-act="study" data-c="${esc(w.c.id)}" data-l="${esc(w.line.id)}" data-id="${esc(w.s.id)}"><b>${esc(moveLabel(w.s.ply, w.s.san))}</b><span class="small muted">${esc(w.line.title)}</span></button>`).join('')}</div>` : ''}
-        <div class="controls">${rest.length || (more && !practice) ? `<button class="btn primary" data-act="${scope && scope.length === 1 ? 'review' : 'daily'}" data-c="${esc(cs[0]?.id || '')}">Keep going (${rest.length || more})</button>` : ''}
-        <button class="btn${rest.length || more ? '' : ' primary'}" data-act="${curCourse ? 'course' : 'home'}" data-c="${esc(curCourse?.id || '')}">Done</button></div>`, 'right');
+        ${onDone ? `<div class="controls"><button class="btn primary" data-act="next">${esc(nextLabel || 'Next')}</button><button class="btn" data-act="back">Stop for today</button></div>`
+        : `<div class="controls">${rest.length || (more && !practice) ? `<button class="btn primary" data-act="${scope && scope.length === 1 ? 'review' : 'daily'}" data-c="${esc(cs[0]?.id || '')}">Keep going (${rest.length || more})</button>` : ''}
+        <button class="btn${rest.length || more ? '' : ' primary'}" data-act="${curCourse ? 'course' : 'home'}" data-c="${esc(curCourse?.id || '')}">Done</button></div>`}`, 'right');
     });
   }
   function reviewCourse(c) { curCourse = c; startReview(dueCards([c]), { label: `Review · ${c.title}`, scope: [c] }); }
-  function startDaily() { startReview(dueCards(), { label: 'Daily review', back: () => show('home') }); }
+  /** opts (Today's session): {label, back, onDone, nextLabel} */
+  function startDaily(opts = {}) { curCourse = null; startReview(dueCards(), { label: opts.label || 'Daily review', back: opts.back || (() => show('home')), onDone: opts.onDone, nextLabel: opts.nextLabel }); }
   function practiseLine(c, l) {
     const items = l.mine.map(s => ({ c, id: s.id })).filter(x => srsGet(c, x.id));
     // practice inside its own line: show them all in this line, even when their primary line is another one
@@ -992,6 +996,7 @@ const O2 = (() => {
       case 'course': curCourse = c || curCourse; return show(curCourse ? 'course' : 'home', curCourse?.id);
       case 'back': return P.back ? P.back() : show('home');
       case 'daily': curCourse = null; return startDaily();
+      case 'next': { const f = P.onDone; P.onDone = null; return f?.(); }
       case 'learn': if (c && l) { curCourse = c; startLearn(c, l); } return;
       case 'study': if (c && l) { curCourse = c; startStudy(c, l, b.dataset.id); } return;
       case 'review': if (c) reviewCourse(c); return;

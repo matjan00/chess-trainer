@@ -1224,9 +1224,9 @@ const T2 = (() => {
       P.back();
     });
   }
-  function startOne(id) {
+  function startOne(id, backTo) {
     run(async () => {
-      const back = curCourse && screen === 'course' ? (cc => () => show('course', cc.id))(curCourse) : () => show('home');
+      const back = backTo || (curCourse && screen === 'course' ? (cc => () => show('course', cc.id))(curCourse) : () => show('home'));
       const chk = begin('one', back);
       const s = cardGet(id), it = id.includes('/pun/') ? punqItem(id) : itemFor(id);
       if (!it) return back();
@@ -1252,16 +1252,18 @@ const T2 = (() => {
     puz: { name: '10 new puzzles', run: (chk, forced) => { if (!PUZ) return null; const n = Math.max(0, DAILY.puz - (today().new || 0)) || (forced ? DAILY.puz : 0); return n ? runSession({ label: 'New puzzles', next: streamNext(), total: n, how: 'newpz', summary: false }, chk) : null; } },
     think: { name: '5 Think-first', run: (chk, forced) => { const n = Math.max(0, DAILY.think - (today().think || 0)) || (forced ? DAILY.think : 0); const items = n ? thinkItems(n) : []; return items.length ? runSession({ label: 'Think first', items, summary: false }, chk) : null; } },
   };
-  function runDaily(only) {
+  /** opts (Today's session): {session: skip finished blocks even with only, pre: labels of parts already done (step bar), onDone: leave to} */
+  function runDaily(only, opts = {}) {
     run(async () => {
-      const chk = begin('daily', () => show('home'));
+      const leave = opts.onDone || (() => show('home')), pre = opts.pre || [];
+      const chk = begin('daily', leave);
       const p = dailyPlan();
-      const forced = !!only;
+      const forced = !!only && !opts.session;
       const list = (only || ['rev', 'puz', 'think']).filter(b => forced || !p[{ rev: 'revDone', puz: 'puzDone', think: 'thinkDone' }[b]]);
       const tot = { asked: 0, ok: 0, rd: 0, wrong: [] };
       for (let i = 0; i < list.length; i++) {
         const b = BLOCKS[list[i]];
-        stepBar(i, list.map(x => BLOCKS[x].name));
+        stepBar(i + pre.length, [...pre, ...list.map(x => BLOCKS[x].name)]);
         if (i > 0) {
           head('Train today', `Next: ${b.name}`, i, list.length);
           board(new Chess().fen(), 'white'); P.shapes = []; draw();
@@ -1294,7 +1296,7 @@ const T2 = (() => {
       })(); chk();
       if (r === 'lod') return lod.kind === 'playout' ? startPlayout(lod.play, { mine: true, back: () => show('home') }) : startLesson(lod.c, lod.l);
       if (r === 'pd') { const ref = playRef(pd); if (ref) return startPlayout(ref.play, { ...ref, back: () => show('home') }); }
-      show('home');
+      leave();
     });
   }
 
@@ -1523,7 +1525,7 @@ const T2 = (() => {
   const UI = { begin, head, fb, actions, cont, nav, choose, toast, rich, esc, stepBar, askMove,
     board: (fen, side, opts) => board(fen, side, opts), draw, get chess() { return P.chess; }, set shapes(s) { P.shapes = s; draw(); }, get cg() { return cg; }, playUci, playSan, flash, play };
   const api = {
-    init, show, refresh, startDaily: () => runDaily(), runDaily, todayTasks, dueSummary, dailyPlan, now, endOfDay, posKey, KINDS, GLOSSARY: GLOSSARY.map(([id, t, d]) => [id, t, d]),
+    init, show, refresh, startDaily: () => runDaily(), runDaily, startOne, todayTasks, dueSummary, dailyPlan, now, endOfDay, posKey, KINDS, GLOSSARY: GLOSSARY.map(([id, t, d]) => [id, t, d]),
     courses: () => COURSES, puzzles: () => PUZ, mine: () => MINE, groups: () => PUZ?.groups || [], groupAccuracy, groupWeights, rating,
     setPlayout(fn) { EXT.playout = fn; }, setScreen(name, fn) { EXT.screens[name] = fn; if (screen === name) renderExtScreen(name); },
     addSection(s) { sections.push(s); if (screen === 'course') renderCourse(curCourse, true); },
