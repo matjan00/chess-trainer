@@ -65,9 +65,11 @@ details.s2-more { margin-top: 12px; }
 .s2-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; background: var(--draw); }
 .s2-legend i.roll { background: var(--accent); } .s2-legend i.win { background: var(--win); } .s2-legend i.loss { background: var(--loss); }
 .s2-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; margin-top: 14px; }
-.s2-grow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 8px; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; color: inherit; font: inherit; font-size: 14px; padding: 8px 0; cursor: pointer; }
+.s2-gname { display: flex; gap: 4px; min-width: 0; white-space: nowrap; }
+.s2-gop { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.s2-grow { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 8px; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; color: inherit; font: inherit; font-size: 14px; padding: 8px 0; cursor: pointer; }
 @media (max-width: 420px) {
   .s2-tiles { gap: 6px; } .s2-tile { padding: 8px; } .s2-v { font-size: 24px; }
   .s2-mrow { grid-template-columns: 56px 30px 40px minmax(48px, 1fr) 40px 34px; gap: 4px; font-size: 12px; }
-  .s2-grow { grid-template-columns: 56px minmax(0, 1fr); } .s2-grow > :last-child { grid-column: 1 / -1; }
+  .s2-grow { grid-template-columns: 80px minmax(0, 1fr); } .s2-grow > :last-child { grid-column: 1 / -1; }
 }

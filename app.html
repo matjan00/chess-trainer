@@ -236,7 +236,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .coming .cm-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 15px; }
 .coming .cm-detail ul { margin: 6px 0 0; padding-left: 18px; }
 .coming .cm-detail li { margin: 2px 0; }
-.coming .cm-warn { margin: 10px 0 0; color: var(--mistake); font-size: 14px; }
+.coming .cm-warn { margin: 10px 0 0; color: #7a3f00; font-size: 14px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .coming .cm-warn { color: var(--mistake); } }
+:root[data-theme="dark"] .coming .cm-warn { color: var(--mistake); }
 @media (max-width: 420px) { .coming .cm-days { gap: 2px; } .coming .cm-dn { font-size: 12px; } }
 .today-watch { display: grid; grid-template-columns: 160px 1fr; gap: 14px; align-items: center; margin-top: 16px; cursor: pointer; }
 .today-watch h3 { font-size: 18px; margin-top: 3px; }
@@ -498,6 +500,8 @@ const [O2_DATA, XP] = await Promise.all([
   fetch('explorer.json').then(r => r.json()).catch(() => ({ stats: {}, courses: {} })),
 ]);
 GAMES.sort((a, b) => a.end - b.end);
+// the analysis scores a move that gives checkmate as a 100% loss (the game ends, so there is no position to score): it is never a mistake
+for (const g of GAMES) g.plies.forEach((p, i) => { if (/#$/.test(p.san || '') && (i % 2 === 0) === (g.color === 'white')) { p.loss = 0; if (p.lab === 'blunder' || p.lab === 'mistake' || p.lab === 'inaccuracy') p.lab = 'best'; p.why = []; } });
 
 /* ---------- the Openings tab (O2): plain scripts inlined here by build.py ---------- */
 /*O2_JS*/
@@ -676,7 +680,7 @@ function noteDay() {
 }
 let onProgressChanged = () => {};
 
-const fmtDate = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+const fmtDate = t => { const d = new Date(t * 1000); return `${d.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]} ${d.getFullYear()}`; };
 const openingName = slug => (slug || 'Unknown').replace(/-/g, ' ').replace(/\s+\d.*$/, '').replace(/\.{3}.*/, '').trim();
 const openingFamily = slug => openingName(slug).split(' ').slice(0, 3).join(' ').replace(/ (Opening|Defense|Game|Attack|Gambit)$/, m => m).trim();
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -730,7 +734,7 @@ for (const g of GAMES) {
 }
 
 // one definition of "a winning position" for the whole app: your winning chance reached 85%
-const WINNING = GAMES.filter(g => Math.max(...g.myWin) >= 85);
+const WINNING = GAMES.filter(g => Math.max(...g.myWin.slice(0, g.plies.length)) >= 85);   // same rule as Stats: the final position alone does not count
 const WINNING_WON = WINNING.filter(g => g.result === 'win').length;
 const MY_RATING = GAMES.length ? GAMES[GAMES.length - 1].myRating : 1500;
 

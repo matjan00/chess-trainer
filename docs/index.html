@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 72;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 73;</script>
 </head>
 <body>
 
@@ -573,7 +573,9 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .coming .cm-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 15px; }
 .coming .cm-detail ul { margin: 6px 0 0; padding-left: 18px; }
 .coming .cm-detail li { margin: 2px 0; }
-.coming .cm-warn { margin: 10px 0 0; color: var(--mistake); font-size: 14px; }
+.coming .cm-warn { margin: 10px 0 0; color: #7a3f00; font-size: 14px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .coming .cm-warn { color: var(--mistake); } }
+:root[data-theme="dark"] .coming .cm-warn { color: var(--mistake); }
 @media (max-width: 420px) { .coming .cm-days { gap: 2px; } .coming .cm-dn { font-size: 12px; } }
 .today-watch { display: grid; grid-template-columns: 160px 1fr; gap: 14px; align-items: center; margin-top: 16px; cursor: pointer; }
 .today-watch h3 { font-size: 18px; margin-top: 3px; }
@@ -1154,11 +1156,13 @@ details.s2-more { margin-top: 12px; }
 .s2-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; background: var(--draw); }
 .s2-legend i.roll { background: var(--accent); } .s2-legend i.win { background: var(--win); } .s2-legend i.loss { background: var(--loss); }
 .s2-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; margin-top: 14px; }
-.s2-grow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 8px; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; color: inherit; font: inherit; font-size: 14px; padding: 8px 0; cursor: pointer; }
+.s2-gname { display: flex; gap: 4px; min-width: 0; white-space: nowrap; }
+.s2-gop { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.s2-grow { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 8px; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--line); background: none; color: inherit; font: inherit; font-size: 14px; padding: 8px 0; cursor: pointer; }
 @media (max-width: 420px) {
   .s2-tiles { gap: 6px; } .s2-tile { padding: 8px; } .s2-v { font-size: 24px; }
   .s2-mrow { grid-template-columns: 56px 30px 40px minmax(48px, 1fr) 40px 34px; gap: 4px; font-size: 12px; }
-  .s2-grow { grid-template-columns: 56px minmax(0, 1fr); } .s2-grow > :last-child { grid-column: 1 / -1; }
+  .s2-grow { grid-template-columns: 80px minmax(0, 1fr); } .s2-grow > :last-child { grid-column: 1 / -1; }
 }
 
 /* ===== Games 2 (g2core.js). Uses the app's tokens (--accent, --line, ...) and classes (.card .btn .seg .pill .dot .viewer .board .actionbar ...). ===== */
@@ -1178,6 +1182,7 @@ details.s2-more { margin-top: 12px; }
 .g2-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .g2-chip[aria-pressed="true"] .muted { color: inherit; opacity: .75; }
 .g2-count { margin: 10px 0 6px; }
+.g2-clear { border: 0; background: none; padding: 6px 2px; min-height: 32px; color: var(--accent); font: 600 14px var(--body); text-decoration: underline; cursor: pointer; }
 .g2-rows { display: grid; gap: 8px; }
 .g2-row { display: grid; gap: 4px; text-align: left; width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; min-width: 0; }
 .g2-row:hover { border-color: var(--ink-3); }
@@ -1189,7 +1194,9 @@ details.s2-more { margin-top: 12px; }
 .g2-r2 .num { flex: none; }
 .g2-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .g2-tag { font: 600 12px/1 var(--body); padding: 4px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); }
-.g2-tag.warn { background: color-mix(in srgb, var(--mistake) 18%, transparent); color: var(--mistake); }
+.g2-tag.warn { background: color-mix(in srgb, var(--mistake) 18%, transparent); color: #7a3f00; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .g2-tag.warn { color: var(--mistake); } }
+:root[data-theme="dark"] .g2-tag.warn { color: var(--mistake); }
 .g2-tag.ok { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
 .g2-more { margin-top: 12px; min-height: 44px; }
 /* game screen */
@@ -1576,6 +1583,8 @@ const [O2_DATA, XP] = await Promise.all([
   fetch('explorer.json').then(r => r.json()).catch(() => ({ stats: {}, courses: {} })),
 ]);
 GAMES.sort((a, b) => a.end - b.end);
+// the analysis scores a move that gives checkmate as a 100% loss (the game ends, so there is no position to score): it is never a mistake
+for (const g of GAMES) g.plies.forEach((p, i) => { if (/#$/.test(p.san || '') && (i % 2 === 0) === (g.color === 'white')) { p.loss = 0; if (p.lab === 'blunder' || p.lab === 'mistake' || p.lab === 'inaccuracy') p.lab = 'best'; p.why = []; } });
 
 /* ---------- the Openings tab (O2): plain scripts inlined here by build.py ---------- */
 /* ============================================================================================
@@ -3901,10 +3910,18 @@ const T2 = (() => {
 
   /* ---- A. home */
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+  // the same names the Stats tab uses for each kind of mistake (keep in step with KIND in stats2/ui/s2core.js)
+  const KIND_NAME = { 'hung piece': 'Left a piece undefended', 'lost material': 'Lost material in a trade', 'missed capture': 'Missed a winning capture', 'fork': 'Walked into a fork',
+    'walked into check': 'Allowed a strong check', 'allowed mate': 'Allowed a mating attack', 'missed mate': 'Missed a checkmate', 'threw away win': 'Threw away a win' };
+  const kindName = t => KIND_NAME[t] || cap1(t);
+  // "Threw away a win" is counted in games (like Stats: 34 games), every other kind in moves
+  const kindCount = w => w.tag === 'threw away win' ? plural(MINE?.stats?.won?.thrown?.length ?? w.n, 'game') : `${w.n} ${w.n === 1 ? 'time' : 'times'}`;
   function weakSpots(n = 3) {
     const tags = MINE?.stats?.tags; if (!tags) return [];
-    const acc = groupAccuracy();
-    return Object.entries(tags).filter(([, v]) => v.n).map(([tag, v]) => { const gi = groupIndex(v.group); return { tag, ...v, gi, acc: gi >= 0 ? acc[gi] : null }; })
+    const acc = groupAccuracy(), thrown = MINE?.stats?.won?.thrown?.length, total = MINE?.stats?.games;
+    return Object.entries(tags).filter(([, v]) => v.n).map(([tag, v]) => { const gi = groupIndex(v.group); const o = { tag, ...v, gi, acc: gi >= 0 ? acc[gi] : null };
+        if (tag === 'threw away win' && thrown != null && total) { o.n = thrown; o.per10 = Math.round(thrown / total * 100) / 10; o.last30 = null; }
+        return o; })
       .sort((a, b) => (b.per10 || 0) - (a.per10 || 0)).slice(0, n);
   }
   const trend = v => v.prev30 == null || v.last30 == null ? '' : v.last30 < v.prev30 ? ' <span class="t2-good" title="fewer than in the 30 games before">↓</span>' : v.last30 > v.prev30 ? ' <span class="t2-bad" title="more than in the 30 games before">↑</span>' : ' →';
@@ -3945,7 +3962,7 @@ const T2 = (() => {
         <button class="btn" data-act="stats">Stats</button>
       </div>
       ${ws.length ? `<div class="card t2-weak"><div class="t2-wh"><span class="eyebrow">Your weak spots · from your games</span><button class="btn" data-act="stats">All stats</button></div>
-        ${ws.map(w => `<div class="t2-wrow"><div><b>${esc(cap1(w.tag))}</b><div class="small muted">In your games: ${w.n} times (${w.per10} per 10 games)${w.last30 != null ? ` · last 30 games: ${w.last30}${trend(w)}` : ''}</div>
+        ${ws.map(w => `<div class="t2-wrow"><div><b>${esc(kindName(w.tag))}</b><div class="small muted">In your games: ${kindCount(w)} (${w.per10} per 10 games)${w.last30 != null ? ` · last 30 games: ${w.last30}${trend(w)}` : ''}</div>
           ${w.acc && w.acc.n ? `<div class="small">In training: ${pct(w.acc.ok / w.acc.n)} of ${w.acc.n}</div>` : ''}</div>
           ${w.gi >= 0 && PUZ ? `<button class="btn" data-act="theme" data-g="${w.gi}">Practise</button>` : ''}</div>`).join('')}</div>` : ''}
       <div id="t2-home-extra"></div>`;
@@ -4094,7 +4111,7 @@ const T2 = (() => {
     const ws = weakSpots(8);
     return `<h2>Stats</h2><p class="small muted">The full statistics page arrives with the next part of the rebuild.</p>
       <div class="card"><span class="eyebrow">Training · last 14 days</span><p>${tot.rev ? `${tot.rev} reviews, ${pct(1 - tot.wrong / Math.max(1, tot.rev))} right.` : 'No reviews yet.'} Puzzle rating ${rating()}.</p></div>
-      ${ws.length ? `<div class="card"><span class="eyebrow">Your mistakes by kind (your games)</span>${ws.map(w => `<div class="t2-wrow"><div><b>${esc(cap1(w.tag))}</b><div class="small muted">${w.n} times · ${w.per10} per 10 games</div></div></div>`).join('')}</div>` : '<p class="muted">Statistics from your games arrive with the next update.</p>'}
+      ${ws.length ? `<div class="card"><span class="eyebrow">Your mistakes by kind (your games)</span>${ws.map(w => `<div class="t2-wrow"><div><b>${esc(kindName(w.tag))}</b><div class="small muted">${kindCount(w)} · ${w.per10} per 10 games</div></div></div>`).join('')}</div>` : '<p class="muted">Statistics from your games arrive with the next update.</p>'}
       ${MINE?.stats?.clock ? `<div class="card"><span class="eyebrow">Slow down</span><p>${pct(MINE.stats.clock.fastShare)} of your mistakes are played in under 5 seconds.</p></div>` : ''}`;
   }
 
@@ -4891,7 +4908,7 @@ const T2 = (() => {
     show('home');
     return api;
   }
-  const UI = { begin, head, fb, actions, cont, nav, choose, toast, rich, esc, stepBar, askMove,
+  const UI = { kindName, begin, head, fb, actions, cont, nav, choose, toast, rich, esc, stepBar, askMove,
     board: (fen, side, opts) => board(fen, side, opts), draw, get chess() { return P.chess; }, set shapes(s) { P.shapes = s; draw(); }, get cg() { return cg; }, playUci, playSan, flash, play };
   const api = {
     init, show, refresh, startDaily: () => runDaily(), runDaily, startOne, todayTasks, dueSummary, dailyPlan, now, endOfDay, posKey, KINDS, forecast, nextReview, intervalText, BACKLOG, GLOSSARY: GLOSSARY.map(([id, t, d]) => [id, t, d]),
@@ -5157,7 +5174,7 @@ const T2 = (() => {
     const b = agg(before), a = agg(after), r1 = x => (Math.round(x * 100) / 100);
     const row = (lab, bv, av, fmt = v => v, lowerBetter = true) => `<tr><td>${esc(lab)}</td><td>${fmt(bv)}</td><td>${fmt(av)}</td><td class="${(av < bv) === lowerBetter && av !== bv ? 't2-good' : av === bv ? '' : 't2-bad'}">${av < bv ? '↓' : av > bv ? '↑' : '→'}</td></tr>`;
     const tagRows = Object.keys(st?.tags || {}).filter(t => b.tags[t] || a.tags[t]).sort((x, y) => (b.tags[y] || 0) - (b.tags[x] || 0))
-      .map(t => row(cap1(t), r1((b.tags[t] || 0) / b.n), r1((a.tags[t] || 0) / a.n))).join('');
+      .map(t => row(T2.ui.kindName ? T2.ui.kindName(t) : cap1(t), r1((b.tags[t] || 0) / b.n), r1((a.tags[t] || 0) / a.n))).join('');
     const mb = b.mist / b.n, ma = a.mist / a.n;
     return card('Before and after training', `${head}<table class="t2-st-tbl"><thead><tr><th></th><th>Before</th><th>After</th><th></th></tr></thead><tbody>
       ${row('Mistakes + blunders per game', r1(mb), r1(ma))}${row('Fast mistakes (under 5 s)', pct(b.mist ? b.fast / b.mist : 0), pct(a.mist ? a.fast / a.mist : 0))}${tagRows}</tbody></table>
@@ -5247,8 +5264,9 @@ const S2 = (() => {
   const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
   const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[s.length >> 1]; };
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const fmtDate = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
-  const fmtDay = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  // one date style everywhere in Stats: "6 Sep 2026" (the browser's own month names vary: Sep / Sept)
+  const fmtDate = t => { const d = new Date(t * 1000); return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+  const fmtDay = fmtDate;
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
   const has = k => typeof H[k] === 'function';
   const isMine = (g, i) => (i % 2 === 0) === (g.color === 'white');
@@ -5278,6 +5296,7 @@ const S2 = (() => {
     const mine = g.plies.filter((p, i) => isMine(g, i));
     if (g.nb === undefined) { g.nb = mine.filter(p => p.lab === 'blunder').length; g.nm = mine.filter(p => p.lab === 'mistake').length; }
     if (g.acpl === undefined) g.acpl = avg(mine.map(p => p.cpl));
+    if (mine.length < 5) g.acpl = null;   // an abandoned game with 1-4 moves of yours says nothing about your play: show a dash, not 0
     if (g.acc === undefined) {
       const a = mine.map(p => moveAcc(p.loss)), mean = avg(a), harm = a.length / a.reduce((s, x) => s + 1 / Math.max(x, 1), 0);
       g.acc = a.length ? (mean + harm) / 2 : null;
@@ -5337,7 +5356,7 @@ const S2 = (() => {
     const tile = (name, value, sub, delta) => `<div class="s2-tile"><span class="eyebrow">${name}</span><b class="s2-v num">${value}</b><span class="s2-sub">${sub}</span>${delta || '<span class="s2-d muted">Not enough games to compare yet</span>'}</div>`;
     const first = w.cur[0], last = w.cur[w.cur.length - 1];
     return `<section class="card s2-verdict">
-      <span class="eyebrow">${w.label} · ${a.n} games${first ? ` · ${fmtDay(first.end)} to ${fmtDay(last.end)}` : ''}</span>
+      <span class="eyebrow">${w.label}${/games$/.test(w.label) ? '' : ` · ${a.n} games`}${first ? ` · ${fmtDay(first.end)} to ${fmtDay(last.end)}` : ''}</span>
       <p class="s2-say">${esc(say.trim())}</p>
       <div class="s2-tiles">
         ${tile('Rating', a.rating, 'rapid, now', arrow(rDelta, false, v => v, 0))}
@@ -5351,7 +5370,7 @@ const S2 = (() => {
 
   /* ================================================================ B. progress by month */
   const mkey = g => { const d = new Date(g.end * 1000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
-  const mlabel = k => { const [y, m] = k.split('-'); return `${MON[+m - 1]} ${y.slice(2)}`; };
+  const mlabel = k => { const [y, m] = k.split('-'); return `${MON[+m - 1]} ${y}`; };
   function rowStats(gs) {
     const s = summ(gs); let ser = 0, fast = 0;
     for (const g of gs) g.plies.forEach((p, i) => { if (isMine(g, i) && serious(p) && p.t != null) { ser++; if (p.t < 5) fast++; } });
@@ -5475,7 +5494,7 @@ const S2 = (() => {
       const w10 = avg(gs.map(g => g.myWin[Math.min(20, g.myWin.length - 1)]));
       const left = median(devs.filter(x => x.devBy === 'me' && x.devPly).map(x => Math.ceil(x.devPly / 2)));
       return `<div class="s2-copen"><div class="s2-chead"><b>${esc(name)}</b><span class="small muted">${plural(n, 'game')} · ${pct(sc)} score</span></div>
-        <div class="small muted">${gl('winchance', 'Winning chance')} after 10 moves: ${Math.round(w10)}%${left ? ` · you usually leave the course at move ${left}` : ''}</div>${extra || ''}</div>`;
+        <div class="small muted">${gl('winchance', 'Winning chance')} after 10 moves: ${Math.round(w10)}%${left ? ` · in games where you left the course, you usually left at move ${left}` : ''}</div>${extra || ''}</div>`;
     };
     const parts = [];
     for (const c of courses) {
@@ -5513,7 +5532,7 @@ const S2 = (() => {
     const accs = G.map(g => g.acc).filter(x => x != null);
     const tiles = [
       ['Overall', f0(avg(myPlies.map(p => p.cpl))), `across ${myPlies.length} of your moves`],
-      ['Last 20 games', f0(last20), diff == null ? 'recent form' : Math.abs(diff) < 1 ? 'same as the 20 before' : `${diff < 0 ? '▼ better by' : '▲ worse by'} ${Math.abs(diff).toFixed(0)}`],
+      ['Last 20 games', f0(last20), diff == null ? 'recent form' : Math.abs(diff) < 1 ? 'same as the 20 before' : `${diff < 0 ? '▼ better' : '▲ worse'} by ${Math.abs(diff).toFixed(0)} vs the 20 before`],
       ['Typical game', f0(median(gls.map(g => g.acpl))), 'the median game'],
       ['Opponents', f0(avg(oppPlies.map(p => p.cpl))), 'their average'],
       ['Without blunders', f0(calm), 'moves losing under 2 pawns'],
@@ -5533,7 +5552,7 @@ const S2 = (() => {
     const col = ['white', 'black'].map(c => ({ name: 'As ' + c, v: acplOf(G.filter(g => g.color === c)), note: `${G.filter(g => g.color === c).length}g` }));
     const rb = [['vs lower rated', g => g.oppRating < g.myRating - 50], ['similar (±50)', g => Math.abs(g.oppRating - g.myRating) <= 50], ['vs higher rated', g => g.oppRating > g.myRating + 50]]
       .map(([name, f]) => ({ name, v: acplOf(G.filter(f)), note: `${G.filter(f).length}g` }));
-    const link = (g, t) => `<button class="s2-grow" ${has('openGame') ? `data-act="game" data-url="${esc(g.url)}"` : ''}><span class="small muted">${fmtDate(g.end)}</span><span>${esc(openingName(g.opening)).slice(0, 30)} · ${g.result}</span><span class="small muted">${t}</span></button>`;
+    const link = (g, t) => `<button class="s2-grow" ${has('openGame') ? `data-act="game" data-url="${esc(g.url)}"` : ''}><span class="small muted">${fmtDate(g.end)}</span><span class="s2-gname"><span class="s2-gop">${esc(openingName(g.opening))}</span> · ${g.result}</span><span class="small muted">${t}</span></button>`;
     const sorted = [...gls].sort((a, b) => a.acpl - b.acpl);
     return `<details class="card s2-more" id="s2-more"><summary><h3>More numbers</h3></summary>
       <div class="s2-lazy"><p class="sub">${gl('acpl', 'Average mistake size')} (ACPL): how much engine score you give away on an average move, in hundredths of a pawn. Lower is better.</p>
@@ -5632,7 +5651,7 @@ const G2 = (() => {
       return cp >= 0 || a < 50 ? w : { 'slightly better': 'slightly worse', 'clearly better': 'clearly worse', winning: 'losing', 'winning easily': 'losing badly' }[w];
     },
     openingName: s => (s || 'Unknown').replace(/-/g, ' ').replace(/\s+\d.*$/, '').replace(/\.{3}.*/, '').trim(),
-    fmtDate: t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }),
+    fmtDate: t => { const d = new Date(t * 1000); return `${d.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]} ${d.getFullYear()}`; },
     evalText: e => !e ? '' : e.m !== undefined ? (e.m === 0 ? '#' : (e.m > 0 ? '+M' : '-M') + Math.abs(e.m)) : (e.cp > 0 ? '+' : '') + (e.cp / 100).toFixed(1),
     mine: () => null, practise: null, practised: () => false, bookDev: () => null, openCourse: null,
   };
@@ -5847,11 +5866,13 @@ const G2 = (() => {
         <select data-f="sort" aria-label="Order"><option value="new"${x.sort === 'new' ? ' selected' : ''}>Newest first</option><option value="swing"${x.sort === 'swing' ? ' selected' : ''}>Biggest swing first</option></select>
       </div>
       <div class="g2-chips">${chip('threw', 'Threw away a win')}${chip('todo', 'Not reviewed yet')}${chip('quick', 'Quick-move mistakes')}</div>
-      <div class="small muted g2-count">${plural(list.length, 'game')}</div>
+      <div class="small muted g2-count">${filtersOn(x) ? `Showing ${list.length} of ${GAMES.length} games · <button class="g2-clear" data-act="clearfilters">Clear filters</button>` : plural(list.length, 'game')}</div>
       <div class="g2-rows">${shown.map(rowHtml).join('') || '<p class="empty">No games match these filters.</p>'}</div>
       ${list.length > shown.length ? `<button class="btn g2-more" data-act="more">Show all ${list.length}</button>` : ''}`;
   }
-  function saveFilters() { H.store.set('g2f', S.f); }
+  // filters sent from another tab ("See games") are temporary: they are not remembered for the next visit
+  function saveFilters() { if (!S.tmpFilter) H.store.set('g2f', S.f); }
+  const filtersOn = x => x.color !== 'all' || x.result !== 'all' || x.opening !== 'all' || x.threw || x.todo || x.quick;
 
   /* ---------------------------------------------------------------- the game screen: header, graph, board */
   function renderHead() {
@@ -6027,7 +6048,7 @@ const G2 = (() => {
       ${rows ? `<ol class="g2-mlist">${rows}</ol>` : ''}
       ${fx.length && H.practise ? `<p class="small muted">${plural(fx.length, 'Train card')} from this game, ${fx.filter(x => cardDone(x.c)).length} practised.</p>` : ''}</div>`;
     const todo = fx.filter(x => !cardDone(x.c));
-    $('#g2-actions').innerHTML = `${todo.length && H.practise ? `<button class="btn" data-act="practiseall">Practise all ${todo.length} now</button>` : ''}${nx && nx !== g ? `<button class="btn primary" data-act="nextgame" data-url="${esc(nx.url)}">Next game to review</button>` : `<button class="btn primary" data-act="mode" data-mode="game">Whole game</button>`}`;
+    $('#g2-actions').innerHTML = `${todo.length && H.practise ? `<button class="btn" data-act="practiseall">${todo.length === 1 ? 'Practise it now' : `Practise all ${todo.length} now`}</button>` : ''}${nx && nx !== g ? `<button class="btn primary" data-act="nextgame" data-url="${esc(nx.url)}">Next game to review</button>` : `<button class="btn primary" data-act="mode" data-mode="game">Whole game</button>`}`;
     $('#g2-tools').innerHTML = nx && nx !== g ? `<button class="btn" data-act="mode" data-mode="game">Whole game</button>` : '';
     moveCursor();
   }
@@ -6116,7 +6137,7 @@ const G2 = (() => {
     const g = S.g, box = $('#g2-comment'), ply = S.ply; if (!box) return;
     if (ply === 0) { box.className = 'comment g2-comment'; box.innerHTML = `<div class="head">Starting position</div><div class="small muted">Step through with ▶, or jump to your next mistake. Tap the graph to jump anywhere.</div>`; return; }
     const i = ply - 1, p = g.plies[i], mine = isMine(g, i), mv = `${moveNo(i)} ${esc(p.san)}`;
-    const nums = `<div class="g2-nums small muted"${S.nums ? '' : ' hidden'}>${p.lab ? `Winning chance −${(p.loss || 0).toFixed(0)}% · lost ${(p.cpl || 0).toFixed(0)} cp · ` : ''}<button class="gl" data-term="eval">eval</button> ${esc(H.evalText(evalAt(g, ply)))}${p.t != null ? ` · ${mine ? 'you' : 'they'} spent ${secs(p.t)}` : ''}${p.clk != null ? `, ${Math.floor(p.clk / 60)}:${String(Math.floor(p.clk % 60)).padStart(2, '0')} left` : ''}</div>`;
+    const nums = `<div class="g2-nums small muted"${S.nums ? '' : ' hidden'}>${p.lab ? `Winning chance −${(p.loss || 0).toFixed(0)}% · lost ${((p.cpl || 0) / 100).toFixed(1)} pawns · ` : ''}<button class="gl" data-term="eval">eval</button> ${esc(H.evalText(evalAt(g, ply)))}${p.t != null ? ` · ${mine ? 'you' : 'they'} spent ${secs(p.t)}` : ''}${p.clk != null ? `, ${Math.floor(p.clk / 60)}:${String(Math.floor(p.clk % 60)).padStart(2, '0')} left` : ''}</div>`;
     const tog = `<button class="linkbtn g2-ntog" data-act="nums">${S.nums ? 'Hide numbers' : 'Numbers'}</button>`;
     if (!p.lab) {
       box.className = 'comment ok g2-comment';
@@ -6223,7 +6244,7 @@ const G2 = (() => {
   }
   function filter(x = {}) {
     S.f = { ...S.f, color: 'all', result: 'all', opening: 'all', threw: false, todo: false, quick: false, ...x };
-    S.more = false; saveFilters(); show('list');
+    S.tmpFilter = filtersOn(S.f); S.more = false; saveFilters(); show('list');
   }
 
   /* ---------------------------------------------------------------- events */
@@ -6231,6 +6252,7 @@ const G2 = (() => {
     const t = e.target;
     const row = t.closest('[data-url].g2-row, [data-open]');
     if (row) return open(row.dataset.url || row.dataset.open);
+    if (t.closest('[data-act="clearfilters"]')) { S.f = { ...S.f, color: 'all', result: 'all', opening: 'all', threw: false, todo: false, quick: false }; S.tmpFilter = false; S.more = false; saveFilters(); return renderList(); }
     const sb = t.closest('.seg[data-f] button');
     if (sb) { S.f[sb.parentElement.dataset.f] = sb.dataset.v; S.more = false; saveFilters(); return renderList(); }
     const ch = t.closest('[data-chip]');
@@ -6284,6 +6306,8 @@ const G2 = (() => {
     if (!H.Chessground || !H.record || !H.progress) throw new Error('G2.init needs hooks.Chessground, hooks.record and hooks.progress');
     for (const k of KINDS) H.progress[k] ||= {};
     GAMES = (data.games || H.games || []).filter(g => g && Array.isArray(g.plies) && g.plies.length);
+    // a move that gives checkmate is scored as a 100% loss by the analysis (nothing left to score): never a slip
+    for (const g of GAMES) g.plies.forEach((p, i) => { if (/#$/.test(p.san || '') && isMine(g, i)) { p.loss = 0; p.cpl = 0; if (p.lab === 'blunder' || p.lab === 'mistake' || p.lab === 'inaccuracy') p.lab = 'best'; p.why = []; } });
     S.f = { ...S.f, ...H.store.get('g2f', {}) };
     S.nums = !!H.store.get('g2nums', false);
     if (!ROOT.dataset.g2) {
@@ -6774,7 +6798,7 @@ function noteDay() {
 }
 let onProgressChanged = () => {};
 
-const fmtDate = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+const fmtDate = t => { const d = new Date(t * 1000); return `${d.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]} ${d.getFullYear()}`; };
 const openingName = slug => (slug || 'Unknown').replace(/-/g, ' ').replace(/\s+\d.*$/, '').replace(/\.{3}.*/, '').trim();
 const openingFamily = slug => openingName(slug).split(' ').slice(0, 3).join(' ').replace(/ (Opening|Defense|Game|Attack|Gambit)$/, m => m).trim();
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -6828,7 +6852,7 @@ for (const g of GAMES) {
 }
 
 // one definition of "a winning position" for the whole app: your winning chance reached 85%
-const WINNING = GAMES.filter(g => Math.max(...g.myWin) >= 85);
+const WINNING = GAMES.filter(g => Math.max(...g.myWin.slice(0, g.plies.length)) >= 85);   // same rule as Stats: the final position alone does not count
 const WINNING_WON = WINNING.filter(g => g.result === 'win').length;
 const MY_RATING = GAMES.length ? GAMES[GAMES.length - 1].myRating : 1500;
 

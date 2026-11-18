@@ -35,7 +35,7 @@ const G2 = (() => {
       return cp >= 0 || a < 50 ? w : { 'slightly better': 'slightly worse', 'clearly better': 'clearly worse', winning: 'losing', 'winning easily': 'losing badly' }[w];
     },
     openingName: s => (s || 'Unknown').replace(/-/g, ' ').replace(/\s+\d.*$/, '').replace(/\.{3}.*/, '').trim(),
-    fmtDate: t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }),
+    fmtDate: t => { const d = new Date(t * 1000); return `${d.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]} ${d.getFullYear()}`; },
     evalText: e => !e ? '' : e.m !== undefined ? (e.m === 0 ? '#' : (e.m > 0 ? '+M' : '-M') + Math.abs(e.m)) : (e.cp > 0 ? '+' : '') + (e.cp / 100).toFixed(1),
     mine: () => null, practise: null, practised: () => false, bookDev: () => null, openCourse: null,
   };
@@ -250,11 +250,13 @@ const G2 = (() => {
         <select data-f="sort" aria-label="Order"><option value="new"${x.sort === 'new' ? ' selected' : ''}>Newest first</option><option value="swing"${x.sort === 'swing' ? ' selected' : ''}>Biggest swing first</option></select>
       </div>
       <div class="g2-chips">${chip('threw', 'Threw away a win')}${chip('todo', 'Not reviewed yet')}${chip('quick', 'Quick-move mistakes')}</div>
-      <div class="small muted g2-count">${plural(list.length, 'game')}</div>
+      <div class="small muted g2-count">${filtersOn(x) ? `Showing ${list.length} of ${GAMES.length} games · <button class="g2-clear" data-act="clearfilters">Clear filters</button>` : plural(list.length, 'game')}</div>
       <div class="g2-rows">${shown.map(rowHtml).join('') || '<p class="empty">No games match these filters.</p>'}</div>
       ${list.length > shown.length ? `<button class="btn g2-more" data-act="more">Show all ${list.length}</button>` : ''}`;
   }
-  function saveFilters() { H.store.set('g2f', S.f); }
+  // filters sent from another tab ("See games") are temporary: they are not remembered for the next visit
+  function saveFilters() { if (!S.tmpFilter) H.store.set('g2f', S.f); }
+  const filtersOn = x => x.color !== 'all' || x.result !== 'all' || x.opening !== 'all' || x.threw || x.todo || x.quick;
 
   /* ---------------------------------------------------------------- the game screen: header, graph, board */
   function renderHead() {
@@ -430,7 +432,7 @@ const G2 = (() => {
       ${rows ? `<ol class="g2-mlist">${rows}</ol>` : ''}
       ${fx.length && H.practise ? `<p class="small muted">${plural(fx.length, 'Train card')} from this game, ${fx.filter(x => cardDone(x.c)).length} practised.</p>` : ''}</div>`;
     const todo = fx.filter(x => !cardDone(x.c));
-    $('#g2-actions').innerHTML = `${todo.length && H.practise ? `<button class="btn" data-act="practiseall">Practise all ${todo.length} now</button>` : ''}${nx && nx !== g ? `<button class="btn primary" data-act="nextgame" data-url="${esc(nx.url)}">Next game to review</button>` : `<button class="btn primary" data-act="mode" data-mode="game">Whole game</button>`}`;
+    $('#g2-actions').innerHTML = `${todo.length && H.practise ? `<button class="btn" data-act="practiseall">${todo.length === 1 ? 'Practise it now' : `Practise all ${todo.length} now`}</button>` : ''}${nx && nx !== g ? `<button class="btn primary" data-act="nextgame" data-url="${esc(nx.url)}">Next game to review</button>` : `<button class="btn primary" data-act="mode" data-mode="game">Whole game</button>`}`;
     $('#g2-tools').innerHTML = nx && nx !== g ? `<button class="btn" data-act="mode" data-mode="game">Whole game</button>` : '';
     moveCursor();
   }
@@ -519,7 +521,7 @@ const G2 = (() => {
     const g = S.g, box = $('#g2-comment'), ply = S.ply; if (!box) return;
     if (ply === 0) { box.className = 'comment g2-comment'; box.innerHTML = `<div class="head">Starting position</div><div class="small muted">Step through with ▶, or jump to your next mistake. Tap the graph to jump anywhere.</div>`; return; }
     const i = ply - 1, p = g.plies[i], mine = isMine(g, i), mv = `${moveNo(i)} ${esc(p.san)}`;
-    const nums = `<div class="g2-nums small muted"${S.nums ? '' : ' hidden'}>${p.lab ? `Winning chance −${(p.loss || 0).toFixed(0)}% · lost ${(p.cpl || 0).toFixed(0)} cp · ` : ''}<button class="gl" data-term="eval">eval</button> ${esc(H.evalText(evalAt(g, ply)))}${p.t != null ? ` · ${mine ? 'you' : 'they'} spent ${secs(p.t)}` : ''}${p.clk != null ? `, ${Math.floor(p.clk / 60)}:${String(Math.floor(p.clk % 60)).padStart(2, '0')} left` : ''}</div>`;
+    const nums = `<div class="g2-nums small muted"${S.nums ? '' : ' hidden'}>${p.lab ? `Winning chance −${(p.loss || 0).toFixed(0)}% · lost ${((p.cpl || 0) / 100).toFixed(1)} pawns · ` : ''}<button class="gl" data-term="eval">eval</button> ${esc(H.evalText(evalAt(g, ply)))}${p.t != null ? ` · ${mine ? 'you' : 'they'} spent ${secs(p.t)}` : ''}${p.clk != null ? `, ${Math.floor(p.clk / 60)}:${String(Math.floor(p.clk % 60)).padStart(2, '0')} left` : ''}</div>`;
     const tog = `<button class="linkbtn g2-ntog" data-act="nums">${S.nums ? 'Hide numbers' : 'Numbers'}</button>`;
     if (!p.lab) {
       box.className = 'comment ok g2-comment';
@@ -626,7 +628,7 @@ const G2 = (() => {
   }
   function filter(x = {}) {
     S.f = { ...S.f, color: 'all', result: 'all', opening: 'all', threw: false, todo: false, quick: false, ...x };
-    S.more = false; saveFilters(); show('list');
+    S.tmpFilter = filtersOn(S.f); S.more = false; saveFilters(); show('list');
   }
 
   /* ---------------------------------------------------------------- events */
@@ -634,6 +636,7 @@ const G2 = (() => {
     const t = e.target;
     const row = t.closest('[data-url].g2-row, [data-open]');
     if (row) return open(row.dataset.url || row.dataset.open);
+    if (t.closest('[data-act="clearfilters"]')) { S.f = { ...S.f, color: 'all', result: 'all', opening: 'all', threw: false, todo: false, quick: false }; S.tmpFilter = false; S.more = false; saveFilters(); return renderList(); }
     const sb = t.closest('.seg[data-f] button');
     if (sb) { S.f[sb.parentElement.dataset.f] = sb.dataset.v; S.more = false; saveFilters(); return renderList(); }
     const ch = t.closest('[data-chip]');
@@ -687,6 +690,8 @@ const G2 = (() => {
     if (!H.Chessground || !H.record || !H.progress) throw new Error('G2.init needs hooks.Chessground, hooks.record and hooks.progress');
     for (const k of KINDS) H.progress[k] ||= {};
     GAMES = (data.games || H.games || []).filter(g => g && Array.isArray(g.plies) && g.plies.length);
+    // a move that gives checkmate is scored as a 100% loss by the analysis (nothing left to score): never a slip
+    for (const g of GAMES) g.plies.forEach((p, i) => { if (/#$/.test(p.san || '') && isMine(g, i)) { p.loss = 0; p.cpl = 0; if (p.lab === 'blunder' || p.lab === 'mistake' || p.lab === 'inaccuracy') p.lab = 'best'; p.why = []; } });
     S.f = { ...S.f, ...H.store.get('g2f', {}) };
     S.nums = !!H.store.get('g2nums', false);
     if (!ROOT.dataset.g2) {

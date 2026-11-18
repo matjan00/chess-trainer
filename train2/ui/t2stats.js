@@ -47,7 +47,7 @@
     const b = agg(before), a = agg(after), r1 = x => (Math.round(x * 100) / 100);
     const row = (lab, bv, av, fmt = v => v, lowerBetter = true) => `<tr><td>${esc(lab)}</td><td>${fmt(bv)}</td><td>${fmt(av)}</td><td class="${(av < bv) === lowerBetter && av !== bv ? 't2-good' : av === bv ? '' : 't2-bad'}">${av < bv ? '↓' : av > bv ? '↑' : '→'}</td></tr>`;
     const tagRows = Object.keys(st?.tags || {}).filter(t => b.tags[t] || a.tags[t]).sort((x, y) => (b.tags[y] || 0) - (b.tags[x] || 0))
-      .map(t => row(cap1(t), r1((b.tags[t] || 0) / b.n), r1((a.tags[t] || 0) / a.n))).join('');
+      .map(t => row(T2.ui.kindName ? T2.ui.kindName(t) : cap1(t), r1((b.tags[t] || 0) / b.n), r1((a.tags[t] || 0) / a.n))).join('');
     const mb = b.mist / b.n, ma = a.mist / a.n;
     return card('Before and after training', `${head}<table class="t2-st-tbl"><thead><tr><th></th><th>Before</th><th>After</th><th></th></tr></thead><tbody>
       ${row('Mistakes + blunders per game', r1(mb), r1(ma))}${row('Fast mistakes (under 5 s)', pct(b.mist ? b.fast / b.mist : 0), pct(a.mist ? a.fast / a.mist : 0))}${tagRows}</tbody></table>

@@ -35,8 +35,9 @@ const S2 = (() => {
   const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
   const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[s.length >> 1]; };
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const fmtDate = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
-  const fmtDay = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  // one date style everywhere in Stats: "6 Sep 2026" (the browser's own month names vary: Sep / Sept)
+  const fmtDate = t => { const d = new Date(t * 1000); return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+  const fmtDay = fmtDate;
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
   const has = k => typeof H[k] === 'function';
   const isMine = (g, i) => (i % 2 === 0) === (g.color === 'white');
@@ -66,6 +67,7 @@ const S2 = (() => {
     const mine = g.plies.filter((p, i) => isMine(g, i));
     if (g.nb === undefined) { g.nb = mine.filter(p => p.lab === 'blunder').length; g.nm = mine.filter(p => p.lab === 'mistake').length; }
     if (g.acpl === undefined) g.acpl = avg(mine.map(p => p.cpl));
+    if (mine.length < 5) g.acpl = null;   // an abandoned game with 1-4 moves of yours says nothing about your play: show a dash, not 0
     if (g.acc === undefined) {
       const a = mine.map(p => moveAcc(p.loss)), mean = avg(a), harm = a.length / a.reduce((s, x) => s + 1 / Math.max(x, 1), 0);
       g.acc = a.length ? (mean + harm) / 2 : null;
@@ -125,7 +127,7 @@ const S2 = (() => {
     const tile = (name, value, sub, delta) => `<div class="s2-tile"><span class="eyebrow">${name}</span><b class="s2-v num">${value}</b><span class="s2-sub">${sub}</span>${delta || '<span class="s2-d muted">Not enough games to compare yet</span>'}</div>`;
     const first = w.cur[0], last = w.cur[w.cur.length - 1];
     return `<section class="card s2-verdict">
-      <span class="eyebrow">${w.label} · ${a.n} games${first ? ` · ${fmtDay(first.end)} to ${fmtDay(last.end)}` : ''}</span>
+      <span class="eyebrow">${w.label}${/games$/.test(w.label) ? '' : ` · ${a.n} games`}${first ? ` · ${fmtDay(first.end)} to ${fmtDay(last.end)}` : ''}</span>
       <p class="s2-say">${esc(say.trim())}</p>
       <div class="s2-tiles">
         ${tile('Rating', a.rating, 'rapid, now', arrow(rDelta, false, v => v, 0))}
@@ -139,7 +141,7 @@ const S2 = (() => {
 
   /* ================================================================ B. progress by month */
   const mkey = g => { const d = new Date(g.end * 1000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
-  const mlabel = k => { const [y, m] = k.split('-'); return `${MON[+m - 1]} ${y.slice(2)}`; };
+  const mlabel = k => { const [y, m] = k.split('-'); return `${MON[+m - 1]} ${y}`; };
   function rowStats(gs) {
     const s = summ(gs); let ser = 0, fast = 0;
     for (const g of gs) g.plies.forEach((p, i) => { if (isMine(g, i) && serious(p) && p.t != null) { ser++; if (p.t < 5) fast++; } });
@@ -263,7 +265,7 @@ const S2 = (() => {
       const w10 = avg(gs.map(g => g.myWin[Math.min(20, g.myWin.length - 1)]));
       const left = median(devs.filter(x => x.devBy === 'me' && x.devPly).map(x => Math.ceil(x.devPly / 2)));
       return `<div class="s2-copen"><div class="s2-chead"><b>${esc(name)}</b><span class="small muted">${plural(n, 'game')} · ${pct(sc)} score</span></div>
-        <div class="small muted">${gl('winchance', 'Winning chance')} after 10 moves: ${Math.round(w10)}%${left ? ` · you usually leave the course at move ${left}` : ''}</div>${extra || ''}</div>`;
+        <div class="small muted">${gl('winchance', 'Winning chance')} after 10 moves: ${Math.round(w10)}%${left ? ` · in games where you left the course, you usually left at move ${left}` : ''}</div>${extra || ''}</div>`;
     };
     const parts = [];
     for (const c of courses) {
@@ -301,7 +303,7 @@ const S2 = (() => {
     const accs = G.map(g => g.acc).filter(x => x != null);
     const tiles = [
       ['Overall', f0(avg(myPlies.map(p => p.cpl))), `across ${myPlies.length} of your moves`],
-      ['Last 20 games', f0(last20), diff == null ? 'recent form' : Math.abs(diff) < 1 ? 'same as the 20 before' : `${diff < 0 ? '▼ better by' : '▲ worse by'} ${Math.abs(diff).toFixed(0)}`],
+      ['Last 20 games', f0(last20), diff == null ? 'recent form' : Math.abs(diff) < 1 ? 'same as the 20 before' : `${diff < 0 ? '▼ better' : '▲ worse'} by ${Math.abs(diff).toFixed(0)} vs the 20 before`],
       ['Typical game', f0(median(gls.map(g => g.acpl))), 'the median game'],
       ['Opponents', f0(avg(oppPlies.map(p => p.cpl))), 'their average'],
       ['Without blunders', f0(calm), 'moves losing under 2 pawns'],
@@ -321,7 +323,7 @@ const S2 = (() => {
     const col = ['white', 'black'].map(c => ({ name: 'As ' + c, v: acplOf(G.filter(g => g.color === c)), note: `${G.filter(g => g.color === c).length}g` }));
     const rb = [['vs lower rated', g => g.oppRating < g.myRating - 50], ['similar (±50)', g => Math.abs(g.oppRating - g.myRating) <= 50], ['vs higher rated', g => g.oppRating > g.myRating + 50]]
       .map(([name, f]) => ({ name, v: acplOf(G.filter(f)), note: `${G.filter(f).length}g` }));
-    const link = (g, t) => `<button class="s2-grow" ${has('openGame') ? `data-act="game" data-url="${esc(g.url)}"` : ''}><span class="small muted">${fmtDate(g.end)}</span><span>${esc(openingName(g.opening)).slice(0, 30)} · ${g.result}</span><span class="small muted">${t}</span></button>`;
+    const link = (g, t) => `<button class="s2-grow" ${has('openGame') ? `data-act="game" data-url="${esc(g.url)}"` : ''}><span class="small muted">${fmtDate(g.end)}</span><span class="s2-gname"><span class="s2-gop">${esc(openingName(g.opening))}</span> · ${g.result}</span><span class="small muted">${t}</span></button>`;
     const sorted = [...gls].sort((a, b) => a.acpl - b.acpl);
     return `<details class="card s2-more" id="s2-more"><summary><h3>More numbers</h3></summary>
       <div class="s2-lazy"><p class="sub">${gl('acpl', 'Average mistake size')} (ACPL): how much engine score you give away on an average move, in hundredths of a pawn. Lower is better.</p>

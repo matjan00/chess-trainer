@@ -661,10 +661,18 @@ const T2 = (() => {
 
   /* ---- A. home */
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+  // the same names the Stats tab uses for each kind of mistake (keep in step with KIND in stats2/ui/s2core.js)
+  const KIND_NAME = { 'hung piece': 'Left a piece undefended', 'lost material': 'Lost material in a trade', 'missed capture': 'Missed a winning capture', 'fork': 'Walked into a fork',
+    'walked into check': 'Allowed a strong check', 'allowed mate': 'Allowed a mating attack', 'missed mate': 'Missed a checkmate', 'threw away win': 'Threw away a win' };
+  const kindName = t => KIND_NAME[t] || cap1(t);
+  // "Threw away a win" is counted in games (like Stats: 34 games), every other kind in moves
+  const kindCount = w => w.tag === 'threw away win' ? plural(MINE?.stats?.won?.thrown?.length ?? w.n, 'game') : `${w.n} ${w.n === 1 ? 'time' : 'times'}`;
   function weakSpots(n = 3) {
     const tags = MINE?.stats?.tags; if (!tags) return [];
-    const acc = groupAccuracy();
-    return Object.entries(tags).filter(([, v]) => v.n).map(([tag, v]) => { const gi = groupIndex(v.group); return { tag, ...v, gi, acc: gi >= 0 ? acc[gi] : null }; })
+    const acc = groupAccuracy(), thrown = MINE?.stats?.won?.thrown?.length, total = MINE?.stats?.games;
+    return Object.entries(tags).filter(([, v]) => v.n).map(([tag, v]) => { const gi = groupIndex(v.group); const o = { tag, ...v, gi, acc: gi >= 0 ? acc[gi] : null };
+        if (tag === 'threw away win' && thrown != null && total) { o.n = thrown; o.per10 = Math.round(thrown / total * 100) / 10; o.last30 = null; }
+        return o; })
       .sort((a, b) => (b.per10 || 0) - (a.per10 || 0)).slice(0, n);
   }
   const trend = v => v.prev30 == null || v.last30 == null ? '' : v.last30 < v.prev30 ? ' <span class="t2-good" title="fewer than in the 30 games before">↓</span>' : v.last30 > v.prev30 ? ' <span class="t2-bad" title="more than in the 30 games before">↑</span>' : ' →';
@@ -705,7 +713,7 @@ const T2 = (() => {
         <button class="btn" data-act="stats">Stats</button>
       </div>
       ${ws.length ? `<div class="card t2-weak"><div class="t2-wh"><span class="eyebrow">Your weak spots · from your games</span><button class="btn" data-act="stats">All stats</button></div>
-        ${ws.map(w => `<div class="t2-wrow"><div><b>${esc(cap1(w.tag))}</b><div class="small muted">In your games: ${w.n} times (${w.per10} per 10 games)${w.last30 != null ? ` · last 30 games: ${w.last30}${trend(w)}` : ''}</div>
+        ${ws.map(w => `<div class="t2-wrow"><div><b>${esc(kindName(w.tag))}</b><div class="small muted">In your games: ${kindCount(w)} (${w.per10} per 10 games)${w.last30 != null ? ` · last 30 games: ${w.last30}${trend(w)}` : ''}</div>
           ${w.acc && w.acc.n ? `<div class="small">In training: ${pct(w.acc.ok / w.acc.n)} of ${w.acc.n}</div>` : ''}</div>
           ${w.gi >= 0 && PUZ ? `<button class="btn" data-act="theme" data-g="${w.gi}">Practise</button>` : ''}</div>`).join('')}</div>` : ''}
       <div id="t2-home-extra"></div>`;
@@ -854,7 +862,7 @@ const T2 = (() => {
     const ws = weakSpots(8);
     return `<h2>Stats</h2><p class="small muted">The full statistics page arrives with the next part of the rebuild.</p>
       <div class="card"><span class="eyebrow">Training · last 14 days</span><p>${tot.rev ? `${tot.rev} reviews, ${pct(1 - tot.wrong / Math.max(1, tot.rev))} right.` : 'No reviews yet.'} Puzzle rating ${rating()}.</p></div>
-      ${ws.length ? `<div class="card"><span class="eyebrow">Your mistakes by kind (your games)</span>${ws.map(w => `<div class="t2-wrow"><div><b>${esc(cap1(w.tag))}</b><div class="small muted">${w.n} times · ${w.per10} per 10 games</div></div></div>`).join('')}</div>` : '<p class="muted">Statistics from your games arrive with the next update.</p>'}
+      ${ws.length ? `<div class="card"><span class="eyebrow">Your mistakes by kind (your games)</span>${ws.map(w => `<div class="t2-wrow"><div><b>${esc(kindName(w.tag))}</b><div class="small muted">${kindCount(w)} · ${w.per10} per 10 games</div></div></div>`).join('')}</div>` : '<p class="muted">Statistics from your games arrive with the next update.</p>'}
       ${MINE?.stats?.clock ? `<div class="card"><span class="eyebrow">Slow down</span><p>${pct(MINE.stats.clock.fastShare)} of your mistakes are played in under 5 seconds.</p></div>` : ''}`;
   }
 
@@ -1651,7 +1659,7 @@ const T2 = (() => {
     show('home');
     return api;
   }
-  const UI = { begin, head, fb, actions, cont, nav, choose, toast, rich, esc, stepBar, askMove,
+  const UI = { kindName, begin, head, fb, actions, cont, nav, choose, toast, rich, esc, stepBar, askMove,
     board: (fen, side, opts) => board(fen, side, opts), draw, get chess() { return P.chess; }, set shapes(s) { P.shapes = s; draw(); }, get cg() { return cg; }, playUci, playSan, flash, play };
   const api = {
     init, show, refresh, startDaily: () => runDaily(), runDaily, startOne, todayTasks, dueSummary, dailyPlan, now, endOfDay, posKey, KINDS, forecast, nextReview, intervalText, BACKLOG, GLOSSARY: GLOSSARY.map(([id, t, d]) => [id, t, d]),
