@@ -43,6 +43,54 @@ def inline_t2(html):
     return html
 
 
+S2_UI = ROOT / "stats2" / "ui"
+
+
+def inline_s2(html):
+    """The Stats tab (stats2/ui) at three placeholders, like Openings and Train:
+    s2.css at /*S2_CSS*/, s2.html at <!--S2_HTML-->, s2core.js at /*S2_JS*/ (inside the module script)."""
+    parts = {"/*S2_CSS*/": (S2_UI / "s2.css").read_text(encoding="utf-8"),
+             "<!--S2_HTML-->": (S2_UI / "s2.html").read_text(encoding="utf-8"),
+             "/*S2_JS*/": (S2_UI / "s2core.js").read_text(encoding="utf-8")}
+    for k, v in parts.items():
+        assert html.count(k) == 1, f"app.html must contain {k} exactly once"
+        assert "</script" not in v.lower(), f"{k}: the inlined file must not contain </script>"
+        html = html.replace(k, v)
+    return html
+
+
+G2_UI = ROOT / "games2" / "ui"
+
+
+def inline_g2(html):
+    """The Games tab (games2/ui) at three placeholders, like Openings and Train:
+    g2.css at /*G2_CSS*/, g2.html at <!--G2_HTML-->, g2core.js at /*G2_JS*/ (inside the module script)."""
+    parts = {"/*G2_CSS*/": (G2_UI / "g2.css").read_text(encoding="utf-8"),
+             "<!--G2_HTML-->": (G2_UI / "g2.html").read_text(encoding="utf-8"),
+             "/*G2_JS*/": (G2_UI / "g2core.js").read_text(encoding="utf-8")}
+    for k, v in parts.items():
+        assert html.count(k) == 1, f"app.html must contain {k} exactly once"
+        assert "</script" not in v.lower(), f"{k}: the inlined file must not contain </script>"
+        html = html.replace(k, v)
+    return html
+
+
+W2_UI = ROOT / "watch2" / "ui"
+
+
+def inline_w2(html):
+    """The Watch tab (watch2/ui) at three placeholders, like Openings and Train:
+    w2.css at /*W2_CSS*/, w2.html at <!--W2_HTML-->, w2core.js at /*W2_JS*/ (inside the module script)."""
+    parts = {"/*W2_CSS*/": (W2_UI / "w2.css").read_text(encoding="utf-8"),
+             "<!--W2_HTML-->": (W2_UI / "w2.html").read_text(encoding="utf-8"),
+             "/*W2_JS*/": (W2_UI / "w2core.js").read_text(encoding="utf-8")}
+    for k, v in parts.items():
+        assert html.count(k) == 1, f"app.html must contain {k} exactly once"
+        assert "</script" not in v.lower(), f"{k}: the inlined file must not contain </script>"
+        html = html.replace(k, v)
+    return html
+
+
 # data files the page fetches (besides analysis.json, which is slimmed below); a missing optional file is skipped
 # (the page hides that part). train2.json: Train courses (train2/tools/compile_train2.py); puzzles2.json: verified
 # puzzle pool (build_puzzles2.py); mine2.json: cards from your own games (build_mine2.py, nightly).
@@ -63,6 +111,9 @@ def main():
     html = (ROOT / "app.html").read_text(encoding="utf-8").replace("/*CG_CSS*/", css)
     html = inline_o2(html)
     html = inline_t2(html)
+    html = inline_s2(html)
+    html = inline_g2(html)
+    html = inline_w2(html)
     notes = ROOT / "notes.html"
     if notes.exists():
         html = html.replace("<!--NOTES-->", notes.read_text(encoding="utf-8"))

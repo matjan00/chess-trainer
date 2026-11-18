@@ -10,10 +10,6 @@
   const esc = T2.ui.esc;
   const pct = x => `${Math.round(x * 100)}%`;
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
-  const plural = (n, w, pl = w + 's') => `${n} ${n === 1 ? w : pl}`;
-  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const monthLabel = m => { const [y, mo] = m.split('-'); return `${MON[+mo - 1]} ${y.slice(2)}`; };
-  const dayLabel = unix => new Date(unix * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   const PG = k => T2.hooks.progress?.[k] || {};
   const card = (eyebrow, body, extra = '') => `<section class="card t2-st ${extra}"><span class="eyebrow">${esc(eyebrow)}</span>${body}</section>`;
   const reading = txt => `<p class="t2-st-read">${txt}</p>`;
@@ -28,49 +24,8 @@
     const pts = vals.map((v, i) => `${(i / (vals.length - 1) * (w - 8) + 4).toFixed(1)},${(h - 6 - (v - lo) / sp * (h - 12)).toFixed(1)}`).join(' ');
     return `<svg class="t2-st-line" viewBox="0 0 ${w} ${h}" role="img" aria-label="Puzzle rating from ${vals[0]} to ${vals[vals.length - 1]}"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
   };
-  const trendOf = v => v.prev30 == null || v.last30 == null ? '' : v.last30 < v.prev30 ? ' <span class="t2-good" title="fewer than in the 30 games before">↓</span>' : v.last30 > v.prev30 ? ' <span class="t2-bad" title="more than in the 30 games before">↑</span>' : ' →';
-  const groupIdx = id => T2.groups().findIndex(g => g.id === id);
 
   /* ---------------------------------------------------------------- blocks */
-  function weakBlock(st) {
-    const tags = st && st.tags ? Object.entries(st.tags).filter(([, v]) => v.n).sort((a, b) => (b[1].per10 || 0) - (a[1].per10 || 0)) : [];
-    if (!tags.length) return card('Your weak spots', empty('Your game statistics arrive after the next update of your games.'));
-    const acc = T2.groupAccuracy(), hasPuz = !!T2.puzzles();
-    const top = tags[0];
-    const rows = tags.map(([tag, v]) => {
-      const gi = groupIdx(v.group), a = gi >= 0 ? acc[gi] : null;
-      const btn = gi >= 0 && hasPuz ? `<button class="btn" data-act="theme" data-g="${gi}">Practise</button>` : !v.group ? `<button class="btn" data-act="course" data-c="convert">Win the won game</button>` : '';
-      return `<div class="t2-wrow"><div><b>${esc(cap1(tag))}</b><div class="small muted">In your games: ${v.n} times (${v.per10} per 10 games)${v.last30 != null ? ` · last 30 games: ${v.last30}${trendOf(v)}` : ''}</div>
-        ${a && a.n ? `<div class="small">In training: ${pct(a.ok / a.n)} of ${a.n}</div>` : a ? '<div class="small muted">Not tried in training yet</div>' : ''}</div>${btn}</div>`;
-    }).join('');
-    return card('Your weak spots · from your games', `${rows}${reading(`${esc(cap1(top[0]))} is your most common mistake: ${top[1].per10} in every 10 games. Practise the ones with a button first.`)}`);
-  }
-
-  function wonBlock(st) {
-    const w = st?.won, months = (st?.months || []).filter(m => m.wonReached);
-    if (!w || !w.reached) return card('Won positions', empty('No winning positions found in your games yet.'));
-    const thrown = w.thrown || [], plays = T2.mine()?.plays || [];
-    const playFor = t => plays.find(p => p.id.startsWith(`cv/${t.gid}-`));
-    const list = thrown.slice(0, 8).map(t => { const p = playFor(t), pr = p && PG('t2x')[p.id];
-      return `<div class="t2-grow"><div class="t2-gt"><b>vs ${esc(t.opp || '?')}</b><div class="small muted">${t.end ? dayLabel(t.end) : ''} · move ${Math.ceil(t.ply / 2)} · ${esc(t.result || '')}${pr?.ok ? ' · converted ✓' : ''}</div></div>${p ? `<button class="btn" data-act="pplay" data-id="${esc(p.id)}">Play it out</button>` : ''}</div>`; }).join('');
-    return card('Won positions', `<p class="t2-big">${w.kept} of ${w.reached}</p>
-      ${reading(`You reached a winning position in ${w.reached} games and won ${w.kept} of them (${pct(w.kept / w.reached)}). ${thrown.length ? `${plural(thrown.length, 'game')} were thrown away: those are your play-outs.` : ''}`)}
-      ${months.length ? bars(months.map(m => ({ l: monthLabel(m.m), v: m.wonReached, k: m.wonKept })), { fmt: (v, r) => `${r.k}/${v}`, cls: 'won' }) : ''}
-      ${thrown.length ? `<h4 class="t2-h4">Thrown away (${thrown.length})</h4><div class="t2-list">${list}</div>${thrown.length > 8 ? `<p class="small muted">and ${thrown.length - 8} more</p>` : ''}` : ''}
-      <div class="controls"><button class="btn primary" data-act="playwin">Play out a win</button></div>`);
-  }
-
-  function slowBlock(st) {
-    const c = st?.clock, months = (st?.months || []).filter(m => m.fast != null && m.mist + m.blun > 0);
-    if (!c) return card('Slow down', empty('Clock statistics arrive after the next update of your games.'));
-    const d = PG('t2d'); let fw = 0, wrong = 0;
-    for (const k of Object.keys(d)) { fw += d[k].fw || 0; wrong += d[k].wrong || 0; }
-    return card('Slow down', `<p class="t2-big">${pct(c.fastShare)}</p>
-      ${reading(`${pct(c.fastShare)} of your mistakes are played in under 5 seconds. A bad move takes you about ${c.medianBad} s, an ordinary move ${c.medianOther} s: the quick ones are the ones that go wrong.`)}
-      ${months.length ? bars(months.map(m => ({ l: monthLabel(m.m), v: Math.round(m.fast * 100) })), { max: 100, fmt: v => v + '%', cls: 'fast' }) : ''}
-      <p class="small">${wrong ? `In training: ${fw} of your ${wrong} wrong answers came in under 4 seconds (${pct(fw / wrong)}).` : 'In training: no wrong answers yet, so nothing to compare.'}</p>`);
-  }
-
   function beforeAfter(st) {
     const days = Object.keys(PG('t2d')).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k)).sort();
     const games = T2.hooks.games;
@@ -119,9 +74,10 @@
   /* ---------------------------------------------------------------- screens */
   T2.setScreen('stats', el => {
     const mine = T2.mine(), st = mine?.stats;
-    const sub = st ? `Based on ${st.games} of your games${st.from ? ` (${dayLabel(st.from)} to ${dayLabel(st.to)})` : ''}.` : '';
-    el.innerHTML = `<div class="t2-stats"><h2>Stats</h2><p class="muted">${sub || 'Your game statistics are not available yet.'} Each block says in one line what it means.</p>
-      ${weakBlock(st)}${wonBlock(st)}${slowBlock(st)}${beforeAfter(st)}${trainingBlock()}</div>`;
+    el.innerHTML = `<div class="t2-stats"><h2>Training stats</h2>
+      <section class="card t2-st"><span class="eyebrow">Your games</span><p>Your weak spots, won positions and clock now live in the Stats tab.</p>${T2.hooks.openStats ? '<div class="controls"><button class="btn" data-t2stats="open">Open Stats</button></div>' : ''}</section>
+      ${beforeAfter(st)}${trainingBlock()}</div>`;
+    el.querySelector('[data-t2stats="open"]')?.addEventListener('click', () => T2.hooks.openStats?.());
   });
 
   T2.setScreen('themes', el => {
