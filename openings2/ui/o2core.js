@@ -31,6 +31,12 @@
    5. Extension points for o2stats.js (T6): O2.addSection({id, label, render(course, el)}) adds a course-page tab;
       O2.addHomeBlock(el => {}) fills #o2-home-extra; O2.playScript({...}) runs a trap / fix-it / model drill in the
       trainer; O2.srs (get, answer, isDue, ...) and O2.posKey, O2.courses() for read access.
+   Forecast (for the Today tab): O2.forecast(days = 7) -> array of `days` entries, index 0 = today (includes everything overdue):
+      {day: 'YYYY-MM-DD', t: <start-of-day ms>, n: <cards due that day>, mins: <round(min(n,CAP)*8/60), min 1 if n>0, else 0>,
+       items: [{course: courseTitle, courseId, line: lineTitle, lineId, n}]} (grouped by primary line, sorted by n desc).
+      O2.intervalText(days) -> "1 day" | "3 days" | "1 week" | "2 weeks" | "1 month" | "3 months" | "6 months" | "N days".
+      O2.srs.BACKLOG (40): above this many due moves, the Learn buttons first ask the user to clear the reviews.
+      O2.srs.answer(c, id, result) returns {lv, prevLv, due, result, practice?}.
    Clock: O2.now() honours ?o2now=<ms> or localStorage ct.o2now (time travel for tests; the clock keeps ticking from it).
    ============================================================================================ */
 const O2 = (() => {
@@ -38,7 +44,7 @@ const O2 = (() => {
   const DAY = 86400000;
   const KINDS = ['o2c', 'o2l', 'o2g', 'o2t', 'o2m', 'o2d'];
   const IV = [0, 1, 3, 7, 14, 30, 90, 180];          // days until the next review, by level (L1 = next day; user decision 2026-11-12)
-  const MAXLV = 7, MATURE = 4, CAP = 60;
+  const MAXLV = 7, MATURE = 4, CAP = 60, BACKLOG = 40;
   const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
   const H = {                                         // hooks; replaced in init()
     Chessground: null, record: null, progress: null,
@@ -90,6 +96,21 @@ const O2 = (() => {
     const d = Math.floor((endOfDay() - t) / DAY);
     return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`;
   }
+
+  const startOfDay = (t = now()) => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  /** "1 day", "3 days", "1 week", "2 weeks", "1 month", "3 months", "6 months", else "N days" */
+  function intervalText(days) {
+    const d = Math.max(0, Math.round(days));
+    if (d === 1) return '1 day';
+    if (d === 7) return '1 week';
+    if (d === 14) return '2 weeks';
+    if (d === 30) return '1 month';
+    if (d === 90) return '3 months';
+    if (d === 180) return '6 months';
+    return `${d} days`;
+  }
+  const dateText = t => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const dayText = t => new Date(t).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).replace(',', '');
 
   /* ---------------------------------------------------------------- glossary (allowed jargon, BLUEPRINT Q18) */
   const GLOSSARY = [
@@ -170,20 +191,60 @@ const O2 = (() => {
   }
   let lastAct = Date.now();
   const spent = () => { const t = Date.now(), d = Math.min(120000, t - lastAct); lastAct = t; return d; };
-  /** result: 'ok' (first try), 'hint' (correct with the hint), 'wrong' (wrong move or "Show"); practice: 'pwrong' */
+  /* Load map (spreading): calendar day -> number of cards due that day, across all courses. Built lazily, kept up to date by
+     srsAnswer/srsLearn, thrown away by loadReset() (init, refresh, or when the calendar day changes). */
+  let LOAD = null, loadDay = '';
+  function loadMap() {
+    const dk = dayKey();
+    if (LOAD && loadDay === dk) return LOAD;
+    LOAD = new Map(); loadDay = dk;
+    for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (s) loadAdd(s.due, 1); }
+    return LOAD;
+  }
+  const loadReset = () => { LOAD = null; };
+  function loadAdd(due, d) { if (!LOAD) return; const k = dayKey(due); LOAD.set(k, (LOAD.get(k) || 0) + d); }
+  /** days until the next review: IV[lv], but for 7+ days pick the least busy day within about +-10% (at least +-1 day) */
+  function pickDays(t, lv) {
+    const iv = IV[lv];
+    if (iv < 7) return iv;
+    const lo = Math.max(1, Math.min(Math.round(iv * 0.9), iv - 1)), hi = Math.max(Math.round(iv * 1.1), iv + 1);
+    const load = loadMap();
+    let best = iv, bestN = Infinity;
+    for (let d = lo; d <= hi; d++) {
+      const n = load.get(dayKey(t + d * DAY)) || 0;
+      if (n < bestN || (n === bestN && Math.abs(d - iv) < Math.abs(best - iv))) { best = d; bestN = n; }
+    }
+    return best;
+  }
+  /** result: 'ok' (first try), 'hint' (correct with the hint), 'wrong' (wrong move or "Show"); practice: 'pwrong'.
+      Returns {lv, prevLv, due, result, practice?} so the UI can say what happened. */
   function srsAnswer(c, id, result) {
     const t = now(), s = srsGet(c, id) || { lv: 0, n: 0, w: 0, s: 0 };
     let { lv = 0, n = 0, w = 0, s: st = 0, due } = s;
-    if (result === 'pwrong') { put('o2c', ckey(c, id), { ...s, due: t }); dayAdd({ wrong: 1, ms: spent() }); return; }
+    const prevLv = lv;
+    if (result === 'pwrong') { put('o2c', ckey(c, id), { ...s, due: t }); dayAdd({ wrong: 1, ms: spent() }); return { lv, prevLv, due: t, result, practice: true }; }
+    if (s.due != null) { loadMap(); loadAdd(s.due, -1); }
     n++;
-    if (result === 'ok') { lv = Math.min(MAXLV, Math.max(1, lv + 1)); st++; due = t + IV[lv] * DAY; }
-    else if (result === 'hint') { lv = Math.max(1, lv); st++; due = t + IV[lv] * DAY; }
-    else { lv = 1; w++; st = 0; due = t + DAY; }
+    if (result === 'ok') { lv = Math.min(MAXLV, Math.max(1, lv + 1)); st++; due = t + pickDays(t, lv) * DAY; }
+    else if (result === 'hint') { lv = Math.max(1, lv); st++; due = t + pickDays(t, lv) * DAY; }
+    else { lv = Math.max(1, lv - 2); w++; st = 0; due = t + DAY; }   // softer mistakes: two boxes down, back tomorrow
+    loadAdd(due, 1);
     put('o2c', ckey(c, id), { lv, due, n, w, s: st });
     dayAdd({ rev: 1, wrong: result === 'wrong' ? 1 : 0, ms: spent() });
+    return { lv, prevLv, due, result };
+  }
+  /** one plain-English line about what an answer did to the schedule */
+  function srsNote(r, practice) {
+    if (practice || r?.practice) return 'Practice: schedule unchanged';
+    if (!r) return '';
+    const days = Math.round((r.due - now()) / DAY), when = `back in ${intervalText(days)} (${dateText(r.due)})`;
+    if (r.result === 'wrong') return `✗ Back tomorrow · box ${r.lv}`;
+    if (r.result === 'ok') return `✓ Box ${r.lv} · ${r.lv > r.prevLv ? '' : 'stays · '}${when}`;
+    return `Box ${r.lv} · ${r.lv > r.prevLv ? '' : 'stays · '}${when}`;
   }
   function srsLearn(c, ids) {
     const t = now();
+    if (LOAD) for (const id of ids) { const o = srsGet(c, id); if (o) loadAdd(o.due, -1); loadAdd(t + IV[1] * DAY, 1); }
     for (const id of ids) put('o2c', ckey(c, id), { lv: 1, due: t + IV[1] * DAY, n: 0, w: 0, s: 0 });
     dayAdd({ new: ids.length, ms: spent() });
   }
@@ -193,9 +254,10 @@ const O2 = (() => {
     const learned = lineLearned(c, l);
     const due = sts.filter(isDue).length, fresh = sts.filter(s => !s).length;
     const minLv = sts.length ? Math.min(...sts.map(s => s?.lv || 0)) : 0;
+    const dues = sts.filter(Boolean).map(s => s.due), next = dues.length ? Math.min(...dues) : null;
     const state = !learned ? 'new' : due ? 'due' : minLv >= MATURE ? 'known' : 'learning';
     const badge = !learned ? 0 : minLv >= 5 ? 4 : minLv >= 4 ? 3 : minLv >= 3 ? 2 : 1;
-    return { learned, due, fresh, minLv, state, badge, cards: sts.length };
+    return { learned, due, fresh, minLv, state, badge, cards: sts.length, next };
   }
   function courseInfo(c) {
     let fresh = 0, learning = 0, mature = 0, due = 0, last = 0;
@@ -220,6 +282,25 @@ const O2 = (() => {
     d.forEach(x => byCourse[x.c.id] = (byCourse[x.c.id] || 0) + 1);
     return { n: d.length, mins: Math.max(1, Math.round(Math.min(d.length, CAP) * 8 / 60)), byCourse };
   }
+  /** cards due per day for the next `days` days; index 0 = today incl. everything overdue (contract used by the Today tab) */
+  function forecast(days = 7) {
+    const e = endOfDay(), t0 = startOfDay(), d0 = new Date(t0);
+    const out = Array.from({ length: days }, (_, i) => { const t = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + i).getTime(); return { day: dayKey(t), t, n: 0, mins: 0, items: [], _m: new Map() }; });
+    for (const c of COURSES) for (const k of c.cards) {
+      const s = srsGet(c, k.id); if (!s) continue;
+      const i = s.due <= e ? 0 : Math.ceil((s.due - e) / DAY);
+      if (i >= days) continue;
+      const o = out[i]; o.n++;
+      const key = c.id + '/' + k.line;
+      let it = o._m.get(key);
+      if (!it) { it = { course: c.title, courseId: c.id, line: c.lineById.get(k.line)?.title || '', lineId: k.line, n: 0 }; o._m.set(key, it); o.items.push(it); }
+      it.n++;
+    }
+    for (const o of out) { o.mins = o.n ? minsFor(o.n) : 0; o.items.sort((a, b) => b.n - a.n); delete o._m; }
+    return out;
+  }
+  const minsFor = n => Math.max(1, Math.round(Math.min(n, CAP) * 8 / 60));
+  const dueOnDay = (cs, t) => { const k = dayKey(t); let n = 0; for (const c of cs) for (const x of c.cards) { const s = srsGet(c, x.id); if (s && dayKey(s.due) === k) n++; } return n; };
   function nextDueAfterToday(cs) {
     let best = Infinity; const e = endOfDay();
     for (const c of cs) for (const k of c.cards) { const s = srsGet(c, k.id); if (s && s.due > e && s.due < best) best = s.due; }
@@ -269,7 +350,7 @@ const O2 = (() => {
     if (which === 'course') renderCourse(curCourse);
     window.scrollTo({ top: 0 });
   }
-  function refresh() { if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
+  function refresh() { loadReset(); if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
 
   /* ---- mini boards (thrown away on every re-render) */
   let minis = [];
@@ -356,6 +437,12 @@ const O2 = (() => {
     drawMinis(panel);
     if (keepScroll) window.scrollTo({ top: y });
   }
+  function nextText(t) {
+    const e = endOfDay();
+    if (t <= e) return 'Due today';
+    if (t <= e + DAY) return 'Back tomorrow';
+    return `Back ${dayText(t)}`;
+  }
   const KIND = { main: 'Main', side: 'Side', punish: 'Punish' };
   const STATE = { new: 'New', learning: 'Learning', due: 'Due', known: 'Known' };
   function reachText(r) {
@@ -379,7 +466,7 @@ const O2 = (() => {
           return `<div class="o2-line lv${i.badge}${nl === l ? ' next' : ''}">
             ${desk ? `<div class="o2-mini" data-mini="${esc(l.endFen)}" data-orient="${c.side}"></div>` : ''}
             <div class="o2-lmain"><div class="o2-lt"><span class="medal-dot" title="${LEVEL_NAME[i.badge]}">${i.badge ? (i.badge >= 2 ? '★' : '·') : ''}</span><span class="t">${esc(l.title)}</span></div>
-              <div class="o2-lmeta"><span class="o2-kind ${l.kind}">${KIND[l.kind] || esc(l.kind)}</span><span class="status ${i.state}">${STATE[i.state]}${i.state === 'due' ? ` · ${i.due}` : ''}</span><span class="small muted">${plural(i.cards, 'move')}</span>${r ? `<span class="small muted">${r}</span>` : ''}</div></div>
+              <div class="o2-lmeta"><span class="o2-kind ${l.kind}">${KIND[l.kind] || esc(l.kind)}</span><span class="status ${i.state}">${STATE[i.state]}${i.state === 'due' ? ` · ${i.due}` : ''}</span>${i.learned && i.next != null ? `<span class="o2-next${i.due ? ' due' : ''}">${nextText(i.next)}</span><span class="o2-dots" title="Box ${i.minLv} of ${MAXLV}" aria-label="Lowest box ${i.minLv} of ${MAXLV}">${Array.from({ length: MAXLV }, (_, j) => `<i${j < i.minLv ? ' class="on"' : ''}></i>`).join('')}</span>` : ''}<span class="small muted">${plural(i.cards, 'move')}</span>${r ? `<span class="small muted">${r}</span>` : ''}</div></div>
             <div class="o2-lbtn">${!i.learned ? `<button class="btn primary" data-act="learn" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Learn</button>`
               : i.due ? `<button class="btn primary" data-act="review-line" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Review</button>`
               : `<button class="btn" data-act="practise-line" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Practise</button>`}
@@ -390,8 +477,7 @@ const O2 = (() => {
   function tabReview(c) {
     const i = courseInfo(c);
     const diff = c.cards.map(k => ({ k, s: srsGet(c, k.id) })).filter(x => isDifficult(x.s)).sort((a, b) => (b.s.w / b.s.n) - (a.s.w / a.s.n));
-    const e = endOfDay(), fc = Array.from({ length: 7 }, () => 0);
-    for (const k of c.cards) { const s = srsGet(c, k.id); if (!s) continue; const d = s.due <= e ? 0 : Math.ceil((s.due - e) / DAY); if (d < 7) fc[d]++; }
+    const fc = forecast(7).map(o => o.items.filter(x => x.courseId === c.id).reduce((a, x) => a + x.n, 0));
     const mx = Math.max(1, ...fc);
     const lv = Array.from({ length: MAXLV + 1 }, () => 0); c.cards.forEach(k => lv[srsGet(c, k.id)?.lv || 0]++);
     const mxl = Math.max(1, ...lv);
@@ -794,7 +880,8 @@ const O2 = (() => {
       P.onDone = onDone || null;
       const groups = buildGroups(batch);
       const total = groups.reduce((s, g) => s + g.ids.size, 0);
-      const S = { asked: 0, ok: 0, wrong: [], answered: new Set() };
+      const S = { asked: 0, ok: 0, wrong: [], answered: new Set(), up: 0, stay: 0, back: 0 };
+      const notes = new Map();
       let qn = 0;
       if (!total) { if (onDone) return onDone(); fb('<p>Nothing to review right now.</p>'); actions('none'); return; }
       for (let gi = 0; gi < groups.length; gi++) {
@@ -829,19 +916,23 @@ const O2 = (() => {
           if (!S.answered.has(key)) {
             S.answered.add(key); S.asked++; qn++;
             if (practice) { if (res === 'wrong') srsAnswer(c, s.id, 'pwrong'); else spent(); }
-            else srsAnswer(c, s.id, res);
+            else {
+              const r = srsAnswer(c, s.id, res); notes.set(key, srsNote(r));
+              if (res === 'wrong') S.back++; else if (r.lv > r.prevLv) S.up++; else S.stay++;
+            }
+            if (practice) notes.set(key, 'Practice: schedule unchanged');
             if (res !== 'wrong') S.ok++; else S.wrong.push({ c, s, line: g.line });
             changed();
           }
           if (res === 'wrong') {
             if (!g.again) groups.push({ c, line: g.line, ids: new Set([s.id]), again: true });
             P.shapes = shapes(s.n.shapes); draw();
-            fb(commentHtml(s, { eyebrow: 'Now you know' }) + `<p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session and again tomorrow.'}</p>`, 'wrong');
+            fb(commentHtml(s, { eyebrow: 'Now you know' }) + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session and is due again tomorrow.'}</p>`, 'wrong');
             await cont(); chk();
           } else {
             play('right');
             P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
-            fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s), 'right');
+            fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s) + (notes.get(key) ? `<p class="small o2-srs">${esc(notes.get(key))}</p>` : ''), 'right');
             addNote(s, true);
             await wait(i === lastI ? 900 : 650); chk();
           }
@@ -856,7 +947,8 @@ const O2 = (() => {
       const acc = S.asked ? S.ok / S.asked : 0;
       if (acc >= 0.9 && S.asked >= 5) { try { H.confetti?.(); } catch {} }
       fb(`<span class="eyebrow">${practice ? 'Drill finished' : 'Review finished'}</span><h3>${S.ok} of ${S.asked} right · ${pct(acc)}</h3>
-        <p>${more && !practice ? `${plural(more, 'move')} still due.` : nd ? `Next review: ${whenText(nd)}.` : ''}</p>
+        ${practice ? '<p class="small muted">Practice: schedule unchanged.</p>' : `<p class="o2-moved">${[S.up ? `${plural(S.up, 'move')} moved up` : '', S.back ? `${S.back} back to tomorrow` : '', S.stay ? `${S.stay} stayed` : ''].filter(Boolean).join(' · ')}</p>`}
+        <p>${more && !practice ? `${plural(more, 'move')} still due.` : nd ? `Next review: ${dayText(nd)} · about ${minsFor(dueOnDay(cs, nd))} min` : ''}</p>
         ${S.wrong.length ? `<p class="small muted">Missed (tap to study the position):</p><div class="o2-missed">${S.wrong.map(w => `<button class="o2-drow" data-act="study" data-c="${esc(w.c.id)}" data-l="${esc(w.line.id)}" data-id="${esc(w.s.id)}"><b>${esc(moveLabel(w.s.ply, w.s.san))}</b><span class="small muted">${esc(w.line.title)}</span></button>`).join('')}</div>` : ''}
         ${onDone ? `<div class="controls"><button class="btn primary" data-act="next">${esc(nextLabel || 'Next')}</button><button class="btn" data-act="back">Stop for today</button></div>`
         : `<div class="controls">${rest.length || (more && !practice) ? `<button class="btn primary" data-act="${scope && scope.length === 1 ? 'review' : 'daily'}" data-c="${esc(cs[0]?.id || '')}">Keep going (${rest.length || more})</button>` : ''}
@@ -997,7 +1089,19 @@ const O2 = (() => {
       case 'back': return P.back ? P.back() : show('home');
       case 'daily': curCourse = null; return startDaily();
       case 'next': { const f = P.onDone; P.onDone = null; return f?.(); }
-      case 'learn': if (c && l) { curCourse = c; startLearn(c, l); } return;
+      case 'learn': {
+        if (!c || !l) return;
+        $$('.o2-backlog').forEach(x => x.remove());
+        const waiting = dueCards().length;
+        if (waiting > BACKLOG && b.dataset.force !== '1') {
+          const host = b.closest('.o2-line') || b.closest('.controls, .o2-cact') || b.parentElement;
+          const html = `<div class="o2-backlog" role="status"><p>You have ${waiting} reviews waiting. Clear them first so they don't pile up.</p>
+            <div class="controls"><button class="btn primary" data-act="daily">Review now</button><button class="btn" data-act="learn" data-force="1" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Learn anyway</button></div></div>`;
+          if (host.classList.contains('o2-line')) host.insertAdjacentHTML('beforeend', html); else host.insertAdjacentHTML('afterend', html);
+          return;
+        }
+        curCourse = c; startLearn(c, l); return;
+      }
       case 'study': if (c && l) { curCourse = c; startStudy(c, l, b.dataset.id); } return;
       case 'review': if (c) reviewCourse(c); return;
       case 'review-line': if (c && l) { curCourse = c; reviewLine(c, l); } return;
@@ -1063,7 +1167,8 @@ const O2 = (() => {
     addSection(s) { sections.push(s); if (screen === 'course') renderCourse(curCourse, true); },
     addHomeBlock(fn) { homeBlocks.push(fn); if (screen === 'home' && ROOT) renderHome(); },
     playScript, openTree, startLearn, startStudy, reviewCourse,
-    srs: { get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE },
+    forecast, intervalText,
+    srs: { get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
     rich, toast,
     get hooks() { return H; },
   };

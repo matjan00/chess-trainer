@@ -192,3 +192,16 @@
 .o2s-sh { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .o2s-sh h3 { font-size: 20px; }
 .o2s-strip { margin-top: 20px; }
 /* ===== end o2stats ===== */
+
+/* SRS: next review date + box dots in the line list, per-answer note, backlog notice */
+.o2-next { font-size: 13px; font-weight: 600; color: var(--ink-2, var(--ink)); }
+.o2-next.due { color: var(--accent); }
+.o2-dots { display: inline-flex; gap: 3px; align-items: center; }
+.o2-dots i { display: block; width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--line); background: transparent; }
+.o2-dots i.on { background: var(--accent); border-color: var(--accent); }
+.o2-srs { margin: 6px 0 0; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.o2-moved { margin: 4px 0; font-weight: 600; }
+.o2-backlog { grid-column: 1 / -1; margin-top: 8px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--bg-2, transparent); }
+.o2-backlog p { margin: 0 0 8px; font-size: 14px; }
+.o2-backlog .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.o2-backlog .btn { flex: 1 1 120px; }
