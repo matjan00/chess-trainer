@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>W2 dev harness</title>
+<!-- Dev harness for the Watch 2 UI. Serve the REPO ROOT (python -m http.server 8823) and open /watch2/ui/dev.html.
+     It borrows the app's real stylesheet from ../../app.html, loads the real ../../data/tube.json and courses2.json, and stands in
+     for record/progress/needs/goTrain/goOpenings. Progress: localStorage 'ct.w2dev.progress'. -->
+<style id="app-css"></style>
+<link rel="stylesheet" href="w2.css">
+<style>
+  #devbar { position: sticky; top: 0; z-index: 35; background: #222; color: #eee; font: 12px/1.3 system-ui, sans-serif; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #devbar button { font: 12px system-ui; padding: 4px 8px; border-radius: 5px; border: 1px solid #555; background: #333; color: #eee; cursor: pointer; }
+  #devbar b { color: #ffd166; }
+</style>
+</head>
+<body>
+<div id="devbar"><span>W2 dev</span><button id="dev-reset">Reset progress</button><button id="dev-info-btn">Info</button><b id="dev-info"></b></div>
+<main class="wrap"><section class="view" id="view-watch"><div id="w2-slot"></div></section></main>
+<script>
+(async () => {
+  const appHtml = await fetch('../../app.html').then(r => r.text());
+  document.getElementById('app-css').textContent = (appHtml.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1].replace('/*CG_CSS*/', '');
+  document.getElementById('w2-slot').outerHTML = await fetch('w2.html').then(r => r.text());
+  await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'w2core.js'; s.onload = res; s.onerror = rej; document.head.append(s); });
+  const q = new URLSearchParams(location.search);
+  const tube = await fetch(q.get('tube') || '../../data/tube.json').then(r => r.json()).catch(() => ({ videos: [] }));
+  const cdata = await fetch('../../data/courses2.json').then(r => r.json()).catch(() => ({ courses: [] }));
+  const courses = (cdata.courses || cdata).map(c => ({ id: c.id, title: c.title }));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('ct.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('ct.' + k, JSON.stringify(v)); } catch {} },
+  };
+  const progress = store.get('w2dev.progress', {}); progress.vid ||= {};
+  function record(kind, id, value) { (progress[kind] ||= {})[id] = { ...value, t: Date.now() }; store.set('w2dev.progress', progress); }
+  const log = [];
+  const needs = () => [
+    { topic: 'convert', title: 'Finish off games you are winning', why: 'You reached a winning position in 9 games and won only 3.' },
+    { topic: 'thinking', title: 'Stop giving pieces away', why: '12 of your mistakes were a piece left undefended.' },
+    { topic: 'tactics', title: 'See the tactics', why: 'You missed 20 opponent blunders.' },
+    { topic: 'endgame', title: 'Endgames', why: 'You blundered in the endgame in 8 games.' },
+    { topic: 'strategy', title: 'Know what to do next', why: 'Plans for the middlegame.' }];
+  window.progress = progress; window.dev = { log };
+  W2.init({ root: document.getElementById('w2'), data: { tube }, hooks: { record, progress, store, needs, courses: () => courses, courseGames: id => ({ jobava: 14, caro: 5, slav: 0 })[id] || 0,
+    goTrain: id => { log.push('train:' + id); info(); }, goOpenings: id => { log.push('op:' + id); info(); }, onChange: () => { log.push('change'); info(); } } });
+  window.W2 = W2;
+  function info() { document.getElementById('dev-info').textContent = log.slice(-3).join(' | '); }
+  document.getElementById('dev-reset').onclick = () => { localStorage.removeItem('ct.w2dev.progress'); localStorage.removeItem('ct.wlen2'); localStorage.removeItem('ct.whide2'); location.reload(); };
+  document.getElementById('dev-ready').textContent = 'ready';
+})();
+</script>
+<span id="dev-ready" hidden></span>
+</body>
+</html>

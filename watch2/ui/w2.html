@@ -1,0 +1,26 @@
+<!-- Watch 2 tab (inlined into the Watch view by build.py at the W2_HTML placeholder); filled by W2.init() in w2core.js.
+     The video player overlay (#w2-player) is moved to <body> by W2.init(), so it also works from Today. -->
+<div id="w2" class="w2">
+  <div id="w2-home"></div>
+</div>
+<div class="overlay" id="w2-player" hidden>
+  <div class="card w2-pcard" role="dialog" aria-labelledby="w2-pt">
+    <div class="w2-pframe" id="w2-frame"></div>
+    <div class="w2-pbody">
+      <div><span class="eyebrow" id="w2-peyebrow"></span><h3 id="w2-pt" style="margin-top:4px"></h3><div class="small muted" id="w2-pmeta"></div></div>
+      <p class="w2-pwhy" id="w2-pwhy"></p>
+      <div class="w2-key" id="w2-key" hidden>
+        <label for="w2-keyin">One line for later: what will you check before every move?</label>
+        <div class="w2-keyrow"><input id="w2-keyin" type="text" maxlength="140" autocomplete="off" placeholder="Optional"><button class="btn" id="w2-keysave">Save</button></div>
+      </div>
+      <div class="w2-pacts">
+        <button class="btn" id="w2-pwatched">Mark as watched</button>
+        <button class="btn" id="w2-plater">Watch later</button>
+        <button class="btn" id="w2-ppractise" hidden></button>
+        <a class="btn" id="w2-pyt" target="_blank" rel="noopener">Open in YouTube</a>
+        <a class="btn" id="w2-prd" target="_blank" rel="noopener">See it on Reddit</a>
+        <button class="btn" id="w2-pclose" style="margin-left:auto">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
