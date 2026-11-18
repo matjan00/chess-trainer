@@ -298,6 +298,27 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .player-acts .btn { min-height: 42px; }
 .player-acts a.btn { text-decoration: none; color: inherit; display: inline-flex; align-items: center; }
 .btn[aria-pressed="true"] { background: color-mix(in srgb, var(--good) 16%, var(--surface)); border-color: var(--good); }
+.coming { margin-top: 16px; }
+.coming .cm-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.coming .cm-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.coming .cm-day { display: grid; grid-template-rows: auto 64px auto; justify-items: center; gap: 4px; padding: 6px 2px; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--ink); cursor: pointer; font: inherit; min-width: 0; }
+.coming .cm-day[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.coming .cm-dn { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+.coming .cm-bar { align-self: end; display: flex; flex-direction: column-reverse; width: min(28px, 70%); height: 100%; justify-content: flex-start; }
+.coming .cm-bar i { display: block; width: 100%; border-radius: 3px 3px 0 0; }
+.coming .cm-bar i.o { background: var(--accent); }
+.coming .cm-bar i.t { background: var(--good); }
+.coming .cm-bar i + i { margin-bottom: 1px; }
+.coming .cm-n { font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
+.coming .cm-n.zero { color: var(--ink-3); font-weight: 400; }
+.coming .cm-key { display: flex; gap: 14px; font-size: 13px; color: var(--ink-2); }
+.coming .cm-key span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.coming .cm-key .o::before { background: var(--accent); } .coming .cm-key .t::before { background: var(--good); }
+.coming .cm-detail { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 15px; }
+.coming .cm-detail ul { margin: 6px 0 0; padding-left: 18px; }
+.coming .cm-detail li { margin: 2px 0; }
+.coming .cm-warn { margin: 10px 0 0; color: var(--mistake); font-size: 14px; }
+@media (max-width: 420px) { .coming .cm-days { gap: 2px; } .coming .cm-dn { font-size: 12px; } }
 .today-watch { display: grid; grid-template-columns: 160px 1fr; gap: 14px; align-items: center; margin-top: 16px; cursor: pointer; }
 .today-watch .vth { border-radius: 7px; }
 .today-watch h3 { font-size: 18px; margin-top: 3px; }
@@ -509,6 +530,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
       <div class="ckpts" id="today-list"></div>
       <div class="sess-go" id="today-go"></div>
     </div>
+    <div class="card coming" id="today-coming" hidden></div>
     <div class="card lastgame" id="today-game" hidden></div>
     <div class="card resume" id="today-extra" hidden></div>
     <div class="card today-watch" id="today-watch" hidden></div>
@@ -1599,6 +1621,7 @@ function renderToday() {
   const still = seen ? ' style="animation:none;stroke-dashoffset:0"' : '';
   $('#today-cheer').innerHTML = all ? `<div class="cheer"><span class="medal"${seen ? ' style="animation:none"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"${still}><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><strong>Session done. That's a full training day.</strong><span class="small muted">${streak > 1 ? `${streak} days in a row now. ` : ''}Anything more today is a bonus.</span></div></div>` : '';
   if (all) store.set('cheered', todayKey);
+  renderComing();
   renderLastGame();
   // one optional extra: the lesson or play-out of the day, or (when that is done) a video
   const ex = $('#today-extra'), lessonOpen = !!extra && !extra.done && !/All lessons finished/.test(extra.ct);
@@ -1636,6 +1659,38 @@ function startSession(short) {
 }
 // Since your last game: the newest analysed game of the last 3 days, where it left your opening course, and your
 // mistakes in it as Train cards ("Practise this mistake" opens that card, then comes back here)
+// "Coming up": reviews due on each of the next 7 days, Openings and Train together; tap a day to see what is in it
+let comingSel = 0;
+function renderComing() {
+  const box = $('#today-coming');
+  const of = typeof O2.forecast === 'function' ? O2.forecast(7) : [], tf = typeof T2.forecast === 'function' ? T2.forecast(7) : [];
+  if (!of.length && !tf.length) { box.hidden = true; return; }
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const o = of[i] || { n: 0, mins: 0, items: [] }, t = tf[i] || { n: 0, mins: 0, items: [] };
+    return { i, o, t, n: o.n + t.n, mins: o.mins + t.mins, at: (o.t || t.t || startOfDay() + i * 864e5) };
+  });
+  if (!days.some(d => d.n)) { box.hidden = true; return; }
+  box.hidden = false;
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const dname = (d, long) => d.i === 0 ? 'Today' : d.i === 1 ? (long ? 'Tomorrow' : 'Tmrw') : new Date(d.at).toLocaleDateString('en-GB', long ? { weekday: 'long', day: 'numeric', month: 'short' } : { weekday: 'short' });
+  const mx = Math.max(1, ...days.map(d => d.n));
+  const week = days.slice(1).reduce((a, d) => a + d.n, 0);
+  const bl = O2.srs?.BACKLOG || 40, tbl = T2.srs?.BACKLOG || 40;
+  const warn = days[0].o.n > bl || days[0].t.n > tbl;
+  const sel = days[Math.min(comingSel, 6)];
+  const list = (items, name) => items.length ? `<div><b>${name}</b><ul>${items.slice(0, 6).map(x => `<li>${esc(x.line ? `${x.course}: ${x.line}` : x.label)} · ${x.n}</li>`).join('')}${items.length > 6 ? `<li class="muted">and ${items.length - 6} more</li>` : ''}</ul></div>` : '';
+  box.innerHTML = `<div class="cm-head"><h3>Coming up</h3><span class="small muted">${week ? `${plural(week, 'review')} in the next 6 days` : 'Nothing more this week'}</span></div>
+    <div class="cm-days" role="group" aria-label="Reviews per day">${days.map(d => {
+      const ho = Math.round(d.o.n / mx * 100), ht = Math.round(d.t.n / mx * 100);
+      return `<button class="cm-day" data-d="${d.i}" aria-pressed="${d.i === sel.i}" aria-label="${dname(d, true)}: ${plural(d.n, 'review')}"><span class="cm-dn">${dname(d)}</span><span class="cm-bar">${d.t.n ? `<i class="t" style="height:${Math.max(4, ht)}%"></i>` : ''}${d.o.n ? `<i class="o" style="height:${Math.max(4, ho)}%"></i>` : ''}</span><span class="cm-n${d.n ? '' : ' zero'}">${d.n}</span></button>`;
+    }).join('')}</div>
+    <div class="cm-key"><span class="o">Openings</span><span class="t">Train</span></div>
+    <div class="cm-detail" aria-live="polite">${sel.n
+      ? `<p style="margin:0">${dname(sel, true)}: <b>${plural(sel.n, 'review')}</b> · about ${Math.max(1, sel.mins)} min${sel.i === 0 ? ' (includes anything overdue)' : ''}</p>${list(sel.o.items, 'Openings')}${list(sel.t.items, 'Train')}`
+      : `<p class="muted" style="margin:0">${dname(sel, true)}: nothing due.</p>`}</div>
+    ${warn ? `<p class="cm-warn">Lots of reviews are waiting today. Clear them before learning new lines or lessons so they don't pile up.</p>` : ''}`;
+  box.querySelector('.cm-days').onclick = e => { const b = e.target.closest('[data-d]'); if (b) { comingSel = +b.dataset.d; renderComing(); } };
+}
 function renderLastGame() {
   const box = $('#today-game');
   const g = GAMES.reduce((a, x) => (!a || (x.end || 0) > (a.end || 0) ? x : a), null);
