@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>G2 dev harness</title>
+<!-- Dev harness for the Games 2 UI. Serve the REPO ROOT (python -m http.server 8822) and open /games2/ui/dev.html.
+     It borrows the app's real stylesheet from ../../app.html, vendored chess.js + chessground + Stockfish, real data from ../../data
+     (analysis.json, mine2.json, courses2.json for "you left your course"), and stands in for record/progress/sfx/Train.
+     Progress: localStorage 'ct.g2dev.progress'. "Practise this" pretends to run the Train card and marks it answered. -->
+<link rel="stylesheet" href="../../vendor/chessground.base.css">
+<link rel="stylesheet" href="../../vendor/chessground.brown.css">
+<link rel="stylesheet" href="../../vendor/chessground.cburnett.css">
+<style id="app-css"></style>
+<link rel="stylesheet" href="g2.css">
+<style>
+  #devbar { position: sticky; top: 0; z-index: 35; background: #222; color: #eee; font: 12px/1.3 system-ui, sans-serif; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #devbar button { font: 12px system-ui; padding: 4px 8px; border-radius: 5px; border: 1px solid #555; background: #333; color: #eee; cursor: pointer; }
+  #glossary { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 80; display: grid; place-items: center; padding: 16px; }
+  #glossary .card { max-width: 420px; }
+  #o2-hidden { display: none; }
+</style>
+<script src="../../vendor/pwa/chess.min.js"></script>
+</head>
+<body>
+<div id="devbar"><span>G2 dev</span><button id="dev-reset">Reset progress</button><span id="dev-info"></span></div>
+<main class="wrap"><section class="view" id="view-games"><div id="g2-slot"></div></section></main>
+<div id="o2-hidden"></div>
+<nav id="nav" aria-label="Fake app tabs"><button>Today</button><button aria-current="page">Games</button><button>Openings</button><button>Train</button><button>Stats</button></nav>
+<div id="glossary" hidden><div class="card"><h3 id="gl-t"></h3><p id="gl-d"></p><button class="btn" id="gl-close">Close</button></div></div>
+<script type="module">
+import { Chessground } from '../../vendor/pwa/chessground.min.js';
+
+const appHtml = await fetch('../../app.html').then(r => r.text());
+document.getElementById('app-css').textContent = (appHtml.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1].replace('/*CG_CSS*/', '');
+document.getElementById('g2-slot').outerHTML = await fetch('g2.html').then(r => r.text());
+const load = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });
+await load('g2core.js');
+const q = new URLSearchParams(location.search);
+const noO2 = q.get('o2') === 'none';
+if (!noO2) {   // the Openings tab, hidden: its markup + scripts, only so "you left your course" can be worked out
+  document.getElementById('o2-hidden').innerHTML = await fetch('../../openings2/ui/o2.html').then(r => r.text());
+  await load('../../openings2/ui/o2core.js'); await load('../../openings2/ui/o2stats.js');
+}
+
+const [GAMES, MINE, C2] = await Promise.all([
+  fetch('../../data/analysis.json').then(r => r.json()),
+  q.get('mine') === 'none' ? null : fetch('../../data/mine2.json').then(r => r.json()).catch(() => null),
+  noO2 ? null : fetch('../../data/courses2.json').then(r => r.json()).catch(() => null),
+]);
+GAMES.sort((a, b) => a.end - b.end);
+// dev only: pretend the newest game was played yesterday, so "this week" parts show (?shift=0 turns it off)
+const shift = q.get('shift') === '0' ? 0 : Math.max(0, Math.floor(Date.now() / 1000 - 86400 - GAMES[GAMES.length - 1].end));
+if (shift) for (const g of GAMES) g.end += shift;
+
+/* ---- copies of the app's helpers and per-game derived stats (app.html "helpers" and "per-game derived stats") ---- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('ct.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('ct.' + k, JSON.stringify(v)); } catch {} },
+};
+const openingName = slug => (slug || 'Unknown').replace(/-/g, ' ').replace(/\s+\d.*$/, '').replace(/\.{3}.*/, '').trim();
+const openingFamily = slug => openingName(slug).split(' ').slice(0, 3).join(' ').trim();
+const fmtDate = t => new Date(t * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+function winPctWhite(e, n) { if (!e) return 50; if (e.m !== undefined) { if (e.m === 0) return n % 2 === 1 ? 100 : 0; return e.m > 0 ? 100 : 0; } const cp = Math.max(-1000, Math.min(1000, e.cp)); return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1); }
+function cpWhite(e, n) { if (!e) return 0; if (e.m !== undefined) return e.m === 0 ? (n % 2 === 1 ? 1000 : -1000) : e.m > 0 ? 1000 : -1000; return Math.max(-1000, Math.min(1000, e.cp)); }
+const evalAt = (g, k) => (k < g.plies.length ? g.plies[k].e : g.final);
+const isMine = (g, i) => (i % 2 === 0) === (g.color === 'white');
+const moveAcc = loss => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * loss) - 3.1669));
+for (const g of GAMES) {
+  const mine = g.plies.filter((p, i) => isMine(g, i)), accs = mine.map(p => moveAcc(p.loss));
+  const mean = accs.reduce((s, a) => s + a, 0) / accs.length, harm = accs.length / accs.reduce((s, a) => s + 1 / Math.max(a, 1), 0);
+  g.acc = mine.length ? (mean + harm) / 2 : null;
+  g.family = openingFamily(g.opening);
+  g.plies.forEach((p, i) => { const s = i % 2 === 0 ? 1 : -1; p.cpl = Math.max(0, s * (cpWhite(evalAt(g, i), g.plies.length) - cpWhite(evalAt(g, i + 1), g.plies.length))); });
+  const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+  g.acpl = avg(mine.map(p => p.cpl)); g.acplOpp = avg(g.plies.filter((p, i) => !isMine(g, i)).map(p => p.cpl));
+  const w = [...g.plies.map((_, k) => winPctWhite(evalAt(g, k), g.plies.length)), winPctWhite(g.final, g.plies.length)];
+  g.myWin = w.map(x => g.color === 'white' ? x : 100 - x);
+  for (const p of g.plies) delete p.fen;   // the app ships analysis.json without per-move FENs (build.py)
+}
+const progress = store.get('g2dev.progress', {});
+function record(kind, id, value) { (progress[kind] ||= {})[id] = { ...value, t: Date.now() }; store.set('g2dev.progress', progress); info(); }
+const sfx = { play(k) { console.debug('sfx', k); } };
+const engine = {
+  w: null, q: Promise.resolve(),
+  go(fen, { movetime = 800 } = {}) {
+    const run = () => new Promise(res => {
+      if (!this.w) { this.w = new Worker('../../vendor/pwa/stockfish.js'); this.w.postMessage('uci'); }
+      let last = null;
+      this.w.onmessage = e => { const l = String(e.data); if (l.startsWith('info') && l.includes(' score ')) last = l;
+        else if (l.startsWith('bestmove')) { const m = last?.match(/score (cp|mate) (-?\d+)/); res({ best: l.split(' ')[1], score: m ? { [m[1]]: +m[2] } : { cp: 0 } }); } };
+      this.w.postMessage('position fen ' + fen); this.w.postMessage('go movetime ' + movetime);
+    });
+    const p = this.q.then(run, run); this.q = p.catch(() => {}); return p;
+  },
+};
+function standWords(cp, mate) {
+  if (mate !== undefined && mate !== null) return mate > 0 ? 'winning easily — mate is coming' : 'getting mated';
+  const a = Math.abs(cp), w = a < 50 ? 'about equal' : a < 150 ? 'slightly better' : a < 300 ? 'clearly better' : a < 600 ? 'winning' : 'winning easily';
+  return cp >= 0 || a < 50 ? w : { 'slightly better': 'slightly worse', 'clearly better': 'clearly worse', winning: 'losing', 'winning easily': 'losing badly' }[w];
+}
+const evalText = e => !e ? '' : e.m !== undefined ? (e.m === 0 ? '#' : (e.m > 0 ? '+M' : '-M') + Math.abs(e.m)) : (e.cp > 0 ? '+' : '') + (e.cp / 100).toFixed(1);
+
+/* ---- O2 (hidden) only for "you left your opening course" ---- */
+if (!noO2 && C2) O2.init({ root: document.getElementById('o2'), data: C2, hooks: { Chessground, record, progress, store, games: GAMES } });
+function bookDev(g) {
+  if (noO2 || !O2.stats) return null;
+  for (const c of O2.courses()) {
+    const x = O2.stats.analyse(c).games.find(x => x.pg.g === g || x.pg.g?.url === g.url);
+    if (x && x.dev && x.dev.by === 'me' && !x.dev.fine) return { id: c.id, title: c.title, ply: x.dev.ply, san: x.dev.san, courseSans: x.dev.courseSans };
+  }
+  return null;
+}
+
+window.G2 = G2; window.progress = progress; window.GAMES = GAMES; window.lastPractise = null;
+G2.init({ root: document.getElementById('g2'), data: { games: GAMES }, hooks: { Chessground, record, progress, store, sfx, engine, games: GAMES,
+  standWords, openingName, fmtDate, evalText,
+  mine: () => MINE,
+  practise: (id, back) => { window.lastPractise = id; record('t2c', id, { lv: 1, due: Date.now() + 86400000 }); setTimeout(back, 50); },
+  practised: id => !!progress.t2c?.[id],
+  bookDev, openCourse: id => { window.lastCourse = id; console.log('open course', id); },
+  onChange: () => info() } });
+G2.GLOSSARY.forEach(([id, t, d]) => (window.GL ||= {})[id] = [t, d]);
+window.GL.acpl = ['ACPL', 'Average centipawn loss.']; window.GL.eval = ['Evaluation', 'The engine score.'];
+document.addEventListener('click', e => { const b = e.target.closest('.gl[data-term]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const [t, d] = GL[b.dataset.term] || [b.dataset.term, '']; document.getElementById('gl-t').textContent = t; document.getElementById('gl-d').textContent = d; document.getElementById('glossary').hidden = false; }, true);
+document.getElementById('gl-close').onclick = () => document.getElementById('glossary').hidden = true;
+// the app's letter shortcuts: a visible button with data-key="x" is clicked by that key
+document.addEventListener('keydown', e => {
+  if (e.target.matches?.('input, select, textarea') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const key = e.key.length === 1 ? e.key.toLowerCase() : ''; if (!key) return;
+  const b = [...document.querySelectorAll(`button[data-key="${key}"]`)].find(x => x.getClientRects().length && !x.disabled);
+  if (b) { b.click(); e.preventDefault(); }
+});
+function info() { document.getElementById('dev-info').textContent = `games ${GAMES.length} · reviewed ${Object.values(progress.gr || {}).filter(v => v.d).length} · practised ${Object.keys(progress.t2c || {}).length}`; }
+document.getElementById('dev-reset').onclick = () => { localStorage.removeItem('ct.g2dev.progress'); localStorage.removeItem('ct.g2f'); location.reload(); };
+info();
+// test helper: screen point of a square on the G2 board
+window.fc = s => {
+  const r = document.querySelector('#g2-board cg-container').getBoundingClientRect();
+  const black = G2.cg.state.orientation === 'black';
+  const f = s.charCodeAt(0) - 97, rk = +s[1] - 1, x = black ? 7 - f : f, y = black ? rk : 7 - rk;
+  return [Math.round(r.left + (x + .5) * r.width / 8), Math.round(r.top + (y + .5) * r.height / 8)];
+};
+window.devReady = true;
+</script>
+</body>
+</html>

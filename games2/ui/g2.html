@@ -1,0 +1,25 @@
+<!-- Games 2 tab (inlined into the Games view by build.py at the G2_HTML placeholder); filled by G2.init() in g2core.js -->
+<div id="g2" class="g2">
+  <div id="g2-list"></div>
+  <div id="g2-play" class="play" hidden>
+    <div class="backrow g2-backrow">
+      <button class="btn" data-act="back">← All games</button>
+      <div class="seg" id="g2-modes" role="group" aria-label="View"><button data-act="mode" data-mode="review" aria-pressed="true">Key moments</button><button data-act="mode" data-mode="game" aria-pressed="false">Whole game</button></div>
+    </div>
+    <div class="g2-head" id="g2-head"></div>
+    <div class="viewer g2-viewer">
+      <div class="board-col g2-bcol">
+        <div class="player" id="g2-ptop"></div>
+        <div class="board-shell"><div class="evalbar" id="g2-evalbar"><span></span></div><div class="board" id="g2-board"></div></div>
+        <div class="player" id="g2-pbot"></div>
+        <div class="controls actionbar" id="g2-actions"></div>
+        <div class="controls" id="g2-tools"></div>
+      </div>
+      <div class="side">
+        <div id="g2-graph"></div>
+        <div id="g2-panel"></div>
+        <div class="g2-extra" id="g2-extra"></div>
+      </div>
+    </div>
+  </div>
+</div>

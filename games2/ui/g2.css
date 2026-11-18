@@ -1,0 +1,134 @@
+/* ===== Games 2 (g2core.js). Uses the app's tokens (--accent, --line, ...) and classes (.card .btn .seg .pill .dot .viewer .board .actionbar ...). ===== */
+.g2 h2 { font-size: 30px; }
+/* list */
+.g2-next { margin-top: 16px; }
+.g2-next.done { border-color: var(--good); }
+.g2-week { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin-top: 12px; border-color: var(--mistake); }
+.g2-week h3 { font-size: 19px; margin-top: 4px; }
+.g2-week p { margin: 4px 0 0; }
+.g2-week .btn { min-height: 44px; }
+.g2-filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 18px 0 10px; }
+.g2-filters .seg button { min-height: 40px; }
+.g2-filters select { min-height: 40px; }
+.g2-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.g2-chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; min-height: 40px; cursor: pointer; font: 600 14px var(--body); }
+.g2-chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.g2-chip[aria-pressed="true"] .muted { color: inherit; opacity: .75; }
+.g2-count { margin: 10px 0 6px; }
+.g2-rows { display: grid; gap: 8px; }
+.g2-row { display: grid; gap: 4px; text-align: left; width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; min-width: 0; }
+.g2-row:hover { border-color: var(--ink-3); }
+.g2-r1 { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 600; }
+.g2-opp { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g2-date { flex: none; font-size: 13px; font-weight: 400; }
+.g2-r2 { display: flex; gap: 6px 12px; font-size: 13px; min-width: 0; }
+.g2-open { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g2-r2 .num { flex: none; }
+.g2-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.g2-tag { font: 600 12px/1 var(--body); padding: 4px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); }
+.g2-tag.warn { background: color-mix(in srgb, var(--mistake) 18%, transparent); color: var(--mistake); }
+.g2-tag.ok { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+.g2-more { margin-top: 12px; min-height: 44px; }
+/* game screen */
+.g2-backrow { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.g2-backrow .seg button { min-height: 40px; }
+.g2-head { margin-bottom: 14px; display: grid; gap: 4px; }
+.g2-head h3 { font-size: 22px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.g2-sum { margin: 2px 0 0; font-size: 15px; max-width: 70ch; }
+.g2-extra { display: grid; gap: 10px; }
+.g2-extra:empty { display: none; }
+.g2-book { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--mistake); border-radius: 8px; background: var(--surface); font-size: 14px; }
+.g2-book .btn { min-height: 40px; }
+.g2-hfoot { display: flex; gap: 6px 14px; flex-wrap: wrap; align-items: center; }
+.g2-hfoot a { color: var(--accent); }
+.g2-tick { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 4px 10px; min-height: 32px; font: 600 13px var(--body); cursor: pointer; }
+.g2-tick[aria-pressed="true"] { border-color: var(--good); color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--surface)); }
+/* graph (G3) */
+.g2-gwrap { display: grid; gap: 4px; }
+.g2-graph, .g2-time { margin-inline: 12px; }   /* room for the markers at the first and last move */
+.g2-graph { position: relative; height: 120px; border-radius: 8px; background: var(--surface-2); cursor: pointer; touch-action: manipulation; }
+.g2-graph svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; border-radius: 8px; }
+.g2-band { fill: color-mix(in srgb, var(--good) 22%, transparent); }
+.g2-area { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.g2-ln { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.g2-mid { stroke: var(--ink-3); stroke-dasharray: 3 3; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.g2-cur { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ink); opacity: .55; pointer-events: none; }
+.g2-mk { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 2px solid var(--surface); background: var(--blunder); color: #fff; font: 700 13px/1 var(--body); display: grid; place-items: center; padding: 0; cursor: pointer; z-index: 2; box-shadow: 0 1px 3px rgb(0 0 0 / .3); }
+.g2-mk::after { content: ""; position: absolute; inset: -9px; }   /* 44 px touch target */
+.g2-mk.threw { background: var(--mistake); }
+.g2-mk.great { background: var(--good); }
+.g2-mk.on { outline: 3px solid var(--ink); outline-offset: 1px; }
+.g2-opp-dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; border: 2px solid var(--ink-2); background: var(--surface); pointer-events: none; }
+.g2-time { position: relative; height: 26px; border-bottom: 1px solid var(--line); }
+.g2-time i { position: absolute; bottom: 0; background: color-mix(in srgb, var(--ink-3) 55%, transparent); border-radius: 1px 1px 0 0; transform: translateX(-50%); }
+.g2-time i.q { background: var(--blunder); }
+.g2-gkey { display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.g2-gkey i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.g2-k-band { background: color-mix(in srgb, var(--good) 35%, transparent); }
+.g2-k-mk { background: var(--blunder); border-radius: 50% !important; }
+.g2-k-opp { border: 2px solid var(--ink-2); border-radius: 50% !important; }
+.g2-k-q { background: var(--blunder); width: 4px !important; }
+/* review moments (G1) */
+#g2-panel { display: grid; gap: 12px; min-width: 0; }
+.g2-moment h3 { font-size: 21px; margin: 6px 0 4px; }
+.g2-moment p { margin: 6px 0 0; }
+.g2-mtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.g2-dots { display: inline-flex; gap: 5px; }
+.g2-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.g2-dots i.done { background: var(--good); }
+.g2-dots i.on { background: var(--accent); }
+.g2-dots i.star { border-radius: 2px; transform: rotate(45deg) scale(.85); }
+.g2-verdict { margin-top: 8px; font: 600 17px/1.3 var(--body); }
+.g2-verdict.good { color: var(--good); }
+.g2-verdict.bad { color: var(--mistake); }
+.g2-line { margin-top: 8px; font: 13px/1.5 var(--mono); color: var(--ink-2); word-break: break-word; }
+.g2-line .eyebrow { display: block; font-family: var(--body); }
+.g2-mlist { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.g2-mlist li { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.g2-mlist .btn { min-height: 40px; flex: none; }
+.g2-mrow { display: flex; gap: 10px; align-items: center; text-align: left; flex: 1 1 auto; min-width: 0; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 8px 10px; min-height: 44px; font: inherit; color: inherit; cursor: pointer; }
+.g2-mrow:hover { border-color: var(--ink-3); }
+.g2-mno { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--blunder); color: #fff; display: grid; place-items: center; font: 700 12px var(--body); }
+.g2-ok { color: var(--good); font-weight: 600; font-size: 13px; flex: none; }
+#g2-tools:empty { display: none; }
+/* whole game: comment, move list, report (moved here from app.html) */
+.g2 .comment { border-left: 4px solid var(--line); background: var(--surface); padding: 12px 14px; border-radius: 0 8px 8px 0; min-height: 88px; }
+.g2 .comment.blunder { border-color: var(--blunder); } .g2 .comment.mistake { border-color: var(--mistake); } .g2 .comment.inaccuracy { border-color: var(--inacc); } .g2 .comment.ok { border-color: var(--good); }
+.g2 .comment .head { font-weight: 700; margin-bottom: 4px; }
+.g2 .comment .line { font: 13px/1.5 var(--mono); color: var(--ink-2); word-break: break-word; margin-top: 4px; }
+.g2-nums { margin-top: 6px; }
+.g2-cfoot { display: flex; gap: 14px; flex-wrap: wrap; }
+.g2 .movelist { max-height: 300px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); display: grid; grid-template-columns: 42px 1fr 1fr; font: 13px var(--mono); }
+.g2 .movelist .no { color: var(--ink-3); padding: 4px 8px; background: var(--surface-2); text-align: right; }
+.g2 .movelist button { border: 0; background: none; text-align: left; padding: 4px 8px; cursor: pointer; font: inherit; color: var(--ink); border-radius: 0; min-height: 32px; }
+.g2 .movelist button:hover { background: var(--surface-2); }
+.g2 .movelist button.cur { background: var(--accent); color: var(--accent-ink); }
+.g2 .movelist .lb { font-weight: 700; margin-left: 2px; }
+.g2 .lb.blunder { color: var(--blunder); } .g2 .lb.mistake { color: var(--mistake); } .g2 .lb.inaccuracy { color: var(--inacc); }
+.g2 .movelist button.cur .lb { color: inherit; }
+.g2 .movelist .mine { font-weight: 600; }
+.g2-report { padding: 12px 14px; }
+.g2-report summary { cursor: pointer; min-height: 28px; }
+.g2-four { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; text-align: center; }
+.g2-four .eyebrow { display: block; }
+.g2-four b { font-size: 22px; display: block; }
+.g2-table { width: 100%; font-size: 14px; margin: 6px 0; }
+.g2-q { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; }
+.g2-q.q-best { background: var(--win); } .g2-q.q-good { background: var(--accent); } .g2-q.q-inaccuracy { background: var(--inacc); } .g2-q.q-mistake { background: var(--mistake); } .g2-q.q-blunder { background: var(--blunder); }
+.g2-keys { margin: 0; }
+@media (hover: none) { .g2-keys { display: none; } }
+/* phones (G8): one column; the review's main button sits in the app's action bar above the tab bar */
+@media (max-width: 520px) {
+  .g2-four { grid-template-columns: repeat(2, 1fr); }
+  .g2-head h3 { font-size: 19px; }
+  .g2-graph { height: 104px; }
+  .g2-filters select { flex: 1 1 140px; }
+}
+@media (max-width: 860px) {
+  /* review on a phone: the question sits right under the board, the graph after it */
+  #g2-play:not(.g2-is-game) #g2-panel { order: -1; }
+  /* whole game: the board stays at the top while the move list scrolls under it */
+  .g2-is-game .g2-bcol { position: sticky; top: 0; z-index: 4; background: var(--bg); padding-bottom: 6px; }
+  .g2-is-game .g2 .movelist, .g2-is-game .movelist { max-height: none; }
+}
+.g2-san { text-transform: none; letter-spacing: 0; }
