@@ -3797,5 +3797,573 @@
 },
 "aGBrDWqLMyo": {
 "keep": false
+},
+"TH091pylwzE": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Three less common lines for Black against the London System, including c6 with Qb6 ideas."
+},
+"0p_881Nwoo4": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "Quick, simple overview of how to play the Caro-Kann against White's main tries."
+},
+"pl:PLUjxDD7HNNTiljFCufDXDSjEQH1cIdbSx": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Chessbrah series teaching London System set-ups and plans, recommended often in London threads."
+},
+"vrZ3WwAXBsQ": {
+"keep": true,
+"kind": "play",
+"top": [
+"openings",
+"tactics"
+],
+"op": [],
+"lvl": 2,
+"why": "Naroditsky shows how to beat the Englund Gambit, handy for any 1.d4 player facing 1...e5."
+},
+"Fdx-2XmM12w": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"e4"
+],
+"lvl": 2,
+"why": "Eric Rosen's practical, trappy ways for White to meet the Caro-Kann with 1.e4."
+},
+"_OAa7KkWnvk": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Long live stream promotion, not a lesson."
+},
+"igoFZeQUTPg": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Long lecture on a White sideline vs Caro-Kann; comments do not clearly recommend it."
+},
+"9JvCFhYZOXc": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"study"
+],
+"op": [],
+"lvl": 2,
+"why": "GM explains why memorising lots of opening theory is not the best use of study time."
+},
+"Qy-JX7hoy-g": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"study"
+],
+"op": [],
+"lvl": 2,
+"why": "Coach discusses the strengths and limits of the London System as a long-term repertoire choice."
+},
+"uH4c_Dz1YjU": {
+"keep": true,
+"kind": "course",
+"top": [
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Finegold lecture on isolated queen pawn positions and how to use the IQP's activity."
+},
+"ebfzL_GwiIE": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"e4"
+],
+"lvl": 2,
+"why": "Gotham shows White's ideas and traps against the Caro-Kann after 1.e4."
+},
+"vyDwjpRbdVo": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"tactics"
+],
+"op": [
+"caro"
+],
+"lvl": 2,
+"why": "Black's way to punish the Fantasy Variation against the Caro-Kann, including a quick mating line."
+},
+"YAlA7a39B_w": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Explains the Baltic Defence, a Black idea against the London System that Magnus has played."
+},
+"6uFhzy3VnXA": {
+"keep": true,
+"kind": "play",
+"top": [
+"openings",
+"attack"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Naroditsky plays the Jobava London in a speedrun while explaining the attacking plans."
+},
+"v25BEjrkCRE": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"slav"
+],
+"lvl": 2,
+"why": "Clear introduction to the Slav Defence as a solid answer to 1.d4."
+},
+"-MrEYqiMU4w": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 2,
+"why": "Explains the Korchnoi Variation of the Caro-Kann for Black and its main ideas."
+},
+"8gvj7_LCsa0": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Indian-style set-up for Black to meet the London System, praised for its practical lines."
+},
+"xIGCDwIiToc": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Unclear repertoire speedrun; comments do not clearly recommend this video."
+},
+"JX00-qr7eVE": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Explains the Carlsbad pawn structure and its typical plans, useful for Caro and Slav exchange positions."
+},
+"-nXUoWhvTjE": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"caro"
+],
+"lvl": 2,
+"why": "In-depth look at the Tartakower structure in the Caro-Kann and its plans, praised in comments."
+},
+"k1Rlg9zfug8": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Introduces the Nimzo-Indian as a Black answer to 1.d4."
+},
+"gUrHkPzLGeQ": {
+"keep": true,
+"kind": "course",
+"top": [
+"strategy",
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Finegold lecture on middlegame plans in the Chigorin Defence."
+},
+"1u8nppEgK1Y": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "Short talk on why the Caro-Kann is harder for beginners than it looks."
+},
+"nEaw-MeQ_TM": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"tactics"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "Shows Black's trap against the Fantasy Variation of the Caro-Kann."
+},
+"kO4qTTR0B7o": {
+"keep": true,
+"kind": "play",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"caro"
+],
+"lvl": 2,
+"why": "Naroditsky speedruns the Caro-Kann and explains Black's ideas, including in the Advanced line."
+},
+"pqYAy-l1c6g": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Long engine versus GM match stream, not a lesson."
+},
+"T2D6MhE5D48": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 2,
+"why": "Simplified plan for the Caro-Kann, including the Classical and Tartakower structure."
+},
+"9homA3nEvto": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Teaches a Black set-up to fight the London System, with Nf6 and c5 ideas."
+},
+"VIIpCCsqePk": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"tactics"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Rosen and Botez go through London System traps and ideas, including the Qb6 lines."
+},
+"pl:PLssNbVBYrGcCjajrI7QtQi48nKOfy-W5O": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Hanging Pawns playlist covering London System theory and plans."
+},
+"WvW21L92IJI": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"tactics"
+],
+"op": [
+"jobava"
+],
+"lvl": 1,
+"why": "Short trap against the Pirc with Bf4 and Nc3 ideas, related to Jobava London tricks."
+},
+"RsN0_AADrAE": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [],
+"lvl": 2,
+"why": "Indian-style set-up for Black against the London System."
+},
+"LhWVdNTba-E": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"kid"
+],
+"lvl": 1,
+"why": "Introduction to the King's Indian Defence set-up for Black."
+},
+"LqQlCOmXuHM": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Comedy sketch, not chess."
+},
+"pl:PLUjxDD7HNNTgHZ8KoBAaDppN1zerOWpXi": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Chessbrah series on the Colle-Zukertort, a 1.d4 system with similar piece set-up to the London."
+},
+"Uf1eOiTf82s": {
+"keep": true,
+"kind": "play",
+"top": [
+"strategy",
+"classic"
+],
+"op": [],
+"lvl": 3,
+"why": "Wesley So game where he sacrifices the exchange to target pawns, an instructive example."
+},
+"VY8ASpIIHYw": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"kid"
+],
+"lvl": 2,
+"why": "Chessbrah lesson series on playing the King's Indian Defence as Black."
+},
+"VU8uXAYkAdg": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "How White sets up the London System against the Dutch."
+},
+"fe8wrjPMDq0": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Long Sicilian lecture; comments only mention it in passing."
+},
+"RajtCtk9xwM": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Explains the Classical Queen's Gambit Declined and its plans, recommended for QGD structures."
+},
+"Nd3CvPicLpI": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "How Black handles the Hillbilly Attack in the Caro-Kann."
+},
+"ln8V9F-opxk": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "How Black handles the Hillbilly Attack in the Caro-Kann."
+},
+"qalNwTONClw": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings"
+],
+"op": [
+"caro"
+],
+"lvl": 1,
+"why": "Short guide for Black to beat the Hillbilly Attack in the Caro-Kann."
+},
+"HShiBcGbfeA": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Opening tier list entertainment, not teaching."
+},
+"z3FBRlzSMHc": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Opening tier list entertainment, not teaching."
+},
+"3bULUDwHYtc": {
+"keep": true,
+"kind": "course",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Grandmaster teaches the London System step by step with main plans and ideas."
+},
+"lWeIQd0_C_s": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"openings",
+"tactics"
+],
+"op": [],
+"lvl": 1,
+"why": "Shows the Englund Gambit trap and how White avoids it."
+},
+"pl:PLy7vABK_JsyP5PoCzcNEkSx_lQg2p9odd": {
+"keep": true,
+"kind": "play",
+"top": [
+"openings",
+"strategy"
+],
+"op": [
+"jobava"
+],
+"lvl": 2,
+"why": "Banzea plays the London System in a rating climb, explaining ideas along the way."
+},
+"G_1PC5F4B4k": {
+"keep": true,
+"kind": "course",
+"top": [
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Finegold lecture on isolated pawn positions, useful for IQP structures."
+},
+"PUJ6RGhLSXU": {
+"keep": true,
+"kind": "lesson",
+"top": [
+"strategy"
+],
+"op": [],
+"lvl": 2,
+"why": "Finegold shows how to play against isolated queen pawns."
+},
+"HG1w5lRgfR0": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Entertainment video with a streamer, not Caro-Kann material."
+},
+"vfKautxXeDQ": {
+"keep": false,
+"kind": "lesson",
+"top": [],
+"op": [],
+"lvl": 2,
+"why": "Short interview clip, not teaching."
 }
 }
