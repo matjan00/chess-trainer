@@ -1,7 +1,7 @@
-mine2: 333 cards {'fix': 174, 'tq': 93, 'pun': 46, 'thr': 20}; judges Counter({('opp', 'safe'): 244, ('me', 'safe'): 210, ('me', 'blunder'): 162}); plays Counter({'cv': 105, 'eo': 51}); left 0; 12s
-  dropped chk: something special to find 228
+mine2: 333 cards {'fix': 174, 'tq': 93, 'pun': 46, 'thr': 20}; judges Counter({('opp', 'safe'): 245, ('me', 'safe'): 211, ('me', 'blunder'): 163}); plays Counter({'cv': 105, 'eo': 51}); left 0; 8s
+  dropped chk: something special to find 230
   dropped cv: search below 85 6
-  dropped fix: gap too small 205, many ok moves 88, best too low 64, same position as a richer card 61, duplicate position 2, everything wins 1, his move is ok now 1
+  dropped fix: gap too small 205, many ok moves 89, best too low 64, same position as a richer card 61, duplicate position 2, everything wins 1, his move is ok now 1
   dropped pun: best too low 51, same position as a richer card 35, gap too small 9, many ok moves 2, one legal move 1
-  dropped thr: fix rule fails or not searched 71, threat not unique 64
+  dropped thr: fix rule fails or not searched 72, threat not unique 64
   dropped tq: many ok moves 202, gap too small 93, best too low 88, no kind 19, same position as a richer card 5, no contrast 1, duplicate position 1
