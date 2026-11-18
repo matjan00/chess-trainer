@@ -947,7 +947,7 @@ const O2 = (() => {
       const acc = S.asked ? S.ok / S.asked : 0;
       if (acc >= 0.9 && S.asked >= 5) { try { H.confetti?.(); } catch {} }
       fb(`<span class="eyebrow">${practice ? 'Drill finished' : 'Review finished'}</span><h3>${S.ok} of ${S.asked} right · ${pct(acc)}</h3>
-        ${practice ? '<p class="small muted">Practice: schedule unchanged.</p>' : `<p class="o2-moved">${[S.up ? `${plural(S.up, 'move')} moved up` : '', S.back ? `${S.back} back to tomorrow` : '', S.stay ? `${S.stay} stayed` : ''].filter(Boolean).join(' · ')}</p>`}
+        ${practice ? '<p class="small muted">Practice: schedule unchanged.</p>' : `<p class="o2-moved">${[S.up ? `${plural(S.up, 'move')} up a box` : '', S.back ? `${S.back} back to tomorrow` : '', S.stay ? `${S.stay} stayed` : ''].filter(Boolean).join(' · ')}</p>`}
         <p>${more && !practice ? `${plural(more, 'move')} still due.` : nd ? `Next review: ${dayText(nd)} · about ${minsFor(dueOnDay(cs, nd))} min` : ''}</p>
         ${S.wrong.length ? `<p class="small muted">Missed (tap to study the position):</p><div class="o2-missed">${S.wrong.map(w => `<button class="o2-drow" data-act="study" data-c="${esc(w.c.id)}" data-l="${esc(w.line.id)}" data-id="${esc(w.s.id)}"><b>${esc(moveLabel(w.s.ply, w.s.san))}</b><span class="small muted">${esc(w.line.title)}</span></button>`).join('')}</div>` : ''}
         ${onDone ? `<div class="controls"><button class="btn primary" data-act="next">${esc(nextLabel || 'Next')}</button><button class="btn" data-act="back">Stop for today</button></div>`

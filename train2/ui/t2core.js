@@ -1169,7 +1169,7 @@ const T2 = (() => {
   const addMv = (a, b) => { for (const k of ['up', 'back', 'gone']) a[k] += b?.[k] || 0; return a; };
   /** end of a session: what moved + when the next review is */
   function endNotes(mv) {
-    const m = mv || {}, parts = [m.up ? `${plural(m.up, 'card')} moved up` : '', m.back ? `${m.back} back to tomorrow` : '', m.gone ? `${m.gone} learned for good` : ''].filter(Boolean);
+    const m = mv || {}, parts = [m.up ? `${plural(m.up, 'card')} up a box` : '', m.back ? `${m.back} back to tomorrow` : '', m.gone ? `${m.gone} learned for good` : ''].filter(Boolean);
     const rem = dueCards().length, nx = nextReview();
     let line = '';
     if (rem) line = `${plural(rem, 'review')} still waiting today`;
