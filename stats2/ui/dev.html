@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>S2 dev harness</title>
+<!-- Dev harness for the Stats 2 tab. Serve the REPO ROOT (python -m http.server 8821) and open /stats2/ui/dev.html.
+     Real data from ../../data (analysis.json, mine2.json, courses2.json); the app's real stylesheet; O2 is loaded (hidden) so the
+     openingCourses hook is the real one. Hooks only log to #dev-log (window.__log). -->
+<style id="app-css"></style>
+<link rel="stylesheet" href="s2.css">
+<style>
+  #devbar { position: sticky; top: 0; z-index: 35; background: #222; color: #eee; font: 12px/1.3 system-ui, sans-serif; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  #devbar b { color: #ffd166; }
+  #glossary { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 80; display: grid; place-items: center; padding: 16px; }
+  #glossary .card { max-width: 420px; }
+</style>
+<script src="../../vendor/pwa/chess.min.js"></script>
+</head>
+<body>
+<div id="devbar"><span>S2 dev · last hook call: <b id="dev-log">none</b></span></div>
+<main class="wrap"><section class="view" id="view-report"><div id="s2-slot"></div></section></main>
+<nav id="nav" aria-label="Fake app tabs"><button>Today</button><button>Openings</button><button>Train</button><button>Games</button><button aria-current="page">Stats</button></nav>
+<div id="glossary" hidden><div class="card"><h3 id="gl-t"></h3><p id="gl-d"></p><button class="btn" id="gl-close">Close</button></div></div>
+<div id="o2-host" hidden></div>
+<script type="module">
+import { Chessground } from '../../vendor/pwa/chessground.min.js';
+const appHtml = await fetch('../../app.html').then(r => r.text());
+document.getElementById('app-css').textContent = (appHtml.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1].replace('/*CG_CSS*/', '');
+document.getElementById('s2-slot').outerHTML = await fetch('s2.html').then(r => r.text());
+document.getElementById('o2-host').innerHTML = await fetch('../../openings2/ui/o2.html').then(r => r.text());
+const load = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s); });
+await load('../../openings2/ui/o2core.js'); await load('../../openings2/ui/o2stats.js'); await load('s2core.js');
+
+const q = new URLSearchParams(location.search);
+const [GAMES, MINE, COURSES, XP] = await Promise.all([
+  fetch(q.get('games') || '../../data/analysis.json').then(r => r.json()),
+  q.get('mine') === 'none' ? null : fetch('../../data/mine2.json').then(r => r.json()).catch(() => null),
+  fetch('../../data/courses2.json').then(r => r.json()),
+  fetch('../../data/explorer.json').then(r => r.json()).catch(() => ({ stats: {} })),
+]);
+GAMES.sort((a, b) => a.end - b.end);
+const store = { get(k, d) { try { const v = localStorage.getItem('ct.s2dev.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('ct.s2dev.' + k, JSON.stringify(v)); } catch {} } };
+const progress = new Proxy({ t2x: {} }, { get: (t, k) => t[k] || (t[k] = {}) });
+const record = () => {};
+O2.init({ root: document.getElementById('o2'), data: COURSES, hooks: { Chessground, record, progress, store, sfx: { play() {} }, confetti: () => {}, statsAt: () => null, games: GAMES } });
+const log = (...a) => { window.__log = (window.__log || []).concat([a]); document.getElementById('dev-log').textContent = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' '); };
+const nowQ = q.get('now');
+const hooks = {
+  games: GAMES, progress,
+  goToday: () => log('goToday'), openCourse: id => log('openCourse', id), practiseTheme: id => log('practiseTheme', id), canPractise: () => true,
+  playOut: id => log('playOut', id), openGame: url => log('openGame', url), seeGames: o => log('seeGames', o),
+  studyCourse: id => log('studyCourse', id), fixCourse: id => log('fixCourse', id),
+  openingCourses: () => O2.courses().map(c => ({ id: c.id, title: c.title, side: c.side, games: O2.stats.analyse(c).games.map(x => ({ g: x.pg.g, devBy: x.dev ? x.dev.by : null, devPly: x.dev ? x.dev.ply : null })) })),
+  ...(nowQ ? { now: () => +nowQ } : {}),
+};
+window.S2 = S2;
+S2.init({ root: document.getElementById('s2'), data: { mine: MINE }, hooks });
+S2.refresh();
+S2.GLOSSARY.forEach(([id, t, d]) => (window.GL ||= {})[id] = [t, d]);
+document.addEventListener('click', e => { const b = e.target.closest('.gl[data-term]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const [t, d] = GL[b.dataset.term] || [b.dataset.term, '']; document.getElementById('gl-t').textContent = t; document.getElementById('gl-d').textContent = d; document.getElementById('glossary').hidden = false; }, true);
+document.getElementById('gl-close').onclick = () => document.getElementById('glossary').hidden = true;
+window.__ready = true;
+</script>
+</body>
+</html>
