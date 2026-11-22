@@ -45,6 +45,7 @@ const O2 = (() => {
   const KINDS = ['o2c', 'o2l', 'o2g', 'o2t', 'o2m', 'o2d'];
   const IV = [0, 1, 3, 7, 14, 30, 90, 180];          // days until the next review, by level (L1 = next day; user decision 2026-11-12)
   const MAXLV = 7, MATURE = 4, CAP = 60, BACKLOG = 40;
+  const LAPSE_CAP = 5;                                 // at most this many "missed last time" moves per day (user 2026-11-22); extras spread over the next days
   const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
   const H = {                                         // hooks; replaced in init()
     Chessground: null, record: null, progress: null,
@@ -182,7 +183,40 @@ const O2 = (() => {
   const srsGet = (c, id) => H.progress.o2c[ckey(c, id)] || null;
   const isDue = s => !!s && s.due <= endOfDay();
   const isDifficult = s => !!s && ((s.w || 0) >= 2 || ((s.n || 0) >= 3 && (s.w || 0) / s.n >= 0.34));
+  const isLapse = s => !!s && (s.n || 0) > 0 && (s.s || 0) === 0;   // the last scored answer was a miss
   function put(kind, id, v) { const { t, ...rest } = v; H.record(kind, id, rest); }
+  /* missed moves per calendar day (overdue ones count for today) */
+  function lapsesByDay() {
+    const m = new Map(), e = endOfDay(), today = dayKey();
+    for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (isLapse(s)) { const d = s.due <= e ? today : dayKey(s.due); m.set(d, (m.get(d) || 0) + 1); } }
+    return m;
+  }
+  /** days until a missed move comes back: the first day from tomorrow on with fewer than LAPSE_CAP missed moves (else the lightest of the next 14) */
+  function lapseDay(t, m = lapsesByDay()) {
+    let best = 1, bestN = Infinity;
+    for (let d = 1; d <= 14; d++) { const n = m.get(dayKey(t + d * DAY)) || 0; if (n < LAPSE_CAP) return d; if (n < bestN) { best = d; bestN = n; } }
+    return best;
+  }
+  /* Once a day (and after a sync): if more than LAPSE_CAP missed moves are due today, keep the oldest LAPSE_CAP and move the rest to the next days. */
+  let spreadMemo = '', spreading = false;
+  function spreadLapses() {
+    const dk = dayKey();
+    if (spreading || spreadMemo === dk || !COURSES.length || !H.progress?.o2c) return;
+    spreading = true; spreadMemo = dk;
+    try {
+      const e = endOfDay(), list = [];
+      for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (isLapse(s) && s.due <= e) list.push({ c, id: k.id, s }); }
+      if (list.length <= LAPSE_CAP) return;
+      list.sort((a, b) => a.s.due - b.s.due);
+      const m = lapsesByDay(), t = now();
+      for (const x of list.slice(LAPSE_CAP)) {
+        const d = lapseDay(t, m), k = dayKey(t + d * DAY);
+        m.set(k, (m.get(k) || 0) + 1); m.set(dk, (m.get(dk) || 1) - 1);
+        put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+      }
+      loadReset();
+    } finally { spreading = false; }
+  }
   function dayAdd(d) {
     const k = dayKey(), cur = H.progress.o2d[k] || {};
     const v = { rev: cur.rev || 0, new: cur.new || 0, wrong: cur.wrong || 0, ms: cur.ms || 0 };
@@ -227,7 +261,7 @@ const O2 = (() => {
     n++;
     if (result === 'ok') { lv = Math.min(MAXLV, Math.max(1, lv + 1)); st++; due = t + pickDays(t, lv) * DAY; }
     else if (result === 'hint') { lv = Math.max(1, lv); st++; due = t + pickDays(t, lv) * DAY; }
-    else { lv = Math.max(1, lv - 2); w++; st = 0; due = t + DAY; }   // softer mistakes: two boxes down, back tomorrow
+    else { lv = Math.max(1, lv - 2); w++; st = 0; due = t + lapseDay(t) * DAY; }   // softer mistakes: two boxes down, back tomorrow (or the next day with room)
     loadAdd(due, 1);
     put('o2c', ckey(c, id), { lv, due, n, w, s: st });
     dayAdd({ rev: 1, wrong: result === 'wrong' ? 1 : 0, ms: spent() });
@@ -238,7 +272,7 @@ const O2 = (() => {
     if (practice || r?.practice) return 'Practice: schedule unchanged';
     if (!r) return '';
     const days = Math.round((r.due - now()) / DAY), when = `back in ${intervalText(days)} (${dateText(r.due)})`;
-    if (r.result === 'wrong') return `✗ Back tomorrow · box ${r.lv}`;
+    if (r.result === 'wrong') { const w = whenText(r.due); return `✗ Back ${w === 'today' ? 'tomorrow' : w} · box ${r.lv}`; }
     if (r.result === 'ok') return `✓ Box ${r.lv} · ${r.lv > r.prevLv ? '' : 'stays · '}${when}`;
     return `Box ${r.lv} · ${r.lv > r.prevLv ? '' : 'stays · '}${when}`;
   }
@@ -273,6 +307,7 @@ const O2 = (() => {
   }
   const nextLine = c => c.order.map(id => c.lineById.get(id)).find(l => !lineLearned(c, l)) || null;
   function dueCards(cs = COURSES) {
+    spreadLapses();
     const out = [];
     for (const c of cs) for (const k of c.cards) { const s = srsGet(c, k.id); if (isDue(s)) out.push({ c, id: k.id, due: s.due }); }
     return out.sort((a, b) => a.due - b.due);
@@ -284,6 +319,7 @@ const O2 = (() => {
   }
   /** cards due per day for the next `days` days; index 0 = today incl. everything overdue (contract used by the Today tab) */
   function forecast(days = 7) {
+    spreadLapses();
     const e = endOfDay(), t0 = startOfDay(), d0 = new Date(t0);
     const out = Array.from({ length: days }, (_, i) => { const t = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + i).getTime(); return { day: dayKey(t), t, n: 0, mins: 0, items: [], _m: new Map() }; });
     for (const c of COURSES) for (const k of c.cards) {
@@ -311,6 +347,74 @@ const O2 = (() => {
     if (!days[dayKey(d.getTime())]) d.setDate(d.getDate() - 1);
     while (days[dayKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
     return n;
+  }
+
+  /* ---------------------------------------------------------------- how a line differs from its sister lines
+     splits: indices of opponent moves played in a position where the course has more than one reply (where lines part ways).
+     signpost: the last such split before move i, i.e. "this is the line where Black played 5...Bg4".
+     sisters: other lines that share the first moves and then go their own way, with the move YOU play at the same moment there. */
+  function splits(c, l) {
+    if (l._splits) return l._splits;
+    return l._splits = c.seq[l.id].map((s, j) => !s.n.mine && (c.children.get(posKey(s.fen)) || []).length > 1 ? j : -1).filter(j => j >= 0);
+  }
+  function signpost(c, l, i) {
+    const sp = splits(c, l).filter(j => j < i);
+    if (!sp.length) return null;
+    const s = c.seq[l.id][sp[sp.length - 1]];
+    const others = (c.children.get(posKey(s.fen)) || []).filter(id => id !== s.id).map(id => c.nodes[id]).filter(Boolean);
+    return { s, others };
+  }
+  /* board as 64 squares from a FEN, cached on the step */
+  const boardOf = st => st._b || (st._b = st.fen.split(' ')[0].split('/').flatMap(r => [...r].flatMap(ch => /\d/.test(ch) ? Array(+ch).fill('') : [ch])));
+  const SQ = i => 'abcdefgh'[i % 8] + (8 - Math.floor(i / 8));
+  const PNAME = { k: 'king', q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
+  /** other lines where you stand in an almost identical position (at most 4 squares differ, same side to move) and play a
+      different move that would also be legal here: the classic "I played the move from the other line" mix-up */
+  function sisters(c, l, i) {
+    const key = l.id + '/' + i;
+    c._sis ||= new Map();
+    if (c._sis.has(key)) return c._sis.get(key);
+    const seq = c.seq[l.id], me = seq[i], all = [];
+    if (me) {
+      const b1 = boardOf(me), turn = me.fen.split(' ')[1], here = new Chess(me.fen);
+      const legal = new Set(here.moves().map(norm));
+      for (const l2 of c.lines) {
+        if (l2 === l) continue;
+        let best = null;
+        for (const q of c.seq[l2.id]) {
+          if (!q.n.mine || q.ply !== me.ply || q.fen.split(' ')[1] !== turn || norm(q.san) === norm(me.san) || !legal.has(norm(q.san))) continue;
+          const b2 = boardOf(q); let d = 0;
+          for (let k = 0; k < 64 && d <= 4; k++) if (b1[k] !== b2[k]) d++;
+          if (d === 0 || d > 4) continue;
+          if (!best || d < best.d) best = { d, q };
+        }
+        if (best) {
+          const b2 = boardOf(best.q), hereP = [], thereP = [];
+          const who = ch => (ch === ch.toUpperCase()) === (turn === 'w') ? 'your' : turn === 'w' ? 'Black’s' : 'White’s';
+          const say = (ch, k) => `${who(ch)} ${PNAME[ch.toLowerCase()]} ${SQ(k)}`;
+          for (let k = 0; k < 64; k++) if (b1[k] !== b2[k]) { if (b1[k]) hereP.push(say(b1[k], k)); if (b2[k]) thereP.push(say(b2[k], k)); }
+          all.push({ l2, d: best.d, s2: best.q, hereP, thereP });
+        }
+      }
+    }
+    all.sort((a, b) => a.d - b.d || (c.orderIdx.get(a.l2.id) ?? 0) - (c.orderIdx.get(b.l2.id) ?? 0));
+    const seen = new Set(), out = [];
+    for (const x of all) { const k = norm(x.s2.san); if (seen.has(k)) continue; seen.add(k); out.push(x); }
+    c._sis.set(key, out);
+    return out;
+  }
+  const signHtml = sp => sp ? `<p class="small o2-sign">This line: <b>${esc(moveLabel(sp.s.ply, sp.s.san))}</b>${sp.others.length ? ` <span class="muted">(not ${sp.others.slice(0, 3).map(n => esc(moveLabel(n.ply, n.san))).join(' / ')})</span>` : ''}</p>` : '';
+  const pcs = a => a.length ? esc(a.join(', ')) : 'nothing';
+  const sisterHtml = (x, wrongSan) => `<div class="o2-vs"><span class="eyebrow">${wrongSan ? `<span class="o2-san">${esc(wrongSan)}</span> is the move from another line` : 'Don’t mix it up'}</span>
+    <p>In <b>${esc(x.l2.title)}</b> the position looks almost the same and you play <b>${esc(moveLabel(x.s2.ply, x.s2.san))}</b>.</p>
+    <p class="small">The difference: here <b>${pcs(x.hereP)}</b>; there <b>${pcs(x.thereP)}</b>.</p></div>`;
+  /** the moves of a line up to (not incl.) index `upto`, as text; split moves bold, then a "?" for the asked move */
+  function lineText(c, l, upto) {
+    const seq = c.seq[l.id], sp = new Set(splits(c, l));
+    const parts = seq.slice(0, upto).map((s, j) => { const t = (s.ply % 2 || j === 0 ? plyLabel(s.ply) : '') + s.san; return sp.has(j) ? `<b class="split">${esc(t)}</b>` : esc(t); });
+    const nx = seq[upto];
+    if (nx) parts.push(`<b class="q">${nx.ply % 2 || !upto ? plyLabel(nx.ply) : ''}?</b>`);
+    return parts.join(' ');
   }
 
   /* ---------------------------------------------------------------- your games index (tree) */
@@ -350,7 +454,7 @@ const O2 = (() => {
     if (which === 'course') renderCourse(curCourse);
     window.scrollTo({ top: 0 });
   }
-  function refresh() { loadReset(); if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
+  function refresh() { loadReset(); spreadMemo = ''; if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
 
   /* ---- mini boards (thrown away on every re-render) */
   let minis = [];
@@ -494,7 +598,7 @@ const O2 = (() => {
           <div class="controls" style="margin-top:10px"><button class="btn primary" data-act="drill" data-c="${esc(c.id)}">Drill these ${diff.length}</button></div>`
           : '<p class="small muted">No difficult moves yet. A move lands here when you miss it twice.</p>'}</div>
       <div class="card"><span class="eyebrow">Moves by level</span><div class="o2-lv">${lv.map((n, j) => `<div><span>${j ? 'L' + j : 'New'}</span><i style="width:${n / mxl * 100}%"></i><b>${n}</b></div>`).join('')}</div>
-        <p class="small muted">A move climbs one level for every right answer: back after 1, 3, 7, 14, 30, 90 and 180 days. Level 4 and up is "mature". A miss sends it back to level 1.</p></div>
+        <p class="small muted">A move climbs one level for every right answer: back after 1, 3, 7, 14, 30, 90 and 180 days. Level 4 and up is "mature". A miss sends it two levels down; it comes back with its whole line from move 1, at most ${LAPSE_CAP} missed moves a day.</p></div>
     </div>`;
   }
   function tabIdeas(c) {
@@ -760,7 +864,7 @@ const O2 = (() => {
         play('right');
         P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
         addNote(s);
-        fb(commentHtml(s, { eyebrow: '✓ Right', prefix: '' }), 'right');
+        { const i0 = seq.indexOf(s), sis = sisters(c, l, i0).filter(x => lineLearned(c, x.l2)); fb(commentHtml(s, { eyebrow: '✓ Right', prefix: '' }) + (sis[0] ? sisterHtml(sis[0]) : ''), 'right'); if (sis[0]) { await wait(1200); chk(); } }
         if (s.n.plan) {
           await wait(500); chk();
           fb(planHtml(s), 'plan'); P.shapes = shapes(s.n.plan.shapes); draw();
@@ -846,7 +950,8 @@ const O2 = (() => {
   function studyShow() {
     const s = P.seq[P.si - 1];
     if (!s) return fb('<span class="eyebrow">Start position</span><p class="small muted">Press Next to begin.</p>');
-    fb(commentHtml(s, { eyebrow: s.n.mine ? 'Your move' : 'Opponent' }) + (s.n.mine ? xNotes(s) : '') + (s.n.plan ? `<div class="o2-plan-in">${planHtml(s)}</div>` : '') + (P.si >= P.seq.length ? '<p class="small muted"><b>End of the line.</b></p>' : ''), s.n.plan ? 'plan' : '');
+    const sis = s.n.mine && P.ctxLine ? sisters(P.c, P.c.lineById.get(P.ctxLine), P.si - 1) : [];
+    fb(commentHtml(s, { eyebrow: s.n.mine ? 'Your move' : 'Opponent' }) + (s.n.mine ? xNotes(s) : '') + (sis[0] ? sisterHtml(sis[0]) : '') + (s.n.plan ? `<div class="o2-plan-in">${planHtml(s)}</div>` : '') + (P.si >= P.seq.length ? '<p class="small muted"><b>End of the line.</b></p>' : ''), s.n.plan ? 'plan' : '');
     P.shapes = dedupe([...shapes(s.n.shapes), ...(s.n.plan ? shapes(s.n.plan.shapes) : []), ...(s.n.mine ? xShapes(s) : [])]);
     const nx = P.seq[P.si];
     if (nx && nx.n.mine) P.shapes.push({ orig: nx.from, dest: nx.to, brush: 'paleBlue' });
@@ -890,25 +995,52 @@ const O2 = (() => {
         const idx = seq.map((s, i) => g.ids.has(s.id) ? i : -1).filter(i => i >= 0);
         if (!idx.length) continue;
         const firstI = idx[0], lastI = idx[idx.length - 1];
-        const fromStart = H.store.get('o2fromstart', false);
+        // a move you missed last time (or earlier in this session) comes back with its whole line from move 1
+        const replay = !practice && (g.again || [...g.ids].some(id => isLapse(srsGet(c, id))));
+        const fromStart = replay || H.store.get('o2fromstart', false);
         const s0 = fromStart ? 0 : Math.max(0, seq[firstI - 1] && !seq[firstI - 1].n.mine ? firstI - 1 : firstI);
         silentTo(seq, s0);
         head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, `${COURSES.length > 1 && !scope ? c.title + ' · ' : ''}${g.line.title}${g.again ? ' (again)' : ''}`, qn, total);
-        fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 ? 'The moves above show how the position arose.' : ''}</p>`);
-        actions('none');
+        let skip = false;
+        if (replay) {
+          fb(`<span class="eyebrow">↺ ${g.again ? 'One more time, from the start' : 'You missed a move in this line last time'}</span><h3>${esc(g.line.title)}</h3>
+            ${g.line.intro && !g.again ? `<p class="small">${rich(g.line.intro)}</p>` : ''}
+            <p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+            <p class="small muted">Watch the line from move 1. <b>Bold</b> moves are where it splits from the other lines, so you know which line you are in.</p>`);
+          await cont('Play from move 1'); chk();
+          cont('Skip to the question').then(() => { skip = true; });
+        } else {
+          fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 ? 'The moves above show how the position arose.' : ''}</p>`);
+          actions('none');
+        }
         await wait(350); chk();
+        const spl = new Set(splits(c, g.line));
         for (let i = s0; i <= lastI; i++) {
           const s = seq[i];
-          if (!s.n.mine || !g.ids.has(s.id)) { await wait(fromStart && i < firstI - 1 ? 160 : 520); chk(); playStep(s); continue; }
+          if (!s.n.mine || !g.ids.has(s.id)) {
+            if (replay && i < firstI) {          // readable pace, pause where the line splits off
+              await wait(skip ? 0 : 650); chk(); playStep(s);
+              if (!skip && spl.has(i)) {
+                const sp = signpost(c, g.line, i + 1);
+                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${sp?.others.length ? `<p class="small muted">Other course lines here: ${sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ')}.</p>` : ''}`, 'plan');
+                await wait(2200); chk();
+              } else if (!skip && s.n.mine && s.n.c) { fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true); await wait(900); chk(); }
+              continue;
+            }
+            await wait(fromStart && i < firstI - 1 ? 160 : 520); chk(); playStep(s); continue;
+          }
+          if (replay && P.cont) { P.cont = null; }
           head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, $('#o2-title').textContent, qn, total);
-          fb(`<span class="eyebrow">Your move</span><p>Play the course move${g.again ? ' (you missed it before)' : ''}.</p>`);
+          const sis = sisters(c, g.line, i);
+          fb(`<span class="eyebrow">Your move</span><p>Play the course move${g.again ? ' (you missed it before)' : ''}.</p>${signHtml(signpost(c, g.line, i))}`);
           P.shapes = []; draw();
           const xs = (s.n.x || []);
           const r = await ask(s, {
             onWrong: (san, e) => {
               const x = xs.find(x => norm(x.san) === norm(san));
+              const mix = sis.find(y => norm(y.s2.san) === norm(san));
               P.shapes = dedupe([...moveShapes(s), ...shapes(s.n.shapes)]); draw();
-              fb(`<span class="eyebrow" style="color:var(--blunder)">${x ? `Don't play <span class="o2-san">${esc(san)}</span>` : `<span class="o2-san">${esc(san)}</span> is not the course move`}</span>${x ? `<p>${rich(x.why)}</p>` : ''}` + commentHtml(s, { eyebrow: 'The course move' }) + '<p class="small muted">Play the arrow move to go on.</p>', 'wrong');
+              fb(`<span class="eyebrow" style="color:var(--blunder)">${x ? `Don't play <span class="o2-san">${esc(san)}</span>` : `<span class="o2-san">${esc(san)}</span> is not the course move`}</span>${x ? `<p>${rich(x.why)}</p>` : ''}` + (mix ? sisterHtml(mix, san) : '') + commentHtml(s, { eyebrow: 'The course move' }) + '<p class="small muted">Play the arrow move to go on.</p>', 'wrong');
             },
           }); chk();
           const res = r.wrongs || r.shown ? 'wrong' : r.hinted ? 'hint' : 'ok';
@@ -927,14 +1059,15 @@ const O2 = (() => {
           if (res === 'wrong') {
             if (!g.again) groups.push({ c, line: g.line, ids: new Set([s.id]), again: true });
             P.shapes = shapes(s.n.shapes); draw();
-            fb(commentHtml(s, { eyebrow: 'Now you know' }) + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session and is due again tomorrow.'}</p>`, 'wrong');
+            fb(commentHtml(s, { eyebrow: 'Now you know' }) + (sis[0] ? sisterHtml(sis[0]) : '') + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session, and next time with its whole line from move 1.'}</p>`, 'wrong');
             await cont(); chk();
           } else {
             play('right');
             P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
-            fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s) + (notes.get(key) ? `<p class="small o2-srs">${esc(notes.get(key))}</p>` : ''), 'right');
+            const sisR = sis[0] && sis[0].d <= 3 ? sis[0] : null;
+            fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s) + (sisR ? sisterHtml(sisR) : '') + (notes.get(key) ? `<p class="small o2-srs">${esc(notes.get(key))}</p>` : ''), 'right');
             addNote(s, true);
-            await wait(i === lastI ? 900 : 650); chk();
+            await wait(sisR ? 2000 : i === lastI ? 900 : 650); chk();
           }
         }
       }
@@ -947,7 +1080,7 @@ const O2 = (() => {
       const acc = S.asked ? S.ok / S.asked : 0;
       if (acc >= 0.9 && S.asked >= 5) { try { H.confetti?.(); } catch {} }
       fb(`<span class="eyebrow">${practice ? 'Drill finished' : 'Review finished'}</span><h3>${S.ok} of ${S.asked} right · ${pct(acc)}</h3>
-        ${practice ? '<p class="small muted">Practice: schedule unchanged.</p>' : `<p class="o2-moved">${[S.up ? `${plural(S.up, 'move')} up a box` : '', S.back ? `${S.back} back to tomorrow` : '', S.stay ? `${S.stay} stayed` : ''].filter(Boolean).join(' · ')}</p>`}
+        ${practice ? '<p class="small muted">Practice: schedule unchanged.</p>' : `<p class="o2-moved">${[S.up ? `${plural(S.up, 'move')} up a box` : '', S.back ? `${S.back} missed: back soon with the whole line` : '', S.stay ? `${S.stay} stayed` : ''].filter(Boolean).join(' · ')}</p>`}
         <p>${more && !practice ? `${plural(more, 'move')} still due.` : nd ? `Next review: ${dayText(nd)} · about ${minsFor(dueOnDay(cs, nd))} min` : ''}</p>
         ${S.wrong.length ? `<p class="small muted">Missed (tap to study the position):</p><div class="o2-missed">${S.wrong.map(w => `<button class="o2-drow" data-act="study" data-c="${esc(w.c.id)}" data-l="${esc(w.line.id)}" data-id="${esc(w.s.id)}"><b>${esc(moveLabel(w.s.ply, w.s.san))}</b><span class="small muted">${esc(w.line.title)}</span></button>`).join('')}</div>` : ''}
         ${onDone ? `<div class="controls"><button class="btn primary" data-act="next">${esc(nextLabel || 'Next')}</button><button class="btn" data-act="back">Stop for today</button></div>`
@@ -1168,7 +1301,7 @@ const O2 = (() => {
     addHomeBlock(fn) { homeBlocks.push(fn); if (screen === 'home' && ROOT) renderHome(); },
     playScript, openTree, startLearn, startStudy, reviewCourse,
     forecast, intervalText,
-    srs: { get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
+    srs: { isLapse, LAPSE_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
     rich, toast,
     get hooks() { return H; },
   };
