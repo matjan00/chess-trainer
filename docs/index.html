@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 81;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 83;</script>
 </head>
 <body>
 
@@ -935,6 +935,25 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .o2-recap .split { color: var(--accent, #3b82f6); }
 .o2-recap .q { padding: 0 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent, #3b82f6) 18%, transparent); }
 
+/* review replay: phone caption under the board (recap move list, split notes); notes heading only with notes */
+.o2-cap { display: none; }
+.o2-noteswrap[hidden], .o2-noteswrap:not(:has(.o2-note)) { display: none; }
+.o2-intro { margin: 4px 0; } .o2-intro > summary { cursor: pointer; color: var(--ink-2); min-height: 32px; display: flex; align-items: center; }
+@media (max-width: 899px) {
+  .o2-cap:not([hidden]):not(:empty) { display: block; padding: 6px 10px; border: 1px solid var(--line); border-left: 3px solid var(--accent, #3b82f6); border-radius: 8px; background: var(--surface); font-size: 14px; line-height: 1.45; max-height: 7.6em; overflow-y: auto; }
+  .o2-cap .eyebrow { display: block; } .o2-cap .o2-recap { margin: 2px 0 0; line-height: 1.5; }
+  .o2-cap .o2-capm b { font-family: var(--mono); } .o2-cap .o2-capm .muted { font-size: 13px; }
+  .o2-cap .o2-capn { margin: 2px 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+  /* nothing in the side column hides under the fixed action bar */
+  #o2-player.play { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+/* laptops: board sized by the screen height so the action buttons stay on screen; the bar sticks as a fallback */
+@media (min-width: 900px) {
+  #o2-player .board-shell { max-width: min(100%, calc(100dvh - 300px + 22px)); }
+  #o2-player .board { max-width: min(100%, calc(100dvh - 300px)); }
+  #o2-player .actionbar { position: sticky; bottom: 0; z-index: 5; background: var(--bg); padding: 6px 0; }
+}
+
 /* ===== Train 2 (t2core.js). Uses the app's tokens (--accent, --line, ...) and classes (.card .btn .viewer ...), same look as Openings 2. ===== */
 .t2 h2 { font-size: 30px; }
 .t2 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -1627,7 +1646,7 @@ for (const g of GAMES) g.plies.forEach((p, i) => { if (/#$/.test(p.san || '') &&
       O2.addHomeBlock(el => {}) fills #o2-home-extra; O2.playScript({...}) runs a trap / fix-it / model drill in the
       trainer; O2.srs (get, answer, isDue, ...) and O2.posKey, O2.courses() for read access.
    Forecast (for the Today tab): O2.forecast(days = 7) -> array of `days` entries, index 0 = today (includes everything overdue):
-      {day: 'YYYY-MM-DD', t: <start-of-day ms>, n: <cards due that day>, mins: <round(min(n,CAP)*8/60), min 1 if n>0, else 0>,
+      {day: 'YYYY-MM-DD', t: <start-of-day ms>, n: <cards due that day>, mins: <max(1, round((min(n,CAP)*11 + missed*15)/60)) if n>0, else 0>,
        items: [{course: courseTitle, courseId, line: lineTitle, lineId, n}]} (grouped by primary line, sorted by n desc).
       O2.intervalText(days) -> "1 day" | "3 days" | "1 week" | "2 weeks" | "1 month" | "3 months" | "6 months" | "N days".
       O2.srs.BACKLOG (40): above this many due moves, the Learn buttons first ask the user to clear the reviews.
@@ -1910,7 +1929,7 @@ const O2 = (() => {
   function dueSummary() {
     const d = dueCards(), byCourse = {};
     d.forEach(x => byCourse[x.c.id] = (byCourse[x.c.id] || 0) + 1);
-    return { n: d.length, mins: Math.max(1, Math.round(Math.min(d.length, CAP) * 8 / 60)), byCourse };
+    return { n: d.length, mins: minsFor(d.length, d.filter(x => isLapse(srsGet(x.c, x.id))).length), byCourse };
   }
   /** cards due per day for the next `days` days; index 0 = today incl. everything overdue (contract used by the Today tab) */
   function forecast(days = 7) {
@@ -1921,16 +1940,18 @@ const O2 = (() => {
       const s = srsGet(c, k.id); if (!s) continue;
       const i = s.due <= e ? 0 : Math.ceil((s.due - e) / DAY);
       if (i >= days) continue;
-      const o = out[i]; o.n++;
+      const o = out[i]; o.n++; if (isLapse(s)) o._l = (o._l || 0) + 1;
       const key = c.id + '/' + k.line;
       let it = o._m.get(key);
       if (!it) { it = { course: c.title, courseId: c.id, line: c.lineById.get(k.line)?.title || '', lineId: k.line, n: 0 }; o._m.set(key, it); o.items.push(it); }
       it.n++;
     }
-    for (const o of out) { o.mins = o.n ? minsFor(o.n) : 0; o.items.sort((a, b) => b.n - a.n); delete o._m; }
+    for (const o of out) { o.mins = o.n ? minsFor(o.n, o._l) : 0; o.items.sort((a, b) => b.n - a.n); delete o._m; delete o._l; }
     return out;
   }
-  const minsFor = n => Math.max(1, Math.round(Math.min(n, CAP) * 8 / 60));
+  // about 11 s a move (each line is watched from move 1, then the answer), +15 s for a missed move (slow guided replay)
+  const SEC_MOVE = 11, SEC_LAPSE = 15;
+  const minsFor = (n, lapsed = 0) => Math.max(1, Math.round((Math.min(n, CAP) * SEC_MOVE + Math.min(lapsed || 0, n, CAP) * SEC_LAPSE) / 60));
   const dueOnDay = (cs, t) => { const k = dayKey(t); let n = 0; for (const c of cs) for (const x of c.cards) { const s = srsGet(c, x.id); if (s && dayKey(s.due) === k) n++; } return n; };
   function nextDueAfterToday(cs) {
     let best = Infinity; const e = endOfDay();
@@ -2183,9 +2204,9 @@ const O2 = (() => {
     const dname = d => d === 0 ? 'Today' : d === 1 ? 'Tmrw' : new Date(now() + d * DAY).toLocaleDateString('en-GB', { weekday: 'short' });
     return `<div class="o2-grid2">
       <div class="card"><span class="eyebrow">Due now</span><h3 class="o2-big">${plural(i.due, 'move')}</h3>
-        <p class="small muted">${i.due ? `About ${Math.max(1, Math.round(Math.min(i.due, CAP) * 8 / 60))} min. Moves are asked inside their line, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
+        <p class="small muted">${i.due ? `About ${minsFor(i.due)} min. Each move is asked inside its line, played from move 1, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
         <div class="controls">${i.due ? `<button class="btn primary" data-act="review" data-c="${esc(c.id)}">Start review</button>` : ''}
-        <label class="o2-check"><input type="checkbox" data-act="fromstart"${H.store.get('o2fromstart', false) ? ' checked' : ''}> Play every line from move 1</label></div></div>
+        <label class="o2-check"><input type="checkbox" data-act="fromstart"${fromStartOn() ? ' checked' : ''}> Play every line from move 1</label></div></div>
       <div class="card"><span class="eyebrow">Next 7 days</span><div class="o2-fc">${fc.map((n, d) => `<div><span class="n">${n || ''}</span><i style="height:${n / mx * 100}%"></i><span class="d">${dname(d)}</span></div>`).join('')}</div></div>
       <div class="card"><span class="eyebrow">Difficult moves</span>
         ${diff.length ? `<p class="small muted">Moves you got wrong more than once. Drilling them does not change their schedule, but a miss makes them due now.</p>
@@ -2208,6 +2229,11 @@ const O2 = (() => {
   let cg = null;
   const CANCEL = Symbol('cancel');
   const P = { gen: 0, c: null, mode: '', chess: null, hist: [], startFen: null, startPly: 0, view: null, expect: null, shapes: [], cont: null, flipped: false, back: null, ctxNode: null, ctxLine: null };
+  // 'o2fromstart' (play every review line from move 1): on by default. A 'false' saved before it became the default is reset once.
+  function fromStartOn() {
+    if (!H.store.get('o2fromstart.v2', false)) { H.store.set('o2fromstart.v2', true); if (H.store.get('o2fromstart', null) === false) H.store.set('o2fromstart', true); }
+    return H.store.get('o2fromstart', true);
+  }
   function stopPlayer() { P.gen++; P.expect = null; P.cont = null; closeMenu(); }
   function begin(c, mode, back) {
     stopPlayer();
@@ -2215,7 +2241,7 @@ const O2 = (() => {
     Object.assign(P, { c, mode, back, hist: [], view: null, shapes: [], startPly: 0, ctxNode: null, ctxLine: null });
     for (const w of ['home', 'course']) $('#o2-' + w).hidden = true;
     $('#o2-player').hidden = false; screen = 'player';
-    $('#o2-panel').innerHTML = ''; $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true;
+    $('#o2-panel').innerHTML = ''; $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true; cap();
     $('#o2-draft').hidden = !c?.draft;
     window.scrollTo({ top: 0 });
     lastAct = Date.now();
@@ -2225,6 +2251,13 @@ const O2 = (() => {
   function head(label, title, done, total) {
     $('#o2-mode').textContent = label; $('#o2-title').textContent = title;
     $('#o2-bar').style.width = total ? Math.min(100, done / total * 100) + '%' : '0';
+  }
+  /* phone caption under the board (CSS shows it below 900px only): the recap move list and split notes, which the
+     feedback card below the board would show off-screen. Same text is in #o2-fb, so it is aria-hidden. */
+  function cap(html = '') {
+    let el = $('#o2-cap');
+    if (!el) { const ch = $('#o2-chips'); if (!ch) return; el = document.createElement('div'); el.id = 'o2-cap'; el.className = 'o2-cap'; el.setAttribute('aria-hidden', 'true'); ch.after(el); }
+    el.innerHTML = html; el.hidden = !html;
   }
   function fb(html, cls = '') { const f = $('#o2-fb'); f.className = 'card o2-fb ' + cls; f.innerHTML = html; }
   function resetBoard(fen = null, ply = 0) {
@@ -2391,7 +2424,7 @@ const O2 = (() => {
     if (H.statsHere && P.c) items.push(['stats', 'Stats for this position']);
     items.push(['eval', `Eval bar: ${evalOn ? 'on' : 'off'}`]);
     if (P.c && P.mode !== 'tree') items.push(['totree', 'Open in move tree']);
-    if (P.mode === 'review') items.push(['fromstart', `Play every line from move 1: ${H.store.get('o2fromstart', false) ? 'on' : 'off'}`]);
+    if (P.mode === 'review' || P.mode === 'drill') items.push(['fromstart', `Play every line from move 1: ${fromStartOn() ? 'on' : 'off'}`]);
     if (H.sfx && 'on' in H.sfx) items.push(['sound', `Sound: ${H.sfx.on ? 'on' : 'off'}`]);
     items.push(['report', 'Report a problem (copies line + position)']);
     m.innerHTML = items.map(([id, t]) => `<button role="menuitem" data-menu="${id}">${esc(t)}</button>`).join('');
@@ -2404,7 +2437,7 @@ const O2 = (() => {
     closeMenu();
     if (id === 'stats') H.statsHere?.({ c: P.c, fen: curFen(), node: P.hist[P.hist.length - 1]?.node ? P.c.nodes[P.hist[P.hist.length - 1].node] : null });
     if (id === 'eval') { evalOn = !evalOn; H.store.set('o2eval', evalOn); evalShow(); }
-    if (id === 'fromstart') { H.store.set('o2fromstart', !H.store.get('o2fromstart', false)); toast('Applies from the next line.'); }
+    if (id === 'fromstart') { const on = !fromStartOn(); H.store.set('o2fromstart', on); toast(on ? 'On: every line plays from move 1 (from the next line).' : 'Off: lines start just before your move. Missed lines still play from move 1.', 3800); }
     if (id === 'sound') { H.sfx.on = !H.sfx.on; H.store.set('sound', H.sfx.on); }
     if (id === 'totree') {
       const c = P.c, upto = P.view ?? P.hist.length, path = [];
@@ -2590,41 +2623,60 @@ const O2 = (() => {
         const idx = seq.map((s, i) => g.ids.has(s.id) ? i : -1).filter(i => i >= 0);
         if (!idx.length) continue;
         const firstI = idx[0], lastI = idx[idx.length - 1];
-        // a move you missed last time (or earlier in this session) comes back with its whole line from move 1
-        const replay = !practice && (g.again || [...g.ids].some(id => isLapse(srsGet(c, id))));
-        const fromStart = replay || H.store.get('o2fromstart', false);
-        const s0 = fromStart ? 0 : Math.max(0, seq[firstI - 1] && !seq[firstI - 1].n.mine ? firstI - 1 : firstI);
+        // every line is played from move 1 (option 'o2fromstart', on by default). A move you missed last time (or earlier in
+        // this session) gets the slow guided replay: recap, pauses where the line splits off, notes on your own moves.
+        const replay = g.again || (!practice && [...g.ids].some(id => isLapse(srsGet(c, id))));
+        const short = Math.max(0, seq[firstI - 1] && !seq[firstI - 1].n.mine ? firstI - 1 : firstI);   // old start: one move before the question
+        const fromStart = replay || fromStartOn();
+        const s0 = fromStart ? 0 : short;
         silentTo(seq, s0);
         head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, `${COURSES.length > 1 && !scope ? c.title + ' · ' : ''}${g.line.title}${g.again ? ' (again)' : ''}`, qn, total);
-        let skip = false;
+        // Skip: jumps straight to the old short start. nap() is a pause that Skip cuts short; only used before `short`.
+        let skip = false, wake = null;
+        const nap = ms => skip ? Promise.resolve() : new Promise(r => { const t = setTimeout(() => { wake = null; r(); }, ms); wake = () => { clearTimeout(t); wake = null; r(); }; });
+        const offerSkip = () => { if (short - s0 > 3) cont('Skip to the question').then(() => { skip = true; actions('play'); wake?.(); }); };
+        $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true;   // notes belong to this line only
+        let capRecap = '';
         if (replay) {
-          fb(`<span class="eyebrow">↺ ${g.again ? 'One more time, from the start' : 'You missed a move in this line last time'}</span><h3>${esc(g.line.title)}</h3>
-            ${g.line.intro && !g.again ? `<p class="small">${rich(g.line.intro)}</p>` : ''}
-            <p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+          const eb = g.again ? 'One more time, from the start' : 'You missed a move in this line last time';
+          fb(`<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+            <p class="small"><b>${esc(g.line.title)}</b></p>
+            ${g.line.intro && !g.again ? `<details class="o2-intro"><summary class="small">About this line</summary><p class="small">${rich(g.line.intro)}</p></details>` : ''}
             <p class="small muted">Watch the line from move 1. <b>Bold</b> moves are where it splits from the other lines, so you know which line you are in.</p>`);
-          await cont('Play from move 1'); chk();
-          cont('Skip to the question').then(() => { skip = true; });
+          capRecap = `<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>`;
+          cap(capRecap);
+          await cont(firstI > 1 ? 'Play from move 1' : 'Start'); chk();
+          actions('play'); offerSkip();
         } else {
-          fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 ? 'The moves above show how the position arose.' : ''}</p>`);
-          actions('none');
+          fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 < short ? 'Watch the line from move 1.' : s0 ? 'The moves above show how the position arose.' : ''}</p>`);
+          cap();
+          actions('play'); offerSkip();
         }
         await wait(350); chk();
         const spl = new Set(splits(c, g.line));
         for (let i = s0; i <= lastI; i++) {
           const s = seq[i];
+          if (skip && i < short) { silentTo(seq, short); i = short - 1; continue; }
           if (!s.n.mine || !g.ids.has(s.id)) {
             if (replay && i < firstI) {          // readable pace, pause where the line splits off
-              await wait(skip ? 0 : 650); chk(); playStep(s);
+              await (i < short ? nap(650) : wait(650)); chk(); playStep(s);
               if (!skip && spl.has(i)) {
                 const sp = signpost(c, g.line, i + 1);
-                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${sp?.others.length ? `<p class="small muted">Other course lines here: ${sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ')}.</p>` : ''}`, 'plan');
-                await wait(2200); chk();
-              } else if (!skip && s.n.mine && s.n.c) { fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true); await wait(900); chk(); }
+                const others = sp?.others.length ? sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ') : '';
+                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${others ? `<p class="small muted">Other course lines here: ${others}.</p>` : ''}`, 'plan');
+                cap(`<span class="eyebrow">Splits off here</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b>${others ? ` <span class="muted">(other lines: ${others})</span>` : ''}</div>${s.n.c ? `<p class="o2-capn">${rich(s.n.c)}</p>` : ''}`);
+                await (i < short ? nap(2200) : wait(2200)); chk();
+                cap(capRecap);
+              } else if (!skip && s.n.mine && s.n.c) {
+                fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true);
+                cap(`<span class="eyebrow">Your move in this line</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b></div><p class="o2-capn">${rich(s.n.c)}</p>`);
+                await nap(900); chk(); cap(capRecap);
+              }
               continue;
             }
-            await wait(fromStart && i < firstI - 1 ? 160 : 520); chk(); playStep(s); continue;
+            await (i < short ? nap(350) : wait(520)); chk(); playStep(s); continue;   // fast but visible from move 1; normal pace near the question
           }
-          if (replay && P.cont) { P.cont = null; }
+          P.cont = null; wake = null; cap();     // no Skip/Continue left over once the question is on the board
           head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, $('#o2-title').textContent, qn, total);
           const sis = sisters(c, g.line, i);
           fb(`<span class="eyebrow">Your move</span><p>Play the course move${g.again ? ' (you missed it before)' : ''}.</p>${signHtml(signpost(c, g.line, i))}`);
@@ -2655,9 +2707,9 @@ const O2 = (() => {
             if (!g.again) groups.push({ c, line: g.line, ids: new Set([s.id]), again: true });
             P.shapes = shapes(s.n.shapes); draw();
             fb(commentHtml(s, { eyebrow: 'Now you know' }) + (sis[0] ? sisterHtml(sis[0]) : '') + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session, and next time with its whole line from move 1.'}</p>`, 'wrong');
-            await cont(); chk();
+            await cont(); chk(); actions('play');
           } else {
-            play('right');
+            play('right'); actions('play');   // no Hint/Show while the line plays on
             P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
             const sisR = sis[0] && sis[0].d <= 3 ? sis[0] : null;
             fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s) + (sisR ? sisterHtml(sisR) : '') + (notes.get(key) ? `<p class="small o2-srs">${esc(notes.get(key))}</p>` : ''), 'right');
@@ -3985,19 +4037,28 @@ const T2 = (() => {
   function dailyPlan() {
     const d = today(), due = dueCards().length, nm = newMineCards().length;
     const newLeft = Math.max(0, Math.min(nm, DAILY.newMine - newMineToday()));
-    const revN = Math.min(CAP, due + newLeft);
+    // revN = exactly what reviewItems() will serve this session (at most CAP); due = the real number of cards due
+    const newN = Math.max(0, Math.min(CAP - Math.min(due, CAP), newLeft));
+    const revN = Math.min(CAP, due) + newN;
     const revDone = revN === 0;
     const puzDone = !PUZ || (d.new || 0) >= DAILY.puz;
     const thinkDone = !MINE || (d.think || 0) >= DAILY.think;
     const lessDone = (d.less || 0) > 0 || (d.play || 0) > 0;
     const puzN = Math.max(0, DAILY.puz - (d.new || 0)), thinkN = Math.max(0, DAILY.think - (d.think || 0));
     const mins = Math.round(((revDone ? 0 : revN * 25) + (puzDone ? 0 : puzN * 50) + (thinkDone ? 0 : thinkN * 40)) / 60);
-    return { revN, puzN, thinkN, revDone, puzDone, thinkDone, lessDone, mins: Math.max(1, mins), allDone: revDone && puzDone && thinkDone };
+    return { revN, due, newN, puzN, thinkN, revDone, puzDone, thinkDone, lessDone, mins: Math.max(1, mins), allDone: revDone && puzDone && thinkDone };
+  }
+  /** "29 cards due · 20 this session", "12 cards due + 3 new", "3 new cards" */
+  function revText(p) {
+    const parts = [];
+    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > CAP ? ` · ${CAP} this session` : ''));
+    if (p.newN) parts.push(p.due ? `+ ${p.newN} new` : plural(p.newN, 'new card'));
+    return parts.join(' ');
   }
   function todayTasks() {
     const p = dailyPlan(), d = today(), lod = lessonOfDay();
     return [
-      { nm: 'Reviews', ct: p.revN ? `${plural(p.revN, 'card')} due · about ${Math.max(1, Math.round(p.revN * 25 / 60))} min` : (d.rev ? `${d.rev} reviewed today` : 'Nothing due'), done: p.revDone,
+      { nm: 'Reviews', ct: p.revN ? `${revText(p)} · about ${Math.max(1, Math.round(p.revN * 25 / 60))} min` : (d.rev ? `${d.rev} reviewed today` : 'Nothing due'), done: p.revDone,
         go: () => runDaily(['rev']) },
       { nm: '10 new puzzles', ct: PUZ ? `${Math.min(d.new || 0, DAILY.puz)}/${DAILY.puz} · picked for your weak spots` : 'Puzzles arrive with the next update', done: p.puzDone, go: () => runDaily(['puz']) },
       { nm: '5 Think-first', ct: MINE ? `${Math.min(d.think || 0, DAILY.think)}/${DAILY.think} · stop and check before you move` : 'Arrives with the next update', done: p.thinkDone, go: () => runDaily(['think']) },
@@ -4070,7 +4131,7 @@ const T2 = (() => {
     const tick = (done, lab) => `<span class="t2-blk${done ? ' on' : ''}"><i aria-hidden="true">${done ? '✓' : ''}</i>${lab}<span class="sr">${done ? ' (done)' : ''}</span></span>`;
     let banner;
     if (!p.allDone) {
-      const parts = [p.revDone ? null : plural(p.revN, 'review'), p.puzDone ? null : plural(p.puzN, 'puzzle'), p.thinkDone ? null : `${p.thinkN} Think-first`].filter(Boolean);
+      const parts = [p.revDone ? null : revText(p), p.puzDone ? null : plural(p.puzN, 'puzzle'), p.thinkDone ? null : `${p.thinkN} Think-first`].filter(Boolean);
       banner = `<div class="card t2-banner"><div><span class="eyebrow">Train today</span><h3>${parts.join(' · ')} · about ${p.mins} min</h3>
         <div class="t2-blocks">${tick(p.revDone, 'Reviews')}${tick(p.puzDone, 'Puzzles')}${tick(p.thinkDone, 'Think first')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
         <button class="btn primary" data-act="daily">${(d.rev || d.new || d.think) ? 'Continue' : 'Start'}</button></div>`;

@@ -597,19 +597,28 @@ const T2 = (() => {
   function dailyPlan() {
     const d = today(), due = dueCards().length, nm = newMineCards().length;
     const newLeft = Math.max(0, Math.min(nm, DAILY.newMine - newMineToday()));
-    const revN = Math.min(CAP, due + newLeft);
+    // revN = exactly what reviewItems() will serve this session (at most CAP); due = the real number of cards due
+    const newN = Math.max(0, Math.min(CAP - Math.min(due, CAP), newLeft));
+    const revN = Math.min(CAP, due) + newN;
     const revDone = revN === 0;
     const puzDone = !PUZ || (d.new || 0) >= DAILY.puz;
     const thinkDone = !MINE || (d.think || 0) >= DAILY.think;
     const lessDone = (d.less || 0) > 0 || (d.play || 0) > 0;
     const puzN = Math.max(0, DAILY.puz - (d.new || 0)), thinkN = Math.max(0, DAILY.think - (d.think || 0));
     const mins = Math.round(((revDone ? 0 : revN * 25) + (puzDone ? 0 : puzN * 50) + (thinkDone ? 0 : thinkN * 40)) / 60);
-    return { revN, puzN, thinkN, revDone, puzDone, thinkDone, lessDone, mins: Math.max(1, mins), allDone: revDone && puzDone && thinkDone };
+    return { revN, due, newN, puzN, thinkN, revDone, puzDone, thinkDone, lessDone, mins: Math.max(1, mins), allDone: revDone && puzDone && thinkDone };
+  }
+  /** "29 cards due · 20 this session", "12 cards due + 3 new", "3 new cards" */
+  function revText(p) {
+    const parts = [];
+    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > CAP ? ` · ${CAP} this session` : ''));
+    if (p.newN) parts.push(p.due ? `+ ${p.newN} new` : plural(p.newN, 'new card'));
+    return parts.join(' ');
   }
   function todayTasks() {
     const p = dailyPlan(), d = today(), lod = lessonOfDay();
     return [
-      { nm: 'Reviews', ct: p.revN ? `${plural(p.revN, 'card')} due · about ${Math.max(1, Math.round(p.revN * 25 / 60))} min` : (d.rev ? `${d.rev} reviewed today` : 'Nothing due'), done: p.revDone,
+      { nm: 'Reviews', ct: p.revN ? `${revText(p)} · about ${Math.max(1, Math.round(p.revN * 25 / 60))} min` : (d.rev ? `${d.rev} reviewed today` : 'Nothing due'), done: p.revDone,
         go: () => runDaily(['rev']) },
       { nm: '10 new puzzles', ct: PUZ ? `${Math.min(d.new || 0, DAILY.puz)}/${DAILY.puz} · picked for your weak spots` : 'Puzzles arrive with the next update', done: p.puzDone, go: () => runDaily(['puz']) },
       { nm: '5 Think-first', ct: MINE ? `${Math.min(d.think || 0, DAILY.think)}/${DAILY.think} · stop and check before you move` : 'Arrives with the next update', done: p.thinkDone, go: () => runDaily(['think']) },
@@ -682,7 +691,7 @@ const T2 = (() => {
     const tick = (done, lab) => `<span class="t2-blk${done ? ' on' : ''}"><i aria-hidden="true">${done ? '✓' : ''}</i>${lab}<span class="sr">${done ? ' (done)' : ''}</span></span>`;
     let banner;
     if (!p.allDone) {
-      const parts = [p.revDone ? null : plural(p.revN, 'review'), p.puzDone ? null : plural(p.puzN, 'puzzle'), p.thinkDone ? null : `${p.thinkN} Think-first`].filter(Boolean);
+      const parts = [p.revDone ? null : revText(p), p.puzDone ? null : plural(p.puzN, 'puzzle'), p.thinkDone ? null : `${p.thinkN} Think-first`].filter(Boolean);
       banner = `<div class="card t2-banner"><div><span class="eyebrow">Train today</span><h3>${parts.join(' · ')} · about ${p.mins} min</h3>
         <div class="t2-blocks">${tick(p.revDone, 'Reviews')}${tick(p.puzDone, 'Puzzles')}${tick(p.thinkDone, 'Think first')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
         <button class="btn primary" data-act="daily">${(d.rev || d.new || d.think) ? 'Continue' : 'Start'}</button></div>`;

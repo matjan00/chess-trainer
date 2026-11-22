@@ -211,3 +211,22 @@
 .o2-recap { font-variant-numeric: tabular-nums; line-height: 1.7; margin: 8px 0; }
 .o2-recap .split { color: var(--accent, #3b82f6); }
 .o2-recap .q { padding: 0 6px; border-radius: 6px; background: color-mix(in srgb, var(--accent, #3b82f6) 18%, transparent); }
+
+/* review replay: phone caption under the board (recap move list, split notes); notes heading only with notes */
+.o2-cap { display: none; }
+.o2-noteswrap[hidden], .o2-noteswrap:not(:has(.o2-note)) { display: none; }
+.o2-intro { margin: 4px 0; } .o2-intro > summary { cursor: pointer; color: var(--ink-2); min-height: 32px; display: flex; align-items: center; }
+@media (max-width: 899px) {
+  .o2-cap:not([hidden]):not(:empty) { display: block; padding: 6px 10px; border: 1px solid var(--line); border-left: 3px solid var(--accent, #3b82f6); border-radius: 8px; background: var(--surface); font-size: 14px; line-height: 1.45; max-height: 7.6em; overflow-y: auto; }
+  .o2-cap .eyebrow { display: block; } .o2-cap .o2-recap { margin: 2px 0 0; line-height: 1.5; }
+  .o2-cap .o2-capm b { font-family: var(--mono); } .o2-cap .o2-capm .muted { font-size: 13px; }
+  .o2-cap .o2-capn { margin: 2px 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+  /* nothing in the side column hides under the fixed action bar */
+  #o2-player.play { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+/* laptops: board sized by the screen height so the action buttons stay on screen; the bar sticks as a fallback */
+@media (min-width: 900px) {
+  #o2-player .board-shell { max-width: min(100%, calc(100dvh - 300px + 22px)); }
+  #o2-player .board { max-width: min(100%, calc(100dvh - 300px)); }
+  #o2-player .actionbar { position: sticky; bottom: 0; z-index: 5; background: var(--bg); padding: 6px 0; }
+}

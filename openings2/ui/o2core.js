@@ -32,7 +32,7 @@
       O2.addHomeBlock(el => {}) fills #o2-home-extra; O2.playScript({...}) runs a trap / fix-it / model drill in the
       trainer; O2.srs (get, answer, isDue, ...) and O2.posKey, O2.courses() for read access.
    Forecast (for the Today tab): O2.forecast(days = 7) -> array of `days` entries, index 0 = today (includes everything overdue):
-      {day: 'YYYY-MM-DD', t: <start-of-day ms>, n: <cards due that day>, mins: <round(min(n,CAP)*8/60), min 1 if n>0, else 0>,
+      {day: 'YYYY-MM-DD', t: <start-of-day ms>, n: <cards due that day>, mins: <max(1, round((min(n,CAP)*11 + missed*15)/60)) if n>0, else 0>,
        items: [{course: courseTitle, courseId, line: lineTitle, lineId, n}]} (grouped by primary line, sorted by n desc).
       O2.intervalText(days) -> "1 day" | "3 days" | "1 week" | "2 weeks" | "1 month" | "3 months" | "6 months" | "N days".
       O2.srs.BACKLOG (40): above this many due moves, the Learn buttons first ask the user to clear the reviews.
@@ -315,7 +315,7 @@ const O2 = (() => {
   function dueSummary() {
     const d = dueCards(), byCourse = {};
     d.forEach(x => byCourse[x.c.id] = (byCourse[x.c.id] || 0) + 1);
-    return { n: d.length, mins: Math.max(1, Math.round(Math.min(d.length, CAP) * 8 / 60)), byCourse };
+    return { n: d.length, mins: minsFor(d.length, d.filter(x => isLapse(srsGet(x.c, x.id))).length), byCourse };
   }
   /** cards due per day for the next `days` days; index 0 = today incl. everything overdue (contract used by the Today tab) */
   function forecast(days = 7) {
@@ -326,16 +326,18 @@ const O2 = (() => {
       const s = srsGet(c, k.id); if (!s) continue;
       const i = s.due <= e ? 0 : Math.ceil((s.due - e) / DAY);
       if (i >= days) continue;
-      const o = out[i]; o.n++;
+      const o = out[i]; o.n++; if (isLapse(s)) o._l = (o._l || 0) + 1;
       const key = c.id + '/' + k.line;
       let it = o._m.get(key);
       if (!it) { it = { course: c.title, courseId: c.id, line: c.lineById.get(k.line)?.title || '', lineId: k.line, n: 0 }; o._m.set(key, it); o.items.push(it); }
       it.n++;
     }
-    for (const o of out) { o.mins = o.n ? minsFor(o.n) : 0; o.items.sort((a, b) => b.n - a.n); delete o._m; }
+    for (const o of out) { o.mins = o.n ? minsFor(o.n, o._l) : 0; o.items.sort((a, b) => b.n - a.n); delete o._m; delete o._l; }
     return out;
   }
-  const minsFor = n => Math.max(1, Math.round(Math.min(n, CAP) * 8 / 60));
+  // about 11 s a move (each line is watched from move 1, then the answer), +15 s for a missed move (slow guided replay)
+  const SEC_MOVE = 11, SEC_LAPSE = 15;
+  const minsFor = (n, lapsed = 0) => Math.max(1, Math.round((Math.min(n, CAP) * SEC_MOVE + Math.min(lapsed || 0, n, CAP) * SEC_LAPSE) / 60));
   const dueOnDay = (cs, t) => { const k = dayKey(t); let n = 0; for (const c of cs) for (const x of c.cards) { const s = srsGet(c, x.id); if (s && dayKey(s.due) === k) n++; } return n; };
   function nextDueAfterToday(cs) {
     let best = Infinity; const e = endOfDay();
@@ -588,9 +590,9 @@ const O2 = (() => {
     const dname = d => d === 0 ? 'Today' : d === 1 ? 'Tmrw' : new Date(now() + d * DAY).toLocaleDateString('en-GB', { weekday: 'short' });
     return `<div class="o2-grid2">
       <div class="card"><span class="eyebrow">Due now</span><h3 class="o2-big">${plural(i.due, 'move')}</h3>
-        <p class="small muted">${i.due ? `About ${Math.max(1, Math.round(Math.min(i.due, CAP) * 8 / 60))} min. Moves are asked inside their line, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
+        <p class="small muted">${i.due ? `About ${minsFor(i.due)} min. Each move is asked inside its line, played from move 1, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
         <div class="controls">${i.due ? `<button class="btn primary" data-act="review" data-c="${esc(c.id)}">Start review</button>` : ''}
-        <label class="o2-check"><input type="checkbox" data-act="fromstart"${H.store.get('o2fromstart', false) ? ' checked' : ''}> Play every line from move 1</label></div></div>
+        <label class="o2-check"><input type="checkbox" data-act="fromstart"${fromStartOn() ? ' checked' : ''}> Play every line from move 1</label></div></div>
       <div class="card"><span class="eyebrow">Next 7 days</span><div class="o2-fc">${fc.map((n, d) => `<div><span class="n">${n || ''}</span><i style="height:${n / mx * 100}%"></i><span class="d">${dname(d)}</span></div>`).join('')}</div></div>
       <div class="card"><span class="eyebrow">Difficult moves</span>
         ${diff.length ? `<p class="small muted">Moves you got wrong more than once. Drilling them does not change their schedule, but a miss makes them due now.</p>
@@ -613,6 +615,11 @@ const O2 = (() => {
   let cg = null;
   const CANCEL = Symbol('cancel');
   const P = { gen: 0, c: null, mode: '', chess: null, hist: [], startFen: null, startPly: 0, view: null, expect: null, shapes: [], cont: null, flipped: false, back: null, ctxNode: null, ctxLine: null };
+  // 'o2fromstart' (play every review line from move 1): on by default. A 'false' saved before it became the default is reset once.
+  function fromStartOn() {
+    if (!H.store.get('o2fromstart.v2', false)) { H.store.set('o2fromstart.v2', true); if (H.store.get('o2fromstart', null) === false) H.store.set('o2fromstart', true); }
+    return H.store.get('o2fromstart', true);
+  }
   function stopPlayer() { P.gen++; P.expect = null; P.cont = null; closeMenu(); }
   function begin(c, mode, back) {
     stopPlayer();
@@ -620,7 +627,7 @@ const O2 = (() => {
     Object.assign(P, { c, mode, back, hist: [], view: null, shapes: [], startPly: 0, ctxNode: null, ctxLine: null });
     for (const w of ['home', 'course']) $('#o2-' + w).hidden = true;
     $('#o2-player').hidden = false; screen = 'player';
-    $('#o2-panel').innerHTML = ''; $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true;
+    $('#o2-panel').innerHTML = ''; $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true; cap();
     $('#o2-draft').hidden = !c?.draft;
     window.scrollTo({ top: 0 });
     lastAct = Date.now();
@@ -630,6 +637,13 @@ const O2 = (() => {
   function head(label, title, done, total) {
     $('#o2-mode').textContent = label; $('#o2-title').textContent = title;
     $('#o2-bar').style.width = total ? Math.min(100, done / total * 100) + '%' : '0';
+  }
+  /* phone caption under the board (CSS shows it below 900px only): the recap move list and split notes, which the
+     feedback card below the board would show off-screen. Same text is in #o2-fb, so it is aria-hidden. */
+  function cap(html = '') {
+    let el = $('#o2-cap');
+    if (!el) { const ch = $('#o2-chips'); if (!ch) return; el = document.createElement('div'); el.id = 'o2-cap'; el.className = 'o2-cap'; el.setAttribute('aria-hidden', 'true'); ch.after(el); }
+    el.innerHTML = html; el.hidden = !html;
   }
   function fb(html, cls = '') { const f = $('#o2-fb'); f.className = 'card o2-fb ' + cls; f.innerHTML = html; }
   function resetBoard(fen = null, ply = 0) {
@@ -796,7 +810,7 @@ const O2 = (() => {
     if (H.statsHere && P.c) items.push(['stats', 'Stats for this position']);
     items.push(['eval', `Eval bar: ${evalOn ? 'on' : 'off'}`]);
     if (P.c && P.mode !== 'tree') items.push(['totree', 'Open in move tree']);
-    if (P.mode === 'review') items.push(['fromstart', `Play every line from move 1: ${H.store.get('o2fromstart', false) ? 'on' : 'off'}`]);
+    if (P.mode === 'review' || P.mode === 'drill') items.push(['fromstart', `Play every line from move 1: ${fromStartOn() ? 'on' : 'off'}`]);
     if (H.sfx && 'on' in H.sfx) items.push(['sound', `Sound: ${H.sfx.on ? 'on' : 'off'}`]);
     items.push(['report', 'Report a problem (copies line + position)']);
     m.innerHTML = items.map(([id, t]) => `<button role="menuitem" data-menu="${id}">${esc(t)}</button>`).join('');
@@ -809,7 +823,7 @@ const O2 = (() => {
     closeMenu();
     if (id === 'stats') H.statsHere?.({ c: P.c, fen: curFen(), node: P.hist[P.hist.length - 1]?.node ? P.c.nodes[P.hist[P.hist.length - 1].node] : null });
     if (id === 'eval') { evalOn = !evalOn; H.store.set('o2eval', evalOn); evalShow(); }
-    if (id === 'fromstart') { H.store.set('o2fromstart', !H.store.get('o2fromstart', false)); toast('Applies from the next line.'); }
+    if (id === 'fromstart') { const on = !fromStartOn(); H.store.set('o2fromstart', on); toast(on ? 'On: every line plays from move 1 (from the next line).' : 'Off: lines start just before your move. Missed lines still play from move 1.', 3800); }
     if (id === 'sound') { H.sfx.on = !H.sfx.on; H.store.set('sound', H.sfx.on); }
     if (id === 'totree') {
       const c = P.c, upto = P.view ?? P.hist.length, path = [];
@@ -995,41 +1009,60 @@ const O2 = (() => {
         const idx = seq.map((s, i) => g.ids.has(s.id) ? i : -1).filter(i => i >= 0);
         if (!idx.length) continue;
         const firstI = idx[0], lastI = idx[idx.length - 1];
-        // a move you missed last time (or earlier in this session) comes back with its whole line from move 1
-        const replay = !practice && (g.again || [...g.ids].some(id => isLapse(srsGet(c, id))));
-        const fromStart = replay || H.store.get('o2fromstart', false);
-        const s0 = fromStart ? 0 : Math.max(0, seq[firstI - 1] && !seq[firstI - 1].n.mine ? firstI - 1 : firstI);
+        // every line is played from move 1 (option 'o2fromstart', on by default). A move you missed last time (or earlier in
+        // this session) gets the slow guided replay: recap, pauses where the line splits off, notes on your own moves.
+        const replay = g.again || (!practice && [...g.ids].some(id => isLapse(srsGet(c, id))));
+        const short = Math.max(0, seq[firstI - 1] && !seq[firstI - 1].n.mine ? firstI - 1 : firstI);   // old start: one move before the question
+        const fromStart = replay || fromStartOn();
+        const s0 = fromStart ? 0 : short;
         silentTo(seq, s0);
         head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, `${COURSES.length > 1 && !scope ? c.title + ' · ' : ''}${g.line.title}${g.again ? ' (again)' : ''}`, qn, total);
-        let skip = false;
+        // Skip: jumps straight to the old short start. nap() is a pause that Skip cuts short; only used before `short`.
+        let skip = false, wake = null;
+        const nap = ms => skip ? Promise.resolve() : new Promise(r => { const t = setTimeout(() => { wake = null; r(); }, ms); wake = () => { clearTimeout(t); wake = null; r(); }; });
+        const offerSkip = () => { if (short - s0 > 3) cont('Skip to the question').then(() => { skip = true; actions('play'); wake?.(); }); };
+        $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true;   // notes belong to this line only
+        let capRecap = '';
         if (replay) {
-          fb(`<span class="eyebrow">↺ ${g.again ? 'One more time, from the start' : 'You missed a move in this line last time'}</span><h3>${esc(g.line.title)}</h3>
-            ${g.line.intro && !g.again ? `<p class="small">${rich(g.line.intro)}</p>` : ''}
-            <p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+          const eb = g.again ? 'One more time, from the start' : 'You missed a move in this line last time';
+          fb(`<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+            <p class="small"><b>${esc(g.line.title)}</b></p>
+            ${g.line.intro && !g.again ? `<details class="o2-intro"><summary class="small">About this line</summary><p class="small">${rich(g.line.intro)}</p></details>` : ''}
             <p class="small muted">Watch the line from move 1. <b>Bold</b> moves are where it splits from the other lines, so you know which line you are in.</p>`);
-          await cont('Play from move 1'); chk();
-          cont('Skip to the question').then(() => { skip = true; });
+          capRecap = `<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>`;
+          cap(capRecap);
+          await cont(firstI > 1 ? 'Play from move 1' : 'Start'); chk();
+          actions('play'); offerSkip();
         } else {
-          fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 ? 'The moves above show how the position arose.' : ''}</p>`);
-          actions('none');
+          fb(`<span class="eyebrow">${g.again ? 'One more time' : 'In this line'}</span><p class="small muted">${esc(g.line.title)}. ${s0 < short ? 'Watch the line from move 1.' : s0 ? 'The moves above show how the position arose.' : ''}</p>`);
+          cap();
+          actions('play'); offerSkip();
         }
         await wait(350); chk();
         const spl = new Set(splits(c, g.line));
         for (let i = s0; i <= lastI; i++) {
           const s = seq[i];
+          if (skip && i < short) { silentTo(seq, short); i = short - 1; continue; }
           if (!s.n.mine || !g.ids.has(s.id)) {
             if (replay && i < firstI) {          // readable pace, pause where the line splits off
-              await wait(skip ? 0 : 650); chk(); playStep(s);
+              await (i < short ? nap(650) : wait(650)); chk(); playStep(s);
               if (!skip && spl.has(i)) {
                 const sp = signpost(c, g.line, i + 1);
-                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${sp?.others.length ? `<p class="small muted">Other course lines here: ${sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ')}.</p>` : ''}`, 'plan');
-                await wait(2200); chk();
-              } else if (!skip && s.n.mine && s.n.c) { fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true); await wait(900); chk(); }
+                const others = sp?.others.length ? sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ') : '';
+                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${others ? `<p class="small muted">Other course lines here: ${others}.</p>` : ''}`, 'plan');
+                cap(`<span class="eyebrow">Splits off here</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b>${others ? ` <span class="muted">(other lines: ${others})</span>` : ''}</div>${s.n.c ? `<p class="o2-capn">${rich(s.n.c)}</p>` : ''}`);
+                await (i < short ? nap(2200) : wait(2200)); chk();
+                cap(capRecap);
+              } else if (!skip && s.n.mine && s.n.c) {
+                fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true);
+                cap(`<span class="eyebrow">Your move in this line</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b></div><p class="o2-capn">${rich(s.n.c)}</p>`);
+                await nap(900); chk(); cap(capRecap);
+              }
               continue;
             }
-            await wait(fromStart && i < firstI - 1 ? 160 : 520); chk(); playStep(s); continue;
+            await (i < short ? nap(350) : wait(520)); chk(); playStep(s); continue;   // fast but visible from move 1; normal pace near the question
           }
-          if (replay && P.cont) { P.cont = null; }
+          P.cont = null; wake = null; cap();     // no Skip/Continue left over once the question is on the board
           head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, $('#o2-title').textContent, qn, total);
           const sis = sisters(c, g.line, i);
           fb(`<span class="eyebrow">Your move</span><p>Play the course move${g.again ? ' (you missed it before)' : ''}.</p>${signHtml(signpost(c, g.line, i))}`);
@@ -1060,9 +1093,9 @@ const O2 = (() => {
             if (!g.again) groups.push({ c, line: g.line, ids: new Set([s.id]), again: true });
             P.shapes = shapes(s.n.shapes); draw();
             fb(commentHtml(s, { eyebrow: 'Now you know' }) + (sis[0] ? sisterHtml(sis[0]) : '') + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session, and next time with its whole line from move 1.'}</p>`, 'wrong');
-            await cont(); chk();
+            await cont(); chk(); actions('play');
           } else {
-            play('right');
+            play('right'); actions('play');   // no Hint/Show while the line plays on
             P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
             const sisR = sis[0] && sis[0].d <= 3 ? sis[0] : null;
             fb(`<span class="eyebrow">✓ ${res === 'hint' ? 'Right, with a hint' : 'Right'}</span>` + commentHtml(s) + (sisR ? sisterHtml(sisR) : '') + (notes.get(key) ? `<p class="small o2-srs">${esc(notes.get(key))}</p>` : ''), 'right');
