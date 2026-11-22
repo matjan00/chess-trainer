@@ -149,11 +149,13 @@ const due = (c, id, lapse = false) => { progress.o2c[`${c.id}/${id}`] = lapse ? 
     O2.reviewCourse(c);
     await until(() => /Play from move 1/.test(bar()), 'recap');
     ok('lapse: recap shown', /o2-recap/.test(fbText()) && /You missed a move/.test(fbText()));
+    ok('lapse: phone caption has the move list', /o2-recap/.test($('#o2-cap').innerHTML) && !$('#o2-cap').hidden);
     key(' ');
     await until(asking, 'ask', 6000);
     ok('lapse: guided replay from move 1', inOrder(positions(seq, i), shown()));
     key(' '); await tick(5);
     ok('lapse: Space at the question does nothing', asking());
+    ok('lapse: caption cleared at the question', $('#o2-cap').innerHTML === '' && $('#o2-cap').hidden);
     await answer(seq[i]); await until(() => /Review finished/.test(fbText()), 'summary');
   }
 
@@ -163,6 +165,7 @@ const due = (c, id, lapse = false) => { progress.o2c[`${c.id}/${id}`] = lapse ? 
     O2.reviewCourse(c);
     await until(asking, 'ask 1');
     await answer(x.seq[x.i]);
+    ok('two moves: no Hint/Show while the line plays on', !/data-pa="hint"/.test(bar()) && /data-pa="flip"/.test(bar()), bar());
     await until(() => asking() && shown().at(-1) === positions(x.seq, x.j).at(-1), 'ask 2');
     ok('two moves: second question reached', asking() && shown().at(-1) === positions(x.seq, x.j).at(-1));
     ok('two moves: moves in between played', inOrder(positions(x.seq, x.j), shown()));

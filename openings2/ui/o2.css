@@ -217,10 +217,17 @@
 .o2-noteswrap[hidden], .o2-noteswrap:not(:has(.o2-note)) { display: none; }
 .o2-intro { margin: 4px 0; } .o2-intro > summary { cursor: pointer; color: var(--ink-2); min-height: 32px; display: flex; align-items: center; }
 @media (max-width: 899px) {
-  .o2-cap:not([hidden]):not(:empty) { display: block; padding: 6px 10px; border: 1px solid var(--line); border-left: 3px solid var(--accent, #3b82f6); border-radius: 8px; background: var(--surface); font-size: 14px; line-height: 1.45; max-height: 7.6em; overflow-y: auto; }
+  .o2-cap:not([hidden]):not(:empty) { display: block; padding: 6px 10px; border: 1px solid var(--line); border-left: 3px solid var(--accent, #3b82f6); border-radius: 8px; background: var(--surface); font-size: 14px; line-height: 1.45; }
   .o2-cap .eyebrow { display: block; } .o2-cap .o2-recap { margin: 2px 0 0; line-height: 1.5; }
-  .o2-cap .o2-capm b { font-family: var(--mono); } .o2-cap .o2-capm .muted { font-size: 13px; }
-  .o2-cap .o2-capn { margin: 2px 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+  .o2-cap .o2-capm b { font-variant-numeric: tabular-nums; } .o2-cap .o2-capm .muted { font-size: 13px; }
+  /* while the caption shows, the card below does not repeat it */
+  #o2-player:has(.o2-cap:not([hidden])) #o2-fb .o2-dup, #o2-player:has(.o2-cap:not([hidden])) #o2-fb:has(.o2-dupall) { display: none; }
+  .o2-cap p.small { margin: 2px 0 0; font-size: 12px; }
+  .o2-cap .o2-capn { margin: 2px 0 0; }
+  /* during a guided replay the board gives up --o2-shrink px (set by capFit) so the caption ends above the action bar */
+  #o2-player .board-shell { max-width: min(calc(100% - var(--o2-shrink, 0px)), calc(100dvh - 380px + 22px - var(--o2-shrink, 0px))); }
+  #o2-player.o2-tight:has(.o2-cap:not([hidden])) #o2-chips { display: none; }
+  #o2-fb { scroll-margin-bottom: calc(136px + env(safe-area-inset-bottom, 0px)); scroll-margin-top: 12px; }
   /* nothing in the side column hides under the fixed action bar */
   #o2-player.play { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 }

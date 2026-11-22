@@ -140,11 +140,14 @@ const it = f[0].items[0];
 ok('forecast: item fields', it && it.course === c0.title && it.courseId === c0.id && 'line' in it && 'lineId' in it && it.n >= 1, JSON.stringify(it));
 ok('forecast: items sum to n and sorted desc', f[0].items.reduce((a, x) => a + x.n, 0) === f[0].n && f[0].items.every((x, i, a) => !i || a[i - 1].n >= x.n));
 ok('forecast: n matches dueCards for day 0', f[0].n === O2.srs.dueCards().length);
-// mins formula: 100 due cards -> min(100,60)*8/60 = 8
+// mins formula: ~11 s a move (line replayed from move 1), +15 s for a missed move; capped at 60 cards
 reset();
-c0.cards.slice(0, 100).forEach(k => { progress.o2c[`${c0.id}/${k.id}`] = { lv: 1, due: t - 1, n: 1, w: 0, s: 0 }; });
+c0.cards.slice(0, 100).forEach(k => { progress.o2c[`${c0.id}/${k.id}`] = { lv: 1, due: t - 1, n: 1, w: 0, s: 1 }; });
 const f2 = O2.forecast(1)[0];
-ok('forecast: mins capped at 60 cards (8 min)', f2.n === Math.min(100, c0.cards.length) && f2.mins === Math.max(1, Math.round(Math.min(f2.n, 60) * 8 / 60)), JSON.stringify([f2.n, f2.mins]));
+ok('forecast: mins capped at 60 cards (11 min)', f2.n === Math.min(100, c0.cards.length) && f2.mins === Math.max(1, Math.round(Math.min(f2.n, 60) * 11 / 60)), JSON.stringify([f2.n, f2.mins]));
+reset();
+c0.cards.slice(0, 10).forEach((k, i) => { progress.o2c[`${c0.id}/${k.id}`] = i < 4 ? { lv: 1, due: t - 1, n: 2, w: 1, s: 0 } : { lv: 2, due: t - 1, n: 2, w: 0, s: 2 }; });
+ok('dueSummary: 10 due, 4 missed -> round((10*11 + 4*15)/60) = 3 min', O2.dueSummary().n === 10 && O2.dueSummary().mins === 3, JSON.stringify(O2.dueSummary()));
 
 // ---- line info: next + minLv
 reset();

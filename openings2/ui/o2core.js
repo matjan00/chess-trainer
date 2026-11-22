@@ -590,7 +590,7 @@ const O2 = (() => {
     const dname = d => d === 0 ? 'Today' : d === 1 ? 'Tmrw' : new Date(now() + d * DAY).toLocaleDateString('en-GB', { weekday: 'short' });
     return `<div class="o2-grid2">
       <div class="card"><span class="eyebrow">Due now</span><h3 class="o2-big">${plural(i.due, 'move')}</h3>
-        <p class="small muted">${i.due ? `About ${minsFor(i.due)} min. Each move is asked inside its line, played from move 1, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
+        <p class="small muted">${i.due ? `About ${(() => { const d = dueCards([c]); return minsFor(i.due, d.filter(x => isLapse(srsGet(c, x.id))).length); })()} min. Each move is asked inside its line, played from move 1, so you see how the position arose.` : (() => { const nd = nextDueAfterToday([c]); return nd ? `Next review ${whenText(nd)}.` : 'Learn a line first; its moves come back the next day.'; })()}</p>
         <div class="controls">${i.due ? `<button class="btn primary" data-act="review" data-c="${esc(c.id)}">Start review</button>` : ''}
         <label class="o2-check"><input type="checkbox" data-act="fromstart"${fromStartOn() ? ' checked' : ''}> Play every line from move 1</label></div></div>
       <div class="card"><span class="eyebrow">Next 7 days</span><div class="o2-fc">${fc.map((n, d) => `<div><span class="n">${n || ''}</span><i style="height:${n / mx * 100}%"></i><span class="d">${dname(d)}</span></div>`).join('')}</div></div>
@@ -640,11 +640,42 @@ const O2 = (() => {
   }
   /* phone caption under the board (CSS shows it below 900px only): the recap move list and split notes, which the
      feedback card below the board would show off-screen. Same text is in #o2-fb, so it is aria-hidden. */
-  function cap(html = '') {
+  const phone = () => !!window.matchMedia?.('(max-width: 899px)').matches;
+  function capEl() {
     let el = $('#o2-cap');
-    if (!el) { const ch = $('#o2-chips'); if (!ch) return; el = document.createElement('div'); el.id = 'o2-cap'; el.className = 'o2-cap'; el.setAttribute('aria-hidden', 'true'); ch.after(el); }
-    el.innerHTML = html; el.hidden = !html;
+    if (!el) { const ch = $('#o2-chips'); if (!ch) return null; el = document.createElement('div'); el.id = 'o2-cap'; el.className = 'o2-cap'; el.setAttribute('aria-hidden', 'true'); ch.after(el); }
+    return el;
   }
+  // cap(html) shows a caption; cap() hides it and gives the board its full size back
+  function cap(html = '') {
+    const el = capEl(); if (!el) return;
+    el.innerHTML = html; el.hidden = !html;
+    if (!html && phone()) { el.style.minHeight = ''; const pl = $('#o2-player'); pl.style.setProperty('--o2-shrink', '0px'); pl.classList.remove('o2-tight'); }
+  }
+  /* phone: reserve room for the tallest caption of this replay (all of them are known up front), and shrink the board
+     once, if needed, so the caption ends above the fixed action bar. The board keeps that size until the question. */
+  function capFit(list) {
+    if (!list.length || !phone()) return;
+    const el = capEl(), pl = $('#o2-player'); if (!el || !pl) return;
+    window.scrollTo({ top: 0 });
+    pl.style.setProperty('--o2-shrink', '0px'); pl.classList.remove('o2-tight'); el.style.minHeight = ''; el.hidden = false;
+    let h = 0;
+    for (const x of list) { el.innerHTML = x; h = Math.max(h, el.offsetHeight); }
+    el.style.minHeight = h + 'px'; el.innerHTML = list[0];
+    const bar = $('#o2-actions').getBoundingClientRect(), shell = $('#o2-player .board-shell');
+    const barTop = bar.height ? bar.top : innerHeight - 130;
+    const w = shell ? shell.getBoundingClientRect().width : 0;
+    let over = Math.ceil(el.getBoundingClientRect().bottom + 8 - barTop);
+    if (w && w - over < 250) { pl.classList.add('o2-tight'); over = Math.ceil(el.getBoundingClientRect().bottom + 8 - barTop); }   // short phone: the caption replaces the move chips
+    let sh = 0;   // a few rounds: the board's own max-width rules can make one step fall a little short
+    for (let k = 0; k < 3 && over > 0 && w; k++) {
+      sh = Math.min(sh + over, Math.max(0, w - 180)); pl.style.setProperty('--o2-shrink', sh + 'px');
+      over = Math.ceil(el.getBoundingClientRect().bottom + 8 - barTop);
+    }
+  }
+  // phones: a card that needs reading (wrong answer) is scrolled just above the action bar (CSS scroll-margin)
+  const fbIntoView = () => { if (phone()) $('#o2-fb').scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }); };
+  const plainLen = t => String(t || '').replace(/<[^>]*>|\[[^\]]*\]|[{}]/g, '').length;
   function fb(html, cls = '') { const f = $('#o2-fb'); f.className = 'card o2-fb ' + cls; f.innerHTML = html; }
   function resetBoard(fen = null, ply = 0) {
     P.chess = fen ? new Chess(fen) : new Chess(); P.startFen = P.chess.fen(); P.startPly = ply; P.hist = []; P.view = null; P.shapes = [];
@@ -1023,14 +1054,25 @@ const O2 = (() => {
         const offerSkip = () => { if (short - s0 > 3) cont('Skip to the question').then(() => { skip = true; actions('play'); wake?.(); }); };
         $('#o2-notes').innerHTML = ''; $('#o2-notes-wrap').hidden = true;   // notes belong to this line only
         let capRecap = '';
+        const spl = new Set(splits(c, g.line));
+        // captions of the guided replay: where the line splits off (move, a few other lines, the note) and your own moves' notes
+        const capSplit = i => {
+          const s = seq[i], sp = signpost(c, g.line, i + 1), o = sp?.others || [];
+          const others = o.slice(0, 4).map(n => esc(moveLabel(n.ply, n.san))).join(', ') + (o.length > 4 ? ` and ${o.length - 4} more` : '');
+          return { others, html: `<span class="eyebrow">Splits off here</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b>${others ? ` <span class="muted">(other lines: ${others})</span>` : ''}</div>${s.n.c ? `<p class="o2-capn">${rich(s.n.c)}</p>` : ''}` };
+        };
+        const capMine = s => `<span class="eyebrow">Your move in this line</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b></div><p class="o2-capn">${rich(s.n.c)}</p>`;
         if (replay) {
           const eb = g.again ? 'One more time, from the start' : 'You missed a move in this line last time';
-          fb(`<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>
+          fb(`<div class="o2-dup"><span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p></div>
             <p class="small"><b>${esc(g.line.title)}</b></p>
             ${g.line.intro && !g.again ? `<details class="o2-intro"><summary class="small">About this line</summary><p class="small">${rich(g.line.intro)}</p></details>` : ''}
             <p class="small muted">Watch the line from move 1. <b>Bold</b> moves are where it splits from the other lines, so you know which line you are in.</p>`);
-          capRecap = `<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p>`;
+          capRecap = `<span class="eyebrow">↺ ${eb}</span><p class="o2-recap">${lineText(c, g.line, firstI)}</p><p class="small muted">Bold: where it splits from the other lines.</p>`;
           cap(capRecap);
+          const caps = [capRecap];
+          for (let i = s0; i < short; i++) { const s = seq[i]; if (s.n.mine && g.ids.has(s.id)) continue; if (spl.has(i)) caps.push(capSplit(i).html); else if (s.n.mine && s.n.c) caps.push(capMine(s)); }
+          capFit(caps);
           await cont(firstI > 1 ? 'Play from move 1' : 'Start'); chk();
           actions('play'); offerSkip();
         } else {
@@ -1039,24 +1081,25 @@ const O2 = (() => {
           actions('play'); offerSkip();
         }
         await wait(350); chk();
-        const spl = new Set(splits(c, g.line));
+        const lastSplit = Math.max(-1, ...[...spl].filter(j => j < firstI));
         for (let i = s0; i <= lastI; i++) {
           const s = seq[i];
           if (skip && i < short) { silentTo(seq, short); i = short - 1; continue; }
           if (!s.n.mine || !g.ids.has(s.id)) {
             if (replay && i < firstI) {          // readable pace, pause where the line splits off
-              await (i < short ? nap(650) : wait(650)); chk(); playStep(s);
+              const pace = i <= lastSplit ? 450 : 650;   // shared opening moves a bit quicker, this line's own moves readable
+              await (i < short ? nap(pace) : wait(pace)); chk(); playStep(s);
               if (!skip && spl.has(i)) {
-                const sp = signpost(c, g.line, i + 1);
-                const others = sp?.others.length ? sp.others.map(n => esc(moveLabel(n.ply, n.san))).join(', ') : '';
-                fb(`<span class="eyebrow">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${others ? `<p class="small muted">Other course lines here: ${others}.</p>` : ''}`, 'plan');
-                cap(`<span class="eyebrow">Splits off here</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b>${others ? ` <span class="muted">(other lines: ${others})</span>` : ''}</div>${s.n.c ? `<p class="o2-capn">${rich(s.n.c)}</p>` : ''}`);
-                await (i < short ? nap(2200) : wait(2200)); chk();
+                // full pause only at the split that decides this line (the last one before the question); earlier, shared splits get a short look
+                const key = i === lastSplit, cs = capSplit(i), ms = key ? Math.min(5000, 1800 + 35 * plainLen(s.n.c)) : 1300;
+                fb(`<span class="eyebrow o2-dupall">Where this line splits off</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div>${s.n.c ? `<p>${rich(s.n.c)}</p>` : ''}${cs.others ? `<p class="small muted">Other course lines here: ${cs.others}.</p>` : ''}`, 'plan');
+                cap(cs.html);
+                await (i < short ? nap(ms) : wait(ms)); chk();
                 cap(capRecap);
               } else if (!skip && s.n.mine && s.n.c) {
-                fb(commentHtml(s, { eyebrow: 'Your move in this line' })); addNote(s, true);
-                cap(`<span class="eyebrow">Your move in this line</span><div class="o2-capm"><b>${esc(moveLabel(s.ply, s.san))}</b></div><p class="o2-capn">${rich(s.n.c)}</p>`);
-                await nap(900); chk(); cap(capRecap);
+                fb(commentHtml(s, { eyebrow: 'Your move in this line' }) + '<i class="o2-dupall"></i>'); addNote(s, true);
+                cap(capMine(s));
+                await nap(400); chk(); cap(capRecap);   // your own earlier moves: no long stop (the note stays in the notes list)
               }
               continue;
             }
@@ -1074,6 +1117,7 @@ const O2 = (() => {
               const mix = sis.find(y => norm(y.s2.san) === norm(san));
               P.shapes = dedupe([...moveShapes(s), ...shapes(s.n.shapes)]); draw();
               fb(`<span class="eyebrow" style="color:var(--blunder)">${x ? `Don't play <span class="o2-san">${esc(san)}</span>` : `<span class="o2-san">${esc(san)}</span> is not the course move`}</span>${x ? `<p>${rich(x.why)}</p>` : ''}` + (mix ? sisterHtml(mix, san) : '') + commentHtml(s, { eyebrow: 'The course move' }) + '<p class="small muted">Play the arrow move to go on.</p>', 'wrong');
+              fbIntoView();
             },
           }); chk();
           const res = r.wrongs || r.shown ? 'wrong' : r.hinted ? 'hint' : 'ok';
@@ -1093,6 +1137,7 @@ const O2 = (() => {
             if (!g.again) groups.push({ c, line: g.line, ids: new Set([s.id]), again: true });
             P.shapes = shapes(s.n.shapes); draw();
             fb(commentHtml(s, { eyebrow: 'Now you know' }) + (sis[0] ? sisterHtml(sis[0]) : '') + `<p class="small o2-srs">${esc(notes.get(key) || '')}</p><p class="small muted">${practice ? 'This move is due again now.' : 'It comes back at the end of this session, and next time with its whole line from move 1.'}</p>`, 'wrong');
+            fbIntoView();
             await cont(); chk(); actions('play');
           } else {
             play('right'); actions('play');   // no Hint/Show while the line plays on
