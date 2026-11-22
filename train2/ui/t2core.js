@@ -50,6 +50,7 @@ const T2 = (() => {
   const KINDS = ['t2c', 't2l', 't2x', 't2k', 't2p', 't2d'];
   const IV = (typeof O2 !== 'undefined' && O2?.srs?.IV) || [0, 1, 3, 7, 14, 30, 90, 180];   // the Openings ladder (shared)
   const MAXLV = 7, MATURE = 4, RETIRED = 9, CAP = 20, BACKLOG = 40;
+  const REV_DAY = 10;                                   // at most this many review cards a day (user 2026-11-22); extras move to the next days
   const DAILY = { puz: 10, think: 5, newMine: 3 };
   const COURSE_ORDER = ['tactics', 'think', 'convert', 'endgames'];
   const COURSE_INFO = {
@@ -499,7 +500,31 @@ const T2 = (() => {
   const punqItem = id => { const it = itemFor(id); return it ? { ...it, kind: 'punq', decoy: false } : null; };
 
   /* ---------------------------------------------------------------- what is due, what is next */
+  let spreadMemo = '', spreading = false;
+  /** once a day (and after a sync): keep the REV_DAY most overdue review cards for today, move the rest to the next days with room */
+  function spreadDay() {
+    const dk = dayKey();
+    if (spreading || spreadMemo === dk || !H.progress) return;
+    spreading = true; spreadMemo = dk;
+    try {
+      const e = endOfDay(), t = now(), due = [], load = new Map();
+      const all = Object.entries(PG('t2c')).filter(([id]) => itemFor(id)).map(([id, s]) => ({ id, s }));
+      if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s) all.push({ id, s }); }
+      for (const x of all) { if (!x.s || x.s.due == null) continue; if (isDue(x.s)) due.push(x); else if (x.s.due > e) { const k = dayKey(x.s.due); load.set(k, (load.get(k) || 0) + 1); } }
+      if (due.length <= REV_DAY) return;
+      due.sort((a, b) => a.s.due - b.s.due);
+      for (const x of due.slice(REV_DAY)) {
+        let d = 1;
+        while (d < 60 && (load.get(dayKey(t + d * DAY)) || 0) >= REV_DAY) d++;
+        const k = dayKey(t + d * DAY);
+        load.set(k, (load.get(k) || 0) + 1);
+        const { legacy, ...rest } = x.s;
+        put('t2c', x.id, { ...rest, due: t + d * DAY });
+      }
+    } finally { spreading = false; }
+  }
   function dueCards() {
+    spreadDay();
     const out = [], e = endOfDay();
     for (const [id, s] of Object.entries(PG('t2c'))) if (isDue(s) && itemFor(id)) out.push({ id, due: s.due });
     if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s && s.due <= e) out.push({ id, due: s.due }); }
@@ -598,8 +623,8 @@ const T2 = (() => {
     const d = today(), due = dueCards().length, nm = newMineCards().length;
     const newLeft = Math.max(0, Math.min(nm, DAILY.newMine - newMineToday()));
     // revN = exactly what reviewItems() will serve this session (at most CAP); due = the real number of cards due
-    const newN = Math.max(0, Math.min(CAP - Math.min(due, CAP), newLeft));
-    const revN = Math.min(CAP, due) + newN;
+    const newN = Math.max(0, Math.min(REV_DAY - Math.min(due, REV_DAY), newLeft));   // new cards only fill up to REV_DAY
+    const revN = Math.min(REV_DAY, due) + newN;
     const revDone = revN === 0;
     const puzDone = !PUZ || (d.new || 0) >= DAILY.puz;
     const thinkDone = !MINE || (d.think || 0) >= DAILY.think;
@@ -611,7 +636,7 @@ const T2 = (() => {
   /** "29 cards due · 20 this session", "12 cards due + 3 new", "3 new cards" */
   function revText(p) {
     const parts = [];
-    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > CAP ? ` · ${CAP} this session` : ''));
+    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > REV_DAY ? ` · ${REV_DAY} this session` : ''));
     if (p.newN) parts.push(p.due ? `+ ${p.newN} new` : plural(p.newN, 'new card'));
     return parts.join(' ');
   }
@@ -666,7 +691,7 @@ const T2 = (() => {
     if (which === 'stats' || which === 'themes') renderExtScreen(which, arg);
     window.scrollTo({ top: 0 });
   }
-  function refresh() { seenCache = null; loadMap = null; if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
+  function refresh() { seenCache = null; loadMap = null; spreadMemo = ''; if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
 
   /* ---- A. home */
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
@@ -1288,8 +1313,8 @@ const T2 = (() => {
     };
   }
   function reviewItems() {
-    const due = dueCards().slice(0, CAP).map(x => itemFor(x.id) || null).filter(Boolean);
-    const room = Math.max(0, Math.min(CAP - due.length, DAILY.newMine - newMineToday()));
+    const due = dueCards().slice(0, REV_DAY).map(x => itemFor(x.id) || null).filter(Boolean);
+    const room = Math.max(0, Math.min(REV_DAY - due.length, DAILY.newMine - newMineToday()));
     const fresh = newMineCards().slice(0, room).map(itemFor).filter(Boolean);
     return [...due, ...fresh].map(it => it.type === 'pun' ? { ...it, kind: 'punq', decoy: false } : it);
   }

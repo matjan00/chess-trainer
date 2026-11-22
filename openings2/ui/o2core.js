@@ -45,6 +45,7 @@ const O2 = (() => {
   const KINDS = ['o2c', 'o2l', 'o2g', 'o2t', 'o2m', 'o2d'];
   const IV = [0, 1, 3, 7, 14, 30, 90, 180];          // days until the next review, by level (L1 = next day; user decision 2026-11-12)
   const MAXLV = 7, MATURE = 4, CAP = 60, BACKLOG = 40;
+  const DAY_CAP = 15;                                  // at most this many opening moves due on one day (user 2026-11-22); the rest move to the next days
   const LAPSE_CAP = 5;                                 // at most this many "missed last time" moves per day (user 2026-11-22); extras spread over the next days
   const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
   const H = {                                         // hooks; replaced in init()
@@ -206,13 +207,30 @@ const O2 = (() => {
     try {
       const e = endOfDay(), list = [];
       for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (isLapse(s) && s.due <= e) list.push({ c, id: k.id, s }); }
-      if (list.length <= LAPSE_CAP) return;
-      list.sort((a, b) => a.s.due - b.s.due);
-      const m = lapsesByDay(), t = now();
-      for (const x of list.slice(LAPSE_CAP)) {
-        const d = lapseDay(t, m), k = dayKey(t + d * DAY);
-        m.set(k, (m.get(k) || 0) + 1); m.set(dk, (m.get(dk) || 1) - 1);
-        put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+      const t = now();
+      if (list.length > LAPSE_CAP) {
+        list.sort((a, b) => a.s.due - b.s.due);
+        const m = lapsesByDay();
+        for (const x of list.slice(LAPSE_CAP)) {
+          const d = lapseDay(t, m), k = dayKey(t + d * DAY);
+          m.set(k, (m.get(k) || 0) + 1); m.set(dk, (m.get(dk) || 1) - 1);
+          put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+        }
+      }
+      // then the whole day: keep the DAY_CAP most overdue (missed ones first), move the rest to the next days with room
+      const all = [];
+      for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (s && s.due <= e) all.push({ c, id: k.id, s }); }
+      if (all.length > DAY_CAP) {
+        all.sort((a, b) => (isLapse(b.s) - isLapse(a.s)) || a.s.due - b.s.due);
+        const load = new Map();
+        for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (s && s.due > e) { const dk2 = dayKey(s.due); load.set(dk2, (load.get(dk2) || 0) + 1); } }
+        for (const x of all.slice(DAY_CAP)) {
+          let d = 1;
+          while (d < 60 && (load.get(dayKey(t + d * DAY)) || 0) >= DAY_CAP) d++;
+          const k = dayKey(t + d * DAY);
+          load.set(k, (load.get(k) || 0) + 1);
+          put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+        }
       }
       loadReset();
     } finally { spreading = false; }
@@ -1379,7 +1397,7 @@ const O2 = (() => {
     addHomeBlock(fn) { homeBlocks.push(fn); if (screen === 'home' && ROOT) renderHome(); },
     playScript, openTree, startLearn, startStudy, reviewCourse,
     forecast, intervalText,
-    srs: { isLapse, LAPSE_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
+    srs: { isLapse, LAPSE_CAP, DAY_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
     rich, toast,
     get hooks() { return H; },
   };

@@ -141,9 +141,10 @@ reset(); delete progress.t2l; for (let i = 0; i < 41; i++) put('ls/endgames.b' +
 progress.t2c = {}; data.train.courses[0].cards = {}; // (cards of the course itself are not needed: use many puzzle-like legacy ids instead)
 data.train.courses[0].cards = {}; for (let i = 0; i < 41; i++) data.train.courses[0].cards['b' + i] = { fen: START, sol: ['e2e4'] };
 T2.courses()[0].cards = data.train.courses[0].cards; T2.courses()[0].lessonOf.clear(); for (let i = 0; i < 41; i++) { put('ls/endgames.b' + i, { lv: 2, due: now() - 1 }); T2.courses()[0].lessonOf.set('b' + i, T2.courses()[0].lessons.l1); }
-T2.refresh(); eq(T2.srs.dueCards().length, 41, '41 due');
+T2.refresh(); eq(T2.srs.dueCards().length, 10, '41 overdue -> only 10 due today (daily cap), the rest spread');
+eq(Object.values(progress.t2c).filter(s => s.due > now() + 3600000).length, 31, '31 moved to later days');
 seen.inserted = null; T2.test.gate(T2.courses()[0], T2.courses()[0].lessons.l1, true);
-ok(seen.inserted && seen.inserted.includes("You have 41 reviews waiting. Clear them first so they don't pile up.") && seen.inserted.includes('Review now') && seen.inserted.includes('Learn anyway'), 'backlog notice shown');
+ok(!seen.inserted, 'with the daily cap there is no backlog notice');
 progress.t2l = { 'endgames/l1': { st: 1 } }; seen.inserted = null; T2.test.gate(T2.courses()[0], T2.courses()[0].lessons.l1, true);
 ok(!seen.inserted, 'a started lesson is not blocked (it starts instead)');
 

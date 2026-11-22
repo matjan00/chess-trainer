@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 89;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 90;</script>
 </head>
 <body>
 
@@ -1666,6 +1666,7 @@ const O2 = (() => {
   const KINDS = ['o2c', 'o2l', 'o2g', 'o2t', 'o2m', 'o2d'];
   const IV = [0, 1, 3, 7, 14, 30, 90, 180];          // days until the next review, by level (L1 = next day; user decision 2026-11-12)
   const MAXLV = 7, MATURE = 4, CAP = 60, BACKLOG = 40;
+  const DAY_CAP = 15;                                  // at most this many opening moves due on one day (user 2026-11-22); the rest move to the next days
   const LAPSE_CAP = 5;                                 // at most this many "missed last time" moves per day (user 2026-11-22); extras spread over the next days
   const LEVEL_NAME = ['New', 'Learning', 'Bronze', 'Silver', 'Gold'];
   const H = {                                         // hooks; replaced in init()
@@ -1827,13 +1828,30 @@ const O2 = (() => {
     try {
       const e = endOfDay(), list = [];
       for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (isLapse(s) && s.due <= e) list.push({ c, id: k.id, s }); }
-      if (list.length <= LAPSE_CAP) return;
-      list.sort((a, b) => a.s.due - b.s.due);
-      const m = lapsesByDay(), t = now();
-      for (const x of list.slice(LAPSE_CAP)) {
-        const d = lapseDay(t, m), k = dayKey(t + d * DAY);
-        m.set(k, (m.get(k) || 0) + 1); m.set(dk, (m.get(dk) || 1) - 1);
-        put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+      const t = now();
+      if (list.length > LAPSE_CAP) {
+        list.sort((a, b) => a.s.due - b.s.due);
+        const m = lapsesByDay();
+        for (const x of list.slice(LAPSE_CAP)) {
+          const d = lapseDay(t, m), k = dayKey(t + d * DAY);
+          m.set(k, (m.get(k) || 0) + 1); m.set(dk, (m.get(dk) || 1) - 1);
+          put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+        }
+      }
+      // then the whole day: keep the DAY_CAP most overdue (missed ones first), move the rest to the next days with room
+      const all = [];
+      for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (s && s.due <= e) all.push({ c, id: k.id, s }); }
+      if (all.length > DAY_CAP) {
+        all.sort((a, b) => (isLapse(b.s) - isLapse(a.s)) || a.s.due - b.s.due);
+        const load = new Map();
+        for (const c of COURSES) for (const k of c.cards) { const s = srsGet(c, k.id); if (s && s.due > e) { const dk2 = dayKey(s.due); load.set(dk2, (load.get(dk2) || 0) + 1); } }
+        for (const x of all.slice(DAY_CAP)) {
+          let d = 1;
+          while (d < 60 && (load.get(dayKey(t + d * DAY)) || 0) >= DAY_CAP) d++;
+          const k = dayKey(t + d * DAY);
+          load.set(k, (load.get(k) || 0) + 1);
+          put('o2c', ckey(x.c, x.id), { ...x.s, due: t + d * DAY });
+        }
       }
       loadReset();
     } finally { spreading = false; }
@@ -3000,7 +3018,7 @@ const O2 = (() => {
     addHomeBlock(fn) { homeBlocks.push(fn); if (screen === 'home' && ROOT) renderHome(); },
     playScript, openTree, startLearn, startStudy, reviewCourse,
     forecast, intervalText,
-    srs: { isLapse, LAPSE_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
+    srs: { isLapse, LAPSE_CAP, DAY_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
     rich, toast,
     get hooks() { return H; },
   };
@@ -3542,6 +3560,7 @@ const T2 = (() => {
   const KINDS = ['t2c', 't2l', 't2x', 't2k', 't2p', 't2d'];
   const IV = (typeof O2 !== 'undefined' && O2?.srs?.IV) || [0, 1, 3, 7, 14, 30, 90, 180];   // the Openings ladder (shared)
   const MAXLV = 7, MATURE = 4, RETIRED = 9, CAP = 20, BACKLOG = 40;
+  const REV_DAY = 10;                                   // at most this many review cards a day (user 2026-11-22); extras move to the next days
   const DAILY = { puz: 10, think: 5, newMine: 3 };
   const COURSE_ORDER = ['tactics', 'think', 'convert', 'endgames'];
   const COURSE_INFO = {
@@ -3991,7 +4010,31 @@ const T2 = (() => {
   const punqItem = id => { const it = itemFor(id); return it ? { ...it, kind: 'punq', decoy: false } : null; };
 
   /* ---------------------------------------------------------------- what is due, what is next */
+  let spreadMemo = '', spreading = false;
+  /** once a day (and after a sync): keep the REV_DAY most overdue review cards for today, move the rest to the next days with room */
+  function spreadDay() {
+    const dk = dayKey();
+    if (spreading || spreadMemo === dk || !H.progress) return;
+    spreading = true; spreadMemo = dk;
+    try {
+      const e = endOfDay(), t = now(), due = [], load = new Map();
+      const all = Object.entries(PG('t2c')).filter(([id]) => itemFor(id)).map(([id, s]) => ({ id, s }));
+      if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s) all.push({ id, s }); }
+      for (const x of all) { if (!x.s || x.s.due == null) continue; if (isDue(x.s)) due.push(x); else if (x.s.due > e) { const k = dayKey(x.s.due); load.set(k, (load.get(k) || 0) + 1); } }
+      if (due.length <= REV_DAY) return;
+      due.sort((a, b) => a.s.due - b.s.due);
+      for (const x of due.slice(REV_DAY)) {
+        let d = 1;
+        while (d < 60 && (load.get(dayKey(t + d * DAY)) || 0) >= REV_DAY) d++;
+        const k = dayKey(t + d * DAY);
+        load.set(k, (load.get(k) || 0) + 1);
+        const { legacy, ...rest } = x.s;
+        put('t2c', x.id, { ...rest, due: t + d * DAY });
+      }
+    } finally { spreading = false; }
+  }
   function dueCards() {
+    spreadDay();
     const out = [], e = endOfDay();
     for (const [id, s] of Object.entries(PG('t2c'))) if (isDue(s) && itemFor(id)) out.push({ id, due: s.due });
     if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s && s.due <= e) out.push({ id, due: s.due }); }
@@ -4090,8 +4133,8 @@ const T2 = (() => {
     const d = today(), due = dueCards().length, nm = newMineCards().length;
     const newLeft = Math.max(0, Math.min(nm, DAILY.newMine - newMineToday()));
     // revN = exactly what reviewItems() will serve this session (at most CAP); due = the real number of cards due
-    const newN = Math.max(0, Math.min(CAP - Math.min(due, CAP), newLeft));
-    const revN = Math.min(CAP, due) + newN;
+    const newN = Math.max(0, Math.min(REV_DAY - Math.min(due, REV_DAY), newLeft));   // new cards only fill up to REV_DAY
+    const revN = Math.min(REV_DAY, due) + newN;
     const revDone = revN === 0;
     const puzDone = !PUZ || (d.new || 0) >= DAILY.puz;
     const thinkDone = !MINE || (d.think || 0) >= DAILY.think;
@@ -4103,7 +4146,7 @@ const T2 = (() => {
   /** "29 cards due · 20 this session", "12 cards due + 3 new", "3 new cards" */
   function revText(p) {
     const parts = [];
-    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > CAP ? ` · ${CAP} this session` : ''));
+    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > REV_DAY ? ` · ${REV_DAY} this session` : ''));
     if (p.newN) parts.push(p.due ? `+ ${p.newN} new` : plural(p.newN, 'new card'));
     return parts.join(' ');
   }
@@ -4158,7 +4201,7 @@ const T2 = (() => {
     if (which === 'stats' || which === 'themes') renderExtScreen(which, arg);
     window.scrollTo({ top: 0 });
   }
-  function refresh() { seenCache = null; loadMap = null; if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
+  function refresh() { seenCache = null; loadMap = null; spreadMemo = ''; if (screen === 'home') renderHome(); else if (screen === 'course') renderCourse(curCourse, true); }
 
   /* ---- A. home */
   const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
@@ -4780,8 +4823,8 @@ const T2 = (() => {
     };
   }
   function reviewItems() {
-    const due = dueCards().slice(0, CAP).map(x => itemFor(x.id) || null).filter(Boolean);
-    const room = Math.max(0, Math.min(CAP - due.length, DAILY.newMine - newMineToday()));
+    const due = dueCards().slice(0, REV_DAY).map(x => itemFor(x.id) || null).filter(Boolean);
+    const room = Math.max(0, Math.min(REV_DAY - due.length, DAILY.newMine - newMineToday()));
     const fresh = newMineCards().slice(0, room).map(itemFor).filter(Boolean);
     return [...due, ...fresh].map(it => it.type === 'pun' ? { ...it, kind: 'punq', decoy: false } : it);
   }
