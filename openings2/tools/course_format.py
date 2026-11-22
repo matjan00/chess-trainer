@@ -605,6 +605,9 @@ def shared_len(a, b):
     return n
 
 
+MIN_CROSS = 6   # plies a line must share with a parent from another chapter
+
+
 def structure(c, reach=None):
     """Parents, splits, learn order and twins for a v3 course (RESTRUCTURE.md section 6).
     reach: {lineId: float|None}.  Returns {"parent": {id: id|None}, "split": {id: int|None}, "learn": [...],
@@ -663,6 +666,8 @@ def structure(c, reach=None):
         else:                                  # cycle: fall back to the best among the lines already placed
             b = pending[0]
             ok, p = best(b, placed, False)
+        if p and not explicit(b) and by_id[p].ch != b.ch and shared_len(b, by_id[p]) < MIN_CROSS:
+            p = None                           # only 1.d4 or so in common with a line of another family: no parent, open at once
         parent[b.id] = p; learn.append(b.id); placed.add(b.id); pending.remove(b)
     split = {}
     for l in c.lines:
