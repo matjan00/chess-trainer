@@ -25,7 +25,8 @@ def build_course(c, res, ev, depth, draft):
                "nag": "!" if nd.keymove else ("sys" if nd.sys else (nd.nag or None)),
                "c": nd.c, "shapes": nd.shapes,
                "plan": nd.plan, "x": [{"san": x["san"], "why": x["why"]} for x in nd.xs], "quiz": nd.quiz,
-               "ev": info["ev_white"] if info else None, "loss": info["loss"] if info else None}
+               "ev": info["ev_white"] if info else None, "loss": info["loss"] if info else None,
+               "trig": None}
         if nd.mine:
             alts = []
             if info:
@@ -57,6 +58,39 @@ def build_course(c, res, ev, depth, draft):
         lines.append({"id": l.id, "ch": l.ch, "title": l.title, "intro": l.intro, "kind": l.kind,
                       "nodes": [n.id for n in l.path], "to": l.to,
                       "reach": (round(r, 5) if (r := vc.Verifier.reach(c, l)) is not None else None), "ev": fin})
+    v3 = c.v3
+    st = cf.structure(c, {l["id"]: l["reach"] for l in lines}) if v3 else None
+    trunk_of = {ch["id"]: next((x for x in ch["lines"] if c.line(x).trunk), None) for ch in c.chapters}
+    for lo, l in zip(lines, c.lines):
+        lo.update({"trunk": bool(l.trunk) if v3 else False, "parent": st["parent"][l.id] if v3 else None,
+                   "split": st["split"][l.id] if v3 else None, "twins": st["twins"][l.id] if v3 else []})
+    rules = []
+    if v3:
+        used = {}                                    # rule id -> [(chapter, node)]
+        for nd in c.nodes.values():
+            if nd.trig and nd.mine and nd.lines:
+                used.setdefault(nd.trig["rule"], []).append(nd)
+        ids = [r["id"] for r in c.rules]
+        chap_use = {}
+        for rid, nds in used.items():
+            for nd in nds:
+                chap = c.line(nd.lines[0]).ch
+                chap_use.setdefault(chap, {}).setdefault(rid, set()).add(nd.id)
+        for nd in c.nodes.values():
+            if not (nd.trig and nd.mine and nd.lines):
+                continue
+            t = nd.trig; chap = c.line(nd.lines[0]).ch
+            here = chap_use.get(chap, {})
+            pref = sorted((r for r in ids if r != t["rule"] and r in here), key=lambda r: (-len(here[r]), ids.index(r)))
+            rest = [r for r in ids if r != t["rule"] and r not in pref]
+            nots = [x for x in t["not"] if x != t["rule"]]
+            for r in pref + rest:
+                if len(nots) >= 2: break
+                if r not in nots: nots.append(r)
+            nodes[nd.id]["trig"] = {"rule": t["rule"], "clue": list(t["clue"]), "text": t["text"], "not": nots}
+        for r in c.rules:
+            rules.append({"id": r["id"], "name": r["name"], "text": r["text"],
+                          "cases": [{"node": nd.id, "line": nd.lines[0]} for nd in used.get(r["id"], [])]})
     cards, seen = [], set()
     for l in c.lines:
         for nd in l.path:
@@ -82,9 +116,11 @@ def build_course(c, res, ev, depth, draft):
                        "year": int(g["year"]) if str(g["year"]).isdigit() else g["year"], "result": g["result"],
                        "moves": moves, "notes": {str(k): v for k, v in g["notes"].items()},
                        "hits": hits, "source": src})
-    out = {"id": c.id, "title": c.title, "side": c.side, "sub": c.sub, "why": c.why,
+    out = {"id": c.id, "ver": 3 if v3 else 2, "title": c.title, "side": c.side, "sub": c.sub, "why": c.why,
+           "start": [x for x in c.start if c.line(x)] if v3 else [], "learn": st["learn"] if v3 else [], "rules": rules,
            "ideas": c.ideas, "structures": c.structures,
-           "chapters": [{"id": ch["id"], "title": ch["title"], "intro": ch["intro"], "lines": ch["lines"]} for ch in c.chapters],
+           "chapters": [{"id": ch["id"], "title": ch["title"], "intro": ch["intro"], "lines": ch["lines"],
+                         "trunk": trunk_of[ch["id"]] if v3 else None, "mixed": bool(ch.get("mixed"))} for ch in c.chapters],
            "lines": lines, "nodes": nodes, "cards": cards,
            "traps": [{"id": t.id, "title": t.title, "kind": t.kind, "intro": t.intro, "nodes": [n.id for n in t.path]} for t in c.traps],
            "models": models, "modelsWanted": c.models_wanted}

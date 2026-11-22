@@ -25,6 +25,7 @@ JARGON = ["zwischenzug", "zugzwang", "prophylaxis", "prophylactic", "desperado",
 EXPLAINERS = ("(", "—", ":", " means ", " i.e.", "that is", " so ", " which ", " = ")
 SAN_RE = re.compile(r"(?<![A-Za-z])(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8][+#]?|[a-h]x[a-h][1-8][+#]?|O-O(?:-O)?[+#]?|\d+\.{1,3}\s*[a-h][1-8][+#]?)(?![A-Za-z0-9])")
 NUM_EVAL = re.compile(r"(?<![\w.])[+\-−]\d+\.\d+")
+SQ_RE = re.compile(r"^[a-h][1-8]$")
 ALT_WORDS = ("stronger", "better", "more accurate", "best", "sharper", "even better")
 
 
@@ -64,6 +65,7 @@ class Verifier:
         c = self.c
         self.check_structure()
         self.check_text()
+        self.check_triggers()
         self.check_models()
         self.evaluate_nodes()
         self.check_our_moves()
@@ -171,6 +173,103 @@ class Verifier:
                     break
         if kind in ("c", "x") and SAN_RE.search(plain):
             self.add("Q19", "WARN", f"move '{SAN_RE.search(plain).group(0)}' named outside (( )); write variations as ((...))", *w)
+
+    # ------------------------------------------------------------ v3: trunks, rule book, triggers (RESTRUCTURE.md section 6)
+    def check_triggers(self):
+        """TRUNK / RULES / T-RULE / T-CLUE / T-SPLIT / T-SISTER.  Only for a 'v3 course' (has ## RULES or any trunk)."""
+        c = self.c
+        if not c.v3:
+            return
+        scope = {l.id for l in self.lines_in_scope()}
+        rules = {}
+        for r in c.rules:
+            if r["id"] in rules:
+                self.add("RULES", "FAIL", f"rule id '{r['id']}' is defined twice")
+            rules[r["id"]] = r
+            if len(r["name"].split()) > 6:
+                self.add("RULES", "WARN", f"rule '{r['id']}': name has {len(r['name'].split())} words; max 6")
+        if len(c.rules) > 15:
+            self.add("RULES", "FAIL", f"{len(c.rules)} rules; max 15")
+        elif len(c.rules) < 6:
+            self.add("RULES", "WARN", f"{len(c.rules)} rules; aim for 6-15")
+        for ch in c.chapters:
+            trunks = [lid for lid in ch["lines"] if (c.line(lid) and c.line(lid).trunk)]
+            if ch.get("mixed"):
+                if trunks:
+                    self.add("TRUNK", "WARN", f"chapter {ch['id']} is 'mixed' but has trunk {', '.join(trunks)}")
+            elif len(trunks) != 1:
+                self.add("TRUNK", "FAIL", f"chapter {ch['id']} has {len(trunks)} trunk lines ({', '.join(trunks) or 'none'}); need exactly 1 (or mark the chapter 'mixed')")
+        for lid in c.start:
+            l = c.line(lid)
+            if l is None or l.section != "line":
+                self.add("TRUNK", "FAIL", f"start: '{lid}' is not a line of this course")
+            elif not l.trunk:
+                self.add("TRUNK", "FAIL", f"start: '{lid}' is not a trunk line", lid)
+        if c.start and not 2 <= len(c.start) <= 4:
+            self.add("TRUNK", "WARN", f"start: names {len(c.start)} lines; 2-4 expected")
+        # T-RULE / T-CLUE on every trigger
+        used = {}
+        st = cf.structure(c)
+        splits = cf.split_places(c)
+        sisp = cf.sister_places(c)
+        others_of = {}      # node id -> list of (move in another line) to compare the position with
+        for sp in splits:
+            l = c.line(sp["line"]); m_opp = l.moves[sp["i"] - 1]
+            for alt in sp["alts"]:
+                for l2 in c.lines:
+                    for j, m2 in enumerate(l2.moves[:-1]):
+                        if m2.key_before == m_opp.key_before and m2.san == alt and l2.moves[j + 1].mine:
+                            others_of.setdefault(sp["node"].id, []).append(l2.moves[j + 1])
+        for rec in sisp:
+            others_of.setdefault(rec["node"].id, []).extend(x["q"] for x in rec["sis"])
+        for nd in c.nodes.values():
+            if not nd.trig or not nd.mine or nd.lines == []:
+                continue
+            t = nd.trig; line = nd.lines[0]
+            l = c.line(line); i = l.path.index(nd)
+            w = (line, nd.ply, nd.san)
+            inscope = bool(set(nd.lines) & scope)
+            used.setdefault(t["rule"], set()).add(nd.id)
+            if not inscope:
+                continue
+            if t["rule"] not in rules:
+                self.add("T-RULE", "FAIL", f"trigger names unknown rule '{t['rule']}'", *w)
+            for x in t["not"]:
+                if x not in rules:
+                    self.add("T-RULE", "FAIL", f"trigger 'not=' names unknown rule '{x}'", *w)
+                elif x == t["rule"]:
+                    self.add("T-RULE", "WARN", "trigger 'not=' lists its own rule", *w)
+            bad = [x for x in t["clue"] if not SQ_RE.match(x)]
+            if not t["clue"] or bad or len(t["clue"]) > 3:
+                self.add("T-CLUE", "FAIL", f"clue must be 1-3 squares like g6 (got '{' '.join(t['clue']) or 'nothing'}')", *w)
+                continue
+            cmp_ = list(others_of.get(nd.id, []))
+            p = st["parent"].get(line)
+            if p and c.line(p) and i < len(c.line(p).moves) and c.line(p).moves[i].san != nd.san and c.line(p).moves[i].mine:
+                cmp_.append(c.line(p).moves[i])
+            if cmp_:
+                mine_pm = cf._pm(l.moves[i]); diff = set()
+                for m2 in cmp_:
+                    b2 = cf._pm(m2)
+                    diff |= {chess.square_name(s) for s in set(mine_pm) | set(b2) if mine_pm.get(s) != b2.get(s)}
+                if not diff & set(t["clue"]):
+                    self.add("T-CLUE", "WARN", f"none of the clue squares ({' '.join(t['clue'])}) differ from the parent/sister position (differing: {' '.join(sorted(diff)[:8])})", *w)
+        for rid, r in rules.items():
+            n = len(used.get(rid, ()))
+            if n == 0:
+                self.add("T-RULE", "FAIL", f"rule '{rid}' is never used by a trigger")
+            elif n == 1:
+                self.add("T-RULE", "WARN", f"rule '{rid}' is used only once")
+        # T-SPLIT / T-SISTER: missing triggers (WARN)
+        for sp in splits:
+            nd = sp["node"]
+            if not nd.trig and sp["line"] in scope:
+                self.add("T-SPLIT", "WARN", f"no trigger after the split move {cf.label(sp['opp'].ply, sp['opp'].san)} (others: {', '.join(sp['alts'])})", sp["line"], nd.ply, nd.san)
+        for rec in sisp:
+            nd = rec["node"]
+            if not nd.trig and rec["line"] in scope:
+                x = rec["sis"][0]
+                self.add("T-SISTER", "WARN", f"no trigger; look-alike of {x['l2'].id} where you play {cf.label(x['q'].ply, x['q'].san)}", rec["line"], nd.ply, nd.san)
 
     # ------------------------------------------------------------ models
     def check_models(self):

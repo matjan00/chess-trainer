@@ -1,0 +1,186 @@
+SPLIT+SISTER c5-main 2.Nc3
+    after 1...d5, other replies here: c6, Nf6, g6, c5, d6, f5, b6, e6, e5 | look-alike in philidor (2.e4); differ d5,d6: here opp pawn d5 / there opp pawn d6
+SPLIT+SISTER c5-main 3.Bf4
+    after 2...Nf6, other replies here: Bf5, e6, c5, Nc6, c6 | look-alike in kid-main (3.e4); differ d5,g6,d7,g7: here opp pawn d5, opp pawn g7 / there opp pawn g6, opp pawn d7; also dutch-main (3.Bg5)
+SPLIT+SISTER c5-main 4.e3
+    after 3...c5, other replies here: e6, Bf5, c6, a6, g6, Nc6 | look-alike in e6-c6 (4.Nb5); differ c5,e6,c7,e7: here opp pawn c5, opp pawn e7 / there opp pawn e6, opp pawn c7
+SPLIT+SISTER c5-main 5.exd4
+    after 4...cxd4, other replies here: e6, a6, Nc6 | look-alike in c5-e6 (5.Nb5); differ d4,c5,e6,e7: here opp pawn d4, opp pawn e7 / there your pawn d4, opp pawn c5, opp pawn e6; also c6-bf5 (5.Bd3), c6-bg4 (5.f3) +1
+SPLIT+SISTER c5-main 7.Ne5
+    after 6...Nc6, other replies here: Bg4 | look-alike in c5-bg4 (7.h3); differ g4,c6,b8,c8: here opp knight c6, opp bishop c8 / there opp bishop g4, opp knight b8
+SPLIT+SISTER c5-bg4 7.h3
+    after 6...Bg4, other replies here: Nc6 | look-alike in c5-main (7.Ne5); differ g4,c6,b8,c8: here opp bishop g4, opp knight b8 / there opp knight c6, opp bishop c8
+SPLIT+SISTER c5-e6 5.Nb5
+    after 4...e6, other replies here: cxd4, a6, Nc6 | look-alike in c5-a6 (5.dxc5); differ a6,e6,a7,e7: here opp pawn e6, opp pawn a7 / there opp pawn a6, opp pawn e7; also bf5-main (5.Bd3), a6-e6 (5.Nf3)
+SISTER       c5-e6 6.c3
+    look-alike in e6-c6 (6.Nc3); differ c5,c6: here opp pawn c5 / there opp pawn c6; also e6-be7 (6.Nf3), e6-bd7 (6.a4)
+SPLIT+SISTER c5-a6 5.dxc5
+    after 4...a6, other replies here: cxd4, e6, Nc6 | look-alike in c5-e6 (5.Nb5); differ a6,e6,a7,e7: here opp pawn a6, opp pawn e7 / there opp pawn e6, opp pawn a7; also a6-bf5 (5.Bd3), a6-e6 (5.Nf3)
+SPLIT+SISTER c5-a6 6.Na4
+    after 5...e6, other replies here: Qa5 | look-alike in c5-a6q (6.Nf3); differ a5,e6,e7,d8: here opp pawn e6, opp queen d8 / there opp queen a5, opp pawn e7
+SPLIT        c5-a6q 6.Nf3
+    after 5...Qa5, other replies here: e6
+SPLIT+SISTER c5-nc6 5.Nb5
+    after 4...Nc6, other replies here: cxd4, e6, a6 | look-alike in c5-a6 (5.dxc5); differ a6,c6,a7,b8: here opp knight c6, opp pawn a7 / there opp pawn a6, opp knight b8; also a6-nc6 (5.Nf3)
+SISTER       c5-nc6 6.dxe5
+    look-alike in c5-e6 (6.c3); differ e5,a6,c6,e6: here opp pawn e5, opp knight c6 / there opp knight a6, opp pawn e6
+SPLIT+SISTER e6-c6 4.Nb5
+    after 3...e6, other replies here: c5, Bf5, c6, a6, g6, Nc6 | look-alike in c5-main (4.e3); differ c5,e6,c7,e7: here opp pawn e6, opp pawn c7 / there opp pawn c5, opp pawn e7; also 2e6-bb4 (4.Qd3), nf6e6-b6 (4.e4)
+SPLIT        e6-c6 5.e3
+    after 4...Na6, other replies here: Bd6, c6
+SPLIT+SISTER e6-c6 6.Nc3
+    after 5...c6, other replies here: Be7, Bd7 | look-alike in c5-e6 (6.c3); differ c5,c6: here opp pawn c6 / there opp pawn c5; also e6-be7 (6.Nf3), e6-bd7 (6.a4)
+SPLIT+SISTER e6-bd6 5.Nxd6+
+    after 4...Bd6, other replies here: Na6, c6 | look-alike in e6-c6 (5.e3); differ a6,d6,b8,f8: here opp bishop d6, opp knight b8 / there opp knight a6, opp bishop f8
+SPLIT+SISTER e6-be7 6.Nf3
+    after 5...Be7, other replies here: c6, Bd7 | look-alike in c5-e6 (6.c3); differ c5,c7,e7,f8: here opp pawn c7, opp bishop e7 / there opp pawn c5, opp bishop f8; also e6-c6 (6.Nc3), e6-bd7 (6.a4)
+SPLIT+SISTER e6-bd7 6.a4
+    after 5...Bd7, other replies here: c6, Be7 | look-alike in c5-e6 (6.c3); differ c5,c7,d7,c8: here opp pawn c7, opp bishop d7 / there opp pawn c5, opp bishop c8; also e6-c6 (6.Nc3), e6-be7 (6.Nf3)
+SPLIT+SISTER e6-c6x 5.Nc7+
+    after 4...c6, other replies here: Na6, Bd6 | look-alike in e6-c6 (5.e3); differ a6,c6,c7,b8: here opp pawn c6, opp knight b8 / there opp knight a6, opp pawn c7
+SPLIT+SISTER bf5-main 4.e3
+    after 3...Bf5, other replies here: c5, e6, c6, a6, g6, Nc6 | look-alike in e6-c6 (4.Nb5); differ f5,e6,e7,c8: here opp bishop f5, opp pawn e7 / there opp pawn e6, opp bishop c8
+SISTER       bf5-main 5.Bd3
+    look-alike in dutch-stonewall (5.Nb5); differ f5,f7,c8: here opp bishop f5, opp pawn f7 / there opp pawn f5, opp bishop c8; also a6-e6 (5.Nf3)
+SPLIT+SISTER bf5-main 6.cxd3
+    after 5...Bxd3, other replies here: Bg6 | look-alike in bf5-bg6 (6.Nf3); differ d3,g6: here opp bishop d3 / there your bishop d3, opp bishop g6; also c6-bf5 (6.Qxd3)
+SPLIT        bf5-main 7.Qb3
+    after 6...Bd6, other replies here: c5
+SISTER       bf5-main 8.Bxd6
+    look-alike in a6-bf5 (8.Rc1); differ a6,d6,a7,f8: here opp bishop d6, opp pawn a7 / there opp pawn a6, opp bishop f8
+SPLIT        bf5-c5 7.Qb3
+    after 6...c5, other replies here: Bd6
+SPLIT        bf5-bg6 6.Nf3
+    after 5...Bg6, other replies here: Bxd3
+SPLIT+SISTER c6-bf5 4.e3
+    after 3...c6, other replies here: c5, e6, Bf5, a6, g6, Nc6 | look-alike in nc6-e5 (4.Nb5); differ c6,c7,b8: here opp pawn c6, opp knight b8 / there opp knight c6, opp pawn c7; also 2c6-qb6 (4.Rb1)
+SPLIT+SISTER c6-bf5 5.Bd3
+    after 4...Bf5, other replies here: Bg4, Qb6 | look-alike in c6-bg4 (5.f3); differ g4,f5: here opp bishop f5 / there opp bishop g4; also c6-qb6 (5.Rb1)
+SISTER       c6-bf5 6.Qxd3
+    look-alike in bf5-main (6.cxd3); differ c6,e6,c7,e7: here opp pawn c6, opp pawn e7 / there opp pawn e6, opp pawn c7
+SISTER       c6-bf5 9.e4
+    look-alike in 1c6-bf5 (9.Ne2); differ d1,d3,f5,e6: here your queen d3, opp pawn e6 / there your queen d1, opp pawn f5
+SPLIT+SISTER c6-bg4 5.f3
+    after 4...Bg4, other replies here: Bf5, Qb6 | look-alike in c6-bf5 (5.Bd3); differ g4,f5: here opp bishop g4 / there opp bishop f5; also c6-qb6 (5.Rb1)
+SPLIT+SISTER a6-bf5 4.e3
+    after 3...a6, other replies here: c5, e6, Bf5, c6, g6, Nc6 | look-alike in e6-c6 (4.Nb5); differ a6,e6,a7,e7: here opp pawn a6, opp pawn e7 / there opp pawn e6, opp pawn a7
+SPLIT+SISTER a6-bf5 5.Bd3
+    after 4...Bf5, other replies here: e6, Nc6 | look-alike in a6-e6 (5.Nf3); differ f5,e6,e7,c8: here opp bishop f5, opp pawn e7 / there opp pawn e6, opp bishop c8
+SISTER       a6-bf5 6.cxd3
+    look-alike in c6-bf5 (6.Qxd3); differ a6,c6,a7,c7: here opp pawn a6, opp pawn c7 / there opp pawn c6, opp pawn a7
+SPLIT+SISTER c6-qb6 5.Rb1
+    after 4...Qb6, other replies here: Bf5, Bg4 | look-alike in c6-bf5 (5.Bd3); differ f5,b6,c8,d8: here opp queen b6, opp bishop c8 / there opp bishop f5, opp queen d8; also c6-bg4 (5.f3)
+SPLIT        2bf5 3.Bf4
+    after 2...Bf5, other replies here: Nf6, e6, c5, Nc6, c6
+SISTER       2bf5 4.e3
+    look-alike in e6-c6 (4.Nb5); differ f5,f6,c8,g8: here opp bishop f5, opp knight g8 / there opp knight f6, opp bishop c8; also 2e6-bb4 (4.Qd3)
+SPLIT+SISTER a6-e6 5.Nf3
+    after 4...e6, other replies here: Bf5, Nc6 | look-alike in c5-e6 (5.Nb5); differ c5,a6,a7,c7: here opp pawn a6, opp pawn c7 / there opp pawn c5, opp pawn a7; also bf5-main (5.Bd3)
+SISTER       a6-e6 6.dxc5
+    look-alike in c5-a6 (6.Na4); differ g1,f3,d4,c5: here your knight f3, your pawn d4, opp pawn c5 / there your knight g1, your pawn c5
+SPLIT+SISTER a6-nc6 5.Nf3
+    after 4...Nc6, other replies here: Bf5, e6 | look-alike in c5-nc6 (5.Nb5); differ c5,a6,a7,c7: here opp pawn a6, opp pawn c7 / there opp pawn c5, opp pawn a7; also a6-bf5 (5.Bd3)
+SPLIT+SISTER g6-main 4.e3
+    after 3...g6, other replies here: c5, e6, Bf5, c6, a6, Nc6 | look-alike in e6-c6 (4.Nb5); differ e6,g6,e7,g7: here opp pawn g6, opp pawn e7 / there opp pawn e6, opp pawn g7
+SISTER       g6-main 5.Nb5
+    look-alike in kid-main (5.Qd2); differ e3,e4,d5,d6: here your pawn e3, opp pawn d5 / there your pawn e4, opp pawn d6
+SPLIT        g6-main 6.Nf3
+    after 5...Na6, other replies here: O-O
+SPLIT        g6-oo 6.Nxc7
+    after 5...O-O, other replies here: Na6
+SPLIT+SISTER nc6-e5 4.Nb5
+    after 3...Nc6, other replies here: c5, e6, Bf5, c6, a6, g6 | look-alike in c6-bf5 (4.e3); differ c6,c7,b8: here opp knight c6, opp pawn c7 / there opp pawn c6, opp knight b8; also 2nc6 (4.Nf3)
+SISTER       nc6-e5 5.Bxe5
+    look-alike in e6-c6 (5.e3); differ e5,a6,c6,e6: here opp pawn e5, opp knight c6 / there opp knight a6, opp pawn e6
+SPLIT+SISTER 2e6-bd6 3.Bf4
+    after 2...e6, other replies here: Nf6, Bf5, c5, Nc6, c6 | look-alike in e6-bb4 (3.Qd3); differ b4,d5,d7,f8: here opp pawn d5, opp bishop f8 / there opp bishop b4, opp pawn d7
+SPLIT+SISTER 2e6-bd6 4.e3
+    after 3...Bd6, other replies here: Bb4, a6, Nc6 | look-alike in 2e6-bb4 (4.Qd3); differ b4,d6: here opp bishop d6 / there opp bishop b4; also e6-c6 (4.Nb5)
+SISTER       2e6-bd6 5.exf4
+    look-alike in 2bf5 (5.Bd3); differ b4,f4,f5,c8: here opp bishop f4, opp bishop c8 / there opp bishop b4, your bishop f4, opp bishop f5
+SPLIT+SISTER 2e6-bb4 4.Qd3
+    after 3...Bb4, other replies here: Bd6, a6, Nc6 | look-alike in 2e6-bd6 (4.e3); differ b4,d6: here opp bishop b4 / there opp bishop d6
+SPLIT+SISTER 2e6-a6 4.e3
+    after 3...a6, other replies here: Bd6, Bb4, Nc6 | look-alike in e6-c6 (4.Nb5); differ a6,f6,a7,g8: here opp pawn a6, opp knight g8 / there opp knight f6, opp pawn a7; also 2e6-bb4 (4.Qd3)
+SISTER       2e6-a6 5.Nf3
+    look-alike in c5-e6 (5.Nb5); differ a6,f6,a7,g8: here opp pawn a6, opp knight g8 / there opp knight f6, opp pawn a7; also c5-a6 (5.dxc5)
+SPLIT+SISTER 2e6-nc6 4.e3
+    after 3...Nc6, other replies here: Bd6, Bb4, a6 | look-alike in e6-c6 (4.Nb5); differ c6,f6,b8,g8: here opp knight c6, opp knight g8 / there opp knight f6, opp knight b8; also 2e6-bb4 (4.Qd3), 2nc6 (4.Nf3)
+SISTER       2e6-nc6 5.Nb5
+    look-alike in bf5-main (5.Bd3); differ f5,c6,b8,c8: here opp knight c6, opp bishop c8 / there opp bishop f5, opp knight b8; also a6-e6 (5.Nf3)
+SISTER       2e6-nc6 6.Nxd6+
+    look-alike in e6-be7 (6.Nf3); differ a6,c6,d6,e7: here opp knight c6, opp bishop d6 / there opp knight a6, opp bishop e7
+SPLIT        2c5 3.Bf4
+    after 2...c5, other replies here: Nf6, Bf5, e6, Nc6, c6
+SISTER       2c5 4.Qxd4
+    look-alike in c5-main (4.e3); differ d4,c5,f6,g8: here opp pawn d4, opp knight g8 / there your pawn d4, opp pawn c5, opp knight f6; also 2c6-qb6 (4.Rb1)
+SPLIT+SISTER 2c5 5.Bxb8
+    after 4...e6, other replies here: Nc6 | look-alike in 2c5-nc6 (5.Qxd5); differ c6,e6,e7,b8: here opp pawn e6, opp knight b8 / there opp knight c6, opp pawn e7
+SPLIT        2c5-nc6 5.Qxd5
+    after 4...Nc6, other replies here: e6
+SPLIT        2nc6 3.Bf4
+    after 2...Nc6, other replies here: Nf6, Bf5, e6, c5, c6
+SISTER       2nc6 4.Nf3
+    look-alike in nc6-e5 (4.Nb5); differ f6,f7,g8: here opp pawn f6, opp knight g8 / there opp knight f6, opp pawn f7; also 2e6-nc6 (4.e3)
+SPLIT+SISTER 1c6-bf5 2.Nc3
+    after 1...c6, other replies here: d5, Nf6, g6, c5, d6, f5, b6, e6, e5 | look-alike in benoni (2.d5); differ c5,c6: here opp pawn c6 / there opp pawn c5; also modern (2.e4)
+SPLIT+SISTER 1c6-bf5 4.e3
+    after 3...Bf5, other replies here: Qb6 | look-alike in 2c6-qb6 (4.Rb1); differ f5,b6,c8,d8: here opp bishop f5, opp queen d8 / there opp queen b6, opp bishop c8
+SISTER       1c6-bf5 9.Ne2
+    look-alike in c6-bf5 (9.e4); differ d1,d3,f5,e6: here your queen d1, opp pawn f5 / there your queen d3, opp pawn e6
+SPLIT        2c6-qb6 3.Bf4
+    after 2...c6, other replies here: Nf6, Bf5, e6, c5, Nc6
+SPLIT+SISTER 2c6-qb6 4.Rb1
+    after 3...Qb6, other replies here: Bf5 | look-alike in c6-bf5 (4.e3); differ b6,f6,d8,g8: here opp queen b6, opp knight g8 / there opp knight f6, opp queen d8
+SPLIT+SISTER nf6e6-bb4 2.Nc3
+    after 1...Nf6, other replies here: d5, c6, g6, c5, d6, f5, b6, e6, e5 | look-alike in modern (2.e4); differ f6,g6,g7,g8: here opp knight f6, opp pawn g7 / there opp pawn g6, opp knight g8; also benoni (2.d5)
+SPLIT+SISTER nf6e6-bb4 3.Bf4
+    after 2...e6, other replies here: g6 | look-alike in kid-main (3.e4); differ e6,g6,e7,g7: here opp pawn e6, opp pawn g7 / there opp pawn g6, opp pawn e7; also dutch-main (3.Bg5), e6-c5 (3.d5) +1
+SPLIT+SISTER nf6e6-bb4 4.Qd3
+    after 3...Bb4, other replies here: c5, b6 | look-alike in nf6e6-c5 (4.d5); differ b4,c5,c7,f8: here opp bishop b4, opp pawn c7 / there opp pawn c5, opp bishop f8; also nf6e6-b6 (4.e4)
+SPLIT+SISTER nf6e6-c5 4.d5
+    after 3...c5, other replies here: Bb4, b6 | look-alike in c5-main (4.e3); differ d5,e6,d7,e7: here opp pawn e6, opp pawn d7 / there opp pawn d5, opp pawn e7; also e6-c6 (4.Nb5), nf6e6-bb4 (4.Qd3) +1
+SPLIT+SISTER nf6e6-b6 4.e4
+    after 3...b6, other replies here: Bb4, c5 | look-alike in e6-c6 (4.Nb5); differ d5,b6,b7,d7: here opp pawn b6, opp pawn d7 / there opp pawn d5, opp pawn b7; also nf6e6-bb4 (4.Qd3), nf6e6-c5 (4.d5)
+SPLIT+SISTER kid-main 3.e4
+    after 2...g6, other replies here: e6 | look-alike in c5-main (3.Bf4); differ d5,g6,d7,g7: here opp pawn g6, opp pawn d7 / there opp pawn d5, opp pawn g7; also dutch-main (3.Bg5)
+SISTER       kid-main 4.Bf4
+    look-alike in philidor (4.Nf3); differ e5,g6,e7,g7: here opp pawn g6, opp pawn e7 / there opp pawn e5, opp pawn g7
+SISTER       kid-main 5.Qd2
+    look-alike in g6-main (5.Nb5); differ e3,e4,d5,d6: here your pawn e4, opp pawn d6 / there your pawn e3, opp pawn d5; also modern (5.Bb5)
+SPLIT+SISTER modern 2.e4
+    after 1...g6, other replies here: d5, c6, Nf6, c5, d6, f5, b6, e6, e5 | look-alike in c5-main (2.Nc3); differ d5,g6,d7,g7: here opp pawn g6, opp pawn d7 / there opp pawn d5, opp pawn g7; also benoni (2.d5)
+SISTER       modern 5.Bb5
+    look-alike in kid-main (5.Qd2); differ c6,f6,b8,g8: here opp knight c6, opp knight g8 / there opp knight f6, opp knight b8
+SPLIT+SISTER benoni 2.d5
+    after 1...c5, other replies here: d5, c6, Nf6, g6, d6, f5, b6, e6, e5 | look-alike in 1c6-bf5 (2.Nc3); differ c5,c6: here opp pawn c5 / there opp pawn c6; also modern (2.e4)
+SPLIT+SISTER philidor 2.e4
+    after 1...d6, other replies here: d5, c6, Nf6, g6, c5, f5, b6, e6, e5 | look-alike in c5-main (2.Nc3); differ d5,d6: here opp pawn d6 / there opp pawn d5; also benoni (2.d5)
+SISTER       philidor 4.Nf3
+    look-alike in kid-main (4.Bf4); differ e5,g6,e7,g7: here opp pawn e5, opp pawn g7 / there opp pawn g6, opp pawn e7
+SPLIT+SISTER dutch-main 2.Nc3
+    after 1...f5, other replies here: d5, c6, Nf6, g6, c5, d6, b6, e6, e5 | look-alike in modern (2.e4); differ f5,g6,f7,g7: here opp pawn f5, opp pawn g7 / there opp pawn g6, opp pawn f7; also benoni (2.d5)
+SPLIT+SISTER dutch-main 3.Bg5
+    after 2...Nf6, other replies here: d5 | look-alike in c5-main (3.Bf4); differ d5,f5,d7,f7: here opp pawn f5, opp pawn d7 / there opp pawn d5, opp pawn f7; also kid-main (3.e4)
+SPLIT+SISTER dutch-main 4.Bxf6
+    after 3...d5, other replies here: e6 | look-alike in dutch-e6 (4.e4); differ d5,e6,d7,e7: here opp pawn d5, opp pawn e7 / there opp pawn e6, opp pawn d7
+SPLIT+SISTER dutch-e6 4.e4
+    after 3...e6, other replies here: d5 | look-alike in dutch-main (4.Bxf6); differ d5,e6,d7,e7: here opp pawn e6, opp pawn d7 / there opp pawn d5, opp pawn e7
+SPLIT+SISTER dutch-stonewall 3.Bf4
+    after 2...d5, other replies here: Nf6 | look-alike in dutch-main (3.Bg5); differ d5,f6,d7,g8: here opp pawn d5, opp knight g8 / there opp knight f6, opp pawn d7
+SISTER       dutch-stonewall 4.e3
+    look-alike in e6-c6 (4.Nb5); differ f5,f6,f7,g8: here opp pawn f5, opp knight g8 / there opp knight f6, opp pawn f7; also 2e6-bb4 (4.Qd3)
+SISTER       dutch-stonewall 5.Nb5
+    look-alike in bf5-main (5.Bd3); differ f5,f7,c8: here opp pawn f5, opp bishop c8 / there opp bishop f5, opp pawn f7; also a6-e6 (5.Nf3)
+SPLIT+SISTER b6 2.e4
+    after 1...b6, other replies here: d5, c6, Nf6, g6, c5, d6, f5, e6, e5 | look-alike in c5-main (2.Nc3); differ d5,b6,b7,d7: here opp pawn b6, opp pawn d7 / there opp pawn d5, opp pawn b7; also benoni (2.d5)
+SPLIT+SISTER e6-c5 2.Nc3
+    after 1...e6, other replies here: d5, c6, Nf6, g6, c5, d6, f5, b6, e5 | look-alike in modern (2.e4); differ e6,g6,e7,g7: here opp pawn e6, opp pawn g7 / there opp pawn g6, opp pawn e7; also benoni (2.d5)
+SPLIT+SISTER e6-c5 3.d5
+    after 2...c5, other replies here: Bb4 | look-alike in 2e6-bd6 (3.Bf4); differ c5,d5,c7,d7: here opp pawn c5, opp pawn d7 / there opp pawn d5, opp pawn c7; also e6-bb4 (3.Qd3)
+SPLIT+SISTER e6-bb4 3.Qd3
+    after 2...Bb4, other replies here: c5 | look-alike in 2e6-bd6 (3.Bf4); differ b4,d5,d7,f8: here opp bishop b4, opp pawn d7 / there opp pawn d5, opp bishop f8; also e6-c5 (3.d5)
+SPLIT+SISTER englund-main 2.dxe5
+    after 1...e5, other replies here: d5, c6, Nf6, g6, c5, d6, f5, b6, e6 | look-alike in e6-c5 (2.Nc3); differ e5,e6: here opp pawn e5 / there opp pawn e6; also modern (2.e4), benoni (2.d5)
+
+jobava: 92 places need a trigger (T-SPLIT 68, T-SISTER 80, both 56); 0 already have one
