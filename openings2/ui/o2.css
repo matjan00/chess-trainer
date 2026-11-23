@@ -255,3 +255,5 @@
 .o2-cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
 .o2-case .o2-mini2 { max-width: 100%; }
 .o2-rulecard p { margin: 4px 0 0; }
+.o2-ideatag { display: inline-block; margin-left: 8px; font: 600 11px/1 var(--body); letter-spacing: .04em; text-transform: uppercase; padding: 3px 6px; border-radius: 4px; vertical-align: middle; background: color-mix(in srgb, var(--muted, #888) 16%, transparent); color: var(--muted, #888); }
+.o2-line.o2-idea .t { font-style: italic; }

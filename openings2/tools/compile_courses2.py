@@ -63,7 +63,8 @@ def build_course(c, res, ev, depth, draft):
     trunk_of = {ch["id"]: next((x for x in ch["lines"] if c.line(x).trunk), None) for ch in c.chapters}
     for lo, l in zip(lines, c.lines):
         lo.update({"trunk": bool(l.trunk) if v3 else False, "parent": st["parent"][l.id] if v3 else None,
-                   "split": st["split"][l.id] if v3 else None, "twins": st["twins"][l.id] if v3 else []})
+                   "split": st["split"][l.id] if v3 else None, "twins": st["twins"][l.id] if v3 else [],
+                   "idea": bool(getattr(l, "idea", False))})
     rules = []
     if v3:
         used = {}                                    # rule id -> [(chapter, node)]

@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Janczu Chess Trainer</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 92;</script>
+<script>window.CHESS_SUPABASE = {"url": "https://txhcnqwrdazgaxjwabln.supabase.co", "key": "sb_publishable_kNZA54ZHzYbJpL7yfqsA3w_vKejTXp3"}; window.CHESS_LOCAL_ENGINE = "vendor/"; window.CHESS_APP_VERSION = 93;</script>
 </head>
 <body>
 
@@ -978,6 +978,8 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border: 1px solid var
 .o2-cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
 .o2-case .o2-mini2 { max-width: 100%; }
 .o2-rulecard p { margin: 4px 0 0; }
+.o2-ideatag { display: inline-block; margin-left: 8px; font: 600 11px/1 var(--body); letter-spacing: .04em; text-transform: uppercase; padding: 3px 6px; border-radius: 4px; vertical-align: middle; background: color-mix(in srgb, var(--muted, #888) 16%, transparent); color: var(--muted, #888); }
+.o2-line.o2-idea .t { font-style: italic; }
 
 /* ===== Train 2 (t2core.js). Uses the app's tokens (--accent, --line, ...) and classes (.card .btn .viewer ...), same look as Openings 2. ===== */
 .t2 h2 { font-size: 30px; }
@@ -1819,6 +1821,14 @@ const O2 = (() => {
     }
     // cards keep the primary line given by the compiler, but fall back to any line that contains them
     for (const k of c.cards) if (!c.seq[k.line]?.some(s => s.id === k.id)) k.line = (c.linesOf.get(k.id) || [])[0] || k.line;
+    // "know the idea" lines are studied, never reviewed: their own moves are not cards; shared moves live in a normal line
+    if (c.lines.some(l => l.idea)) {
+      const real = id => (c.linesOf.get(id) || []).filter(x => !c.lineById.get(x)?.idea);
+      c.cards = c.cards.filter(k => real(k.id).length);
+      for (const k of c.cards) if (c.lineById.get(k.line)?.idea) k.line = real(k.id)[0];
+      c.cardById = new Map(c.cards.map(k => [k.id, k]));
+      for (const l of c.lines) l.mine = l.idea ? [] : l.mine.filter(s => c.cardById.has(s.id));
+    }
   }
 
   /* ---------------------------------------------------------------- SRS (BLUEPRINT section 4) */
@@ -1968,9 +1978,10 @@ const O2 = (() => {
       if (isDue(s)) due++;
       if (s?.t > last) last = s.t;
     }
-    const learnedLines = c.order.filter(id => lineLearned(c, c.lineById.get(id))).length;
+    const real = c.order.filter(id => !c.lineById.get(id).idea);
+    const learnedLines = real.filter(id => lineLearned(c, c.lineById.get(id))).length;
     for (const id of c.order) { const t = H.progress.o2l[ckey(c, id)]?.t || 0; if (t > last) last = t; }
-    return { total: c.cards.length, fresh, learning, mature, due, last, learnedLines, lines: c.order.length };
+    return { total: c.cards.length, fresh, learning, mature, due, last, learnedLines, lines: real.length };
   }
   /* Unlocking (v3 courses; BLUEPRINT/RESTRUCTURE section 6). A trunk is always open. A branch opens when every card of its parent line is in
      box 2 or higher (the parent has had its first review). A branch that has a look-alike twin which is already learned opens only when that
@@ -1978,8 +1989,9 @@ const O2 = (() => {
      Returns null (open, or already learned) or {kind, line, text}. A locked line can still be learned with "Learn anyway". */
   const minBox = (c, l) => l.mine.length ? Math.min(...l.mine.map(s => srsGet(c, s.id)?.lv || 0)) : 0;
   function lockInfo(c, l) {
-    if (c.ver !== 3 || l.trunk || lineLearned(c, l)) return null;
-    const par = l.parent && c.lineById.get(l.parent);
+    if (c.ver !== 3 || l.trunk || l.idea || lineLearned(c, l)) return null;
+    let par = l.parent && c.lineById.get(l.parent);
+    while (par?.idea) par = par.parent && c.lineById.get(par.parent);   // an idea note is never learned: judge by its own parent
     if (par && (!lineLearned(c, par) || minBox(c, par) < 2)) return { kind: 'parent', line: par, text: `Opens when ${par.title} has had its first review` };
     for (const tid of l.twins || []) {
       const t = tid !== l.parent && c.lineById.get(tid);
@@ -1988,7 +2000,7 @@ const O2 = (() => {
     return null;
   }
   /** "Next up": the first open, unlearned line of course.learn (old courses: of the chapter order) */
-  const nextLine = c => c.learnOrder.map(id => c.lineById.get(id)).find(l => !lineLearned(c, l) && !lockInfo(c, l)) || null;
+  const nextLine = c => c.learnOrder.map(id => c.lineById.get(id)).find(l => !l.idea && !lineLearned(c, l) && !lockInfo(c, l)) || null;
   function dueCards(cs = COURSES) {
     spreadLapses();
     const out = [];
@@ -2263,12 +2275,19 @@ const O2 = (() => {
     const nl = nextLine(c);
     return c.chapters.map(ch => {
       const tree = chapterTree(c, ch), ls = tree.map(x => x.l);
-      const done = ls.filter(l => lineLearned(c, l)).length;
+      const lr = ls.filter(l => !l.idea), done = lr.filter(l => lineLearned(c, l)).length;
       const open = H.store.get(`o2ch.${c.id}.${ch.id}`, true);
-      return `<details class="o2-chap" data-ch="${esc(ch.id)}"${open ? ' open' : ''}><summary><span class="t">${esc(ch.title)}</span><span class="small muted">${done}/${ls.length} learned</span>
-        <span class="o2-chbar"><i style="width:${ls.length ? done / ls.length * 100 : 0}%"></i></span></summary>
+      return `<details class="o2-chap" data-ch="${esc(ch.id)}"${open ? ' open' : ''}><summary><span class="t">${esc(ch.title)}</span><span class="small muted">${done}/${lr.length} learned</span>
+        <span class="o2-chbar"><i style="width:${lr.length ? done / lr.length * 100 : 0}%"></i></span></summary>
         ${ch.intro ? `<p class="small muted o2-chintro">${rich(ch.intro)}</p>` : ''}
         <div class="o2-lines">${tree.map(({ l, depth }) => {
+          if (l.idea) { const lv = leavesText(c, l), r = reachText(l.reach);
+            return `<div class="o2-line o2-idea${depth ? ' o2-sub' : ''}" style="--d:${Math.min(depth, 3)}" data-line="${esc(l.id)}">
+            ${desk ? `<div class="o2-mini" data-mini="${esc(l.endFen)}" data-orient="${c.side}"></div>` : ''}
+            <div class="o2-lmain"><div class="o2-lt"><span class="medal-dot"></span><span class="t">${esc(l.title)}</span><span class="o2-ideatag">Know the idea</span></div>
+              ${lv ? `<div class="small muted o2-leaves">${esc(lv)}</div>` : ''}
+              <div class="o2-lmeta"><span class="small muted">No daily reviews · read it once with Study</span>${r ? `<span class="small muted">${r}</span>` : ''}</div></div>
+            <div class="o2-lbtn"><button class="btn" data-act="study" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Study</button></div></div>`; }
           const i = lineInfo(c, l), r = reachText(l.reach), lock = lockInfo(c, l), lv = leavesText(c, l);
           return `<div class="o2-line lv${i.badge}${nl === l ? ' next' : ''}${lock ? ' locked' : ''}${depth ? ' o2-sub' : ''}" style="--d:${Math.min(depth, 3)}" data-line="${esc(l.id)}">
             ${desk ? `<div class="o2-mini" data-mini="${esc(l.endFen)}" data-orient="${c.side}"></div>` : ''}

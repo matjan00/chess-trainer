@@ -4,7 +4,6 @@ Q6 WARN jobava/bf5-c5 ply 12 c5: not in the engine top 3 and no statistics (engi
 T-SPLIT WARN jobava/bf5-c5 ply 13 Qb3: no trigger after the split move 6...c5 (others: Bd6)
 Q11 WARN jobava/bf5-bg6 ply 21 exf4: final position is -0.07 for us; below +0.00
 T-SPLIT WARN jobava/2bf5 ply 5 Bf4: no trigger after the split move 2...Bf5 (others: Nf6, c6, Nc6, e6, c5)
-T-SISTER WARN jobava/c6-bf5 ply 17 e4: no trigger; look-alike of 1c6-bf5 where you play 9.Ne2
 Q1 WARN jobava/1c6-bf5 ply 7 e3: loses 26 cp (26-35 is borderline; engine: f3)
 T-SISTER WARN jobava/1c6-bf5 ply 17 Ne2: no trigger; look-alike of c6-bf5 where you play 9.e4
 T-SPLIT WARN jobava/2c6-qb6 ply 5 Bf4: no trigger after the split move 2...c6 (others: Nf6, Bf5, Nc6, e6, c5)
@@ -73,4 +72,4 @@ kid-d5                punish     13    0   +0.95       38 cp      72 cp    0.1%
 englund-d6            punish     13    0   +1.90       11 cp     138 cp    0.1%
 englund-f6            punish     15    0   +2.39       11 cp     138 cp    0.0%
 
-0 FAIL, 17 WARN
+0 FAIL, 16 WARN

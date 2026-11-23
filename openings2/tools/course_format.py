@@ -131,7 +131,7 @@ class Line:
         self.id, self.title, self.kind, self.section = lid, title, kind, section
         self.tags = set(); self.ch = None; self.intro = ""; self.raw = ""; self.to = None
         self.moves = []; self.broken = False; self.order = 0
-        self.trunk = False; self.parent_decl = None
+        self.trunk = False; self.parent_decl = None; self.idea = False
         self.plan_count = 0; self.path = []      # path: list of Node (filled by build_tree)
 
 
@@ -221,6 +221,7 @@ def parse_course(src, course_id=None):
                 f = (f + ["?", "?", "side"])[:3] if len(f) < 3 else f[:2] + ["side"]
             cur = Line(f[0], f[1], f[2]); cur.tags = set(x.lower() for x in f[3:])
             cur.trunk = "trunk" in cur.tags
+            cur.idea = "idea" in cur.tags     # "know the idea" note: shown and studied, never reviewed
             cur.order = len(c.lines); cur.ch = chapter["id"] if chapter else None
             if not chapter:
                 c.errors.append(finding("F0", "FAIL", "line outside any chapter", line=cur.id))
@@ -631,14 +632,14 @@ def structure(c, reach=None):
     parent = {l.id: None for l in c.lines}
 
     def explicit(b):
-        return b.parent_decl if (b.parent_decl in by_id and b.parent_decl != b.id) else None
+        return b.parent_decl if (b.parent_decl in by_id and b.parent_decl != b.id and not by_id[b.parent_decl].idea) else None
 
     def best(b, allowed, strict):
         """(ok, parent): ok False = the wanted parent is not placed yet."""
         e = explicit(b)
         if e:
             return (e in allowed or not strict), e
-        sh = {o.id: shared_len(b, o) for o in c.lines if o is not b}
+        sh = {o.id: shared_len(b, o) for o in c.lines if o is not b and not o.idea}   # an idea note is never a parent
         top = max(sh.values(), default=0)
         if top == 0:
             return True, None

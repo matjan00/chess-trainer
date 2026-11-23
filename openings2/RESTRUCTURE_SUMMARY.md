@@ -48,12 +48,10 @@ The moves themselves did not change.
 - A few rules are good guidelines rather than laws, for example the Caro "h3 against your g4 bishop" rule.
 - A handful of places have no trigger on purpose: you play the same move whatever the opponent does there.
 
-## Your decision on Q3: lines that are almost copies (nothing changed yet)
-These could become a short "know the idea" note with no daily reviews. Say which ones, or "none":
-- **Caro:** cl-bf4 (same as the Classical main line until move 11), cl-bd3-oo, nf3-e5-h3p, nf3-bb5 + bc4-bb5
-  (same idea), nc3-quiet, h3, f4, and the very rare qf3-d4 and nf3-c3.
-- **Jobava:** e6-be7, e6-bd7, bf5-c5, c5-a6q, 2c6-qb6, 1c6-bf5, 2nc6, 2e6-a6, e6-bb4.
-- **Slav:** dutch-h3, bg5-bxf6 / nc3-bg5-bxf6, e3-nb1 / e3-na2, ex-bf4-early, slow-qb3, slow-bd3-early.
+## Q3: lines that are almost copies (DONE, 2026-11-23: all turned into notes)
+24 lines are now "Know the idea" notes: shown in the tree with a Study button, no Learn button, no daily reviews,
+not counted in "x/y learned". A note is never the parent of another line. For the pairs, the note is nf3-bb5 (bc4-bb5 stays),
+nc3-bg5-bxf6 (bg5-bxf6 stays) and e3-na2 (e3-nb1 stays). Mark: `| idea` at the end of the `### LINE` header.
 
 ## To make it live
 Say OK. I then merge the work branch (agent/o3) into main, rebuild, and push (app version 92).
