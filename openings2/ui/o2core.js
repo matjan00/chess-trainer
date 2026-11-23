@@ -861,8 +861,9 @@ const O2 = (() => {
     const clue = (tg.clue || []).filter(q => SQRE.test(q)), rule = c.rulesById.get(tg.rule);
     P.shapes = []; P.view = null; draw();
     fb(`<span class="eyebrow">Question 1 · What changed?</span><p><b>Tap the square where you should look.</b></p><p class="small muted">Tap it on the board. A wrong tap costs nothing: the right squares are shown.</p>`, 'plan');
-    cap(`<span class="eyebrow">What changed?</span><p class="o2-capn"><b>Tap the square where you should look.</b></p>`);
-    actions('q1');
+    const q1cap = `<span class="eyebrow">What changed?</span><p class="o2-capn"><b>Tap the square where you should look.</b></p>`;
+    cap(q1cap); actions('q1'); capFit([q1cap]);   // phone: shrink the board a little so the question is not hidden behind the action bar
+
     const r = await new Promise(res => { P.q1 = { clue, res }; });
     P.q1 = null;
     P.shapes = circles(clue); draw();

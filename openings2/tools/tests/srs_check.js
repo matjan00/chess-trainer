@@ -51,7 +51,7 @@ const DAY = 86400000;
 const courses = O2.courses();
 const c0 = courses[0], c1 = courses[1] || courses[0];
 const ids = c0.cards.map(k => k.id);
-const get = (c, id) => progress.o2c[`${c.id}/${id}`];
+const get = (c, id) => progress.o2c[`${c.id}${c.ver === 3 ? "@3" : ""}/${id}`];
 const reset = () => { for (const k of Object.keys(progress)) delete progress[k]; progress.o2c = {}; progress.o2l = {}; progress.o2d = {}; O2.srs.resetLoad(); };
 const dkey = t => { const d = new Date(t); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); };
 
@@ -74,12 +74,12 @@ ok('note text for ok/hint/wrong', /^✓ Box 3/.test(O2.srs.note({ lv: 3, prevLv:
 
 // ---- softer lapse
 reset();
-progress.o2c[`${c0.id}/${ids[1]}`] = { lv: 6, due: O2.now() - 1000, n: 5, w: 0, s: 4 };
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[1]}`] = { lv: 6, due: O2.now() - 1000, n: 5, w: 0, s: 4 };
 r = O2.srs.answer(c0, ids[1], 'wrong');
 let s = get(c0, ids[1]);
 ok('lapse: box 6 wrong -> 4, due tomorrow, w=1, s=0, n=6', s.lv === 4 && s.w === 1 && s.s === 0 && s.n === 6 && Math.abs(s.due - (O2.now() + DAY)) < 5000, JSON.stringify(s));
 ok('lapse result prevLv 6', r.prevLv === 6 && r.lv === 4);
-progress.o2c[`${c0.id}/${ids[2]}`] = { lv: 1, due: O2.now() - 1000, n: 1, w: 0, s: 1 };
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[2]}`] = { lv: 1, due: O2.now() - 1000, n: 1, w: 0, s: 1 };
 O2.srs.answer(c0, ids[2], 'wrong');
 ok('lapse never below box 1', get(c0, ids[2]).lv === 1);
 O2.srs.answer(c0, ids[3], 'wrong');   // brand new card
@@ -89,8 +89,8 @@ ok('practice wrong: schedule level unchanged, result.practice', r.practice && ge
 
 // ---- old progress format reads fine
 reset();
-progress.o2c[`${c0.id}/${ids[4]}`] = { lv: 3, due: O2.now() + 2 * DAY, n: 4, w: 1, s: 2, t: 123 };
-progress.o2c[`${c0.id}/${ids[5]}`] = { lv: 1, due: O2.now() - DAY };           // minimal old card
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[4]}`] = { lv: 3, due: O2.now() + 2 * DAY, n: 4, w: 1, s: 2, t: 123 };
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[5]}`] = { lv: 1, due: O2.now() - DAY };           // minimal old card
 ok('old progress: get + isDue', O2.srs.get(c0, ids[4]).lv === 3 && !O2.srs.isDue(O2.srs.get(c0, ids[4])) && O2.srs.isDue(O2.srs.get(c0, ids[5])));
 const old = O2.srs.dueCards().length;
 ok('old progress: dueCards sees the overdue one', old === 1, old);
@@ -103,9 +103,9 @@ reset();
 const t = O2.now();
 // unknown card ids are ignored by the loader (it iterates real cards), so crowd with real cards of the other course/cards
 const pool = c0.cards.map(k => k.id).filter(id => id !== ids[10]);
-let pi = 0; const place = (d, n) => { for (let i = 0; i < n; i++) progress.o2c[`${c0.id}/${pool[pi++]}`] = { lv: 3, due: t + d * DAY, n: 1, w: 0, s: 1 }; };
+let pi = 0; const place = (d, n) => { for (let i = 0; i < n; i++) progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${pool[pi++]}`] = { lv: 3, due: t + d * DAY, n: 1, w: 0, s: 1 }; };
 for (let d = 27; d <= 33; d++) place(d, d === 29 ? 0 : 3);          // every day busy except day 29
-progress.o2c[`${c0.id}/${ids[10]}`] = { lv: 4, due: t - 1000, n: 3, w: 0, s: 2 };
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[10]}`] = { lv: 4, due: t - 1000, n: 3, w: 0, s: 2 };
 O2.srs.resetLoad();
 ok('pickDays(box 5) chooses the empty day 29', O2.srs.pickDays(t, 5) === 29, O2.srs.pickDays(t, 5));
 r = O2.srs.answer(c0, ids[10], 'ok');
@@ -125,11 +125,11 @@ reset();
 const e = O2.endOfDay();
 const lineOf = k => c0.lineById.get(k.line)?.title;
 const ks = c0.cards.slice(0, 6);
-progress.o2c[`${c0.id}/${ks[0].id}`] = { lv: 2, due: t - 3 * DAY, n: 1, w: 0, s: 1 };   // overdue -> day 0
-progress.o2c[`${c0.id}/${ks[1].id}`] = { lv: 2, due: t + 1000, n: 1, w: 0, s: 1 };         // today
-progress.o2c[`${c0.id}/${ks[2].id}`] = { lv: 2, due: e + 1000, n: 1, w: 0, s: 1 };        // tomorrow
-progress.o2c[`${c0.id}/${ks[3].id}`] = { lv: 2, due: t + 3 * DAY, n: 1, w: 0, s: 1 };
-progress.o2c[`${c0.id}/${ks[4].id}`] = { lv: 2, due: t + 30 * DAY, n: 1, w: 0, s: 1 };    // out of range
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ks[0].id}`] = { lv: 2, due: t - 3 * DAY, n: 1, w: 0, s: 1 };   // overdue -> day 0
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ks[1].id}`] = { lv: 2, due: t + 1000, n: 1, w: 0, s: 1 };         // today
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ks[2].id}`] = { lv: 2, due: e + 1000, n: 1, w: 0, s: 1 };        // tomorrow
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ks[3].id}`] = { lv: 2, due: t + 3 * DAY, n: 1, w: 0, s: 1 };
+progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ks[4].id}`] = { lv: 2, due: t + 30 * DAY, n: 1, w: 0, s: 1 };    // out of range
 const f = O2.forecast();
 ok('forecast: 7 entries', f.length === 7 && O2.forecast(3).length === 3 && O2.forecast(14).length === 14);
 ok('forecast: day 0 counts overdue + today = 2, mins >= 1', f[0].n === 2 && f[0].mins === 1, JSON.stringify(f[0]));
@@ -142,18 +142,18 @@ ok('forecast: items sum to n and sorted desc', f[0].items.reduce((a, x) => a + x
 ok('forecast: n matches dueCards for day 0', f[0].n === O2.srs.dueCards().length);
 // mins formula: ~11 s a move (line replayed from move 1), +15 s for a missed move; capped at 60 cards
 reset();
-c0.cards.slice(0, 100).forEach(k => { progress.o2c[`${c0.id}/${k.id}`] = { lv: 1, due: t - 1, n: 1, w: 0, s: 1 }; });
+c0.cards.slice(0, 100).forEach(k => { progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${k.id}`] = { lv: 1, due: t - 1, n: 1, w: 0, s: 1 }; });
 const f2 = O2.forecast(1)[0];
 ok('forecast: mins capped at 60 cards (11 min)', f2.n === Math.min(100, c0.cards.length) && f2.mins === Math.max(1, Math.round(Math.min(f2.n, 60) * 11 / 60)), JSON.stringify([f2.n, f2.mins]));
 reset();
-c0.cards.slice(0, 10).forEach((k, i) => { progress.o2c[`${c0.id}/${k.id}`] = i < 4 ? { lv: 1, due: t - 1, n: 2, w: 1, s: 0 } : { lv: 2, due: t - 1, n: 2, w: 0, s: 2 }; });
+c0.cards.slice(0, 10).forEach((k, i) => { progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${k.id}`] = i < 4 ? { lv: 1, due: t - 1, n: 2, w: 1, s: 0 } : { lv: 2, due: t - 1, n: 2, w: 0, s: 2 }; });
 ok('dueSummary: 10 due, 4 missed -> round((10*11 + 4*15)/60) = 3 min', O2.dueSummary().n === 10 && O2.dueSummary().mins === 3, JSON.stringify(O2.dueSummary()));
 
 // ---- line info: next + minLv
 reset();
 const ln = c0.lineById.get(c0.order[0]);
-ln.mine.forEach((m, i) => { progress.o2c[`${c0.id}/${m.id}`] = { lv: 2 + (i % 2), due: t + (5 - (i % 3)) * DAY, n: 1, w: 0, s: 1 }; });
-progress.o2l[`${c0.id}/${ln.id}`] = { done: 1 };
+ln.mine.forEach((m, i) => { progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${m.id}`] = { lv: 2 + (i % 2), due: t + (5 - (i % 3)) * DAY, n: 1, w: 0, s: 1 }; });
+progress.o2l[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ln.id}`] = { done: 1 };
 const li = O2.srs.lineInfo(c0, ln);
 ok('lineInfo: minLv and earliest next', li.minLv === 2 && li.next === Math.min(...ln.mine.map(m => get(c0, m.id).due)), JSON.stringify(li));
 

@@ -51,15 +51,15 @@ const DAY = 86400000;
 const courses = O2.courses();
 const c0 = courses[0], c1 = courses[1] || courses[0];
 const ids = c0.cards.map(k => k.id);
-const get = (c, id) => progress.o2c[`${c.id}/${id}`];
+const get = (c, id) => progress.o2c[`${c.id}${c.ver === 3 ? "@3" : ""}/${id}`];
 const reset = () => { for (const k of Object.keys(progress)) delete progress[k]; progress.o2c = {}; progress.o2l = {}; progress.o2d = {}; O2.srs.resetLoad(); };
 const dkey = t => { const d = new Date(t); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); };
 const Chess = ctx.Chess;
 const t = O2.now(), refresh = () => { O2.refresh(); };
 // ---- cap: 12 missed moves all due today -> only 5 stay today, the rest go to the next days (5 per day)
 reset();
-for (let i = 0; i < 12; i++) progress.o2c[`${c0.id}/${ids[i]}`] = { lv: 1, due: t - DAY + i * 1000, n: 2, w: 1, s: 0 };
-for (let i = 12; i < 20; i++) progress.o2c[`${c0.id}/${ids[i]}`] = { lv: 3, due: t - DAY, n: 3, w: 0, s: 3 };   // normal reviews, untouched
+for (let i = 0; i < 12; i++) progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[i]}`] = { lv: 1, due: t - DAY + i * 1000, n: 2, w: 1, s: 0 };
+for (let i = 12; i < 20; i++) progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[i]}`] = { lv: 3, due: t - DAY, n: 3, w: 0, s: 3 };   // normal reviews, untouched
 refresh();
 const due = O2.srs.dueCards();
 const lapsedToday = due.filter(x => O2.srs.isLapse(get(x.c, x.id))).length;
@@ -78,7 +78,7 @@ O2.srs.answer(c0, ids[0], 'ok');
 ok('ok clears lapse', !O2.srs.isLapse(get(c0, ids[0])));
 // ---- few misses: nothing moved
 reset();
-for (let i = 0; i < 3; i++) progress.o2c[`${c0.id}/${ids[i]}`] = { lv: 1, due: t - DAY, n: 1, w: 1, s: 0 };
+for (let i = 0; i < 3; i++) progress.o2c[`${c0.id}${c0.ver === 3 ? "@3" : ""}/${ids[i]}`] = { lv: 1, due: t - DAY, n: 1, w: 1, s: 0 };
 refresh();
 ok('3 misses all stay due', O2.srs.dueCards().length === 3);
 r = O2.srs.answer(c0, ids[5], 'wrong');

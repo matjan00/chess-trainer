@@ -91,7 +91,7 @@ function pick(c, minI, second = false) {
     if (j > 0) return { k, seq, i, j, k2: c.cardById.get(seq[j].id) };
   }
 }
-const due = (c, id, lapse = false) => { progress.o2c[`${c.id}/${id}`] = lapse ? { lv: 1, due: t - DAY, n: 2, w: 1, s: 0 } : { lv: 3, due: t - DAY, n: 3, w: 0, s: 3 }; };
+const due = (c, id, lapse = false) => { progress.o2c[`${c.id}${c.ver === 3 ? "@3" : ""}/${id}`] = lapse ? { lv: 1, due: t - DAY, n: 2, w: 1, s: 0 } : { lv: 3, due: t - DAY, n: 3, w: 0, s: 3 }; };
 
 (async () => {
   const courses = O2.courses();
@@ -207,7 +207,7 @@ const due = (c, id, lapse = false) => { progress.o2c[`${c.id}/${id}`] = lapse ? 
 
   // 8. practice of a line also starts from move 1
   reset();
-  { const c = black, { k, seq, i } = pick(c, 10); due(c, k.id); progress.o2c[`${c.id}/${k.id}`].due = t + 30 * DAY; O2.refresh();
+  { const c = black, { k, seq, i } = pick(c, 10); due(c, k.id); progress.o2c[`${c.id}${c.ver === 3 ? "@3" : ""}/${k.id}`].due = t + 30 * DAY; O2.refresh();
     // practise-line is internal; drive it through its button
     click({ act: 'practise-line', c: c.id, l: k.line });
     await until(asking, 'ask');
