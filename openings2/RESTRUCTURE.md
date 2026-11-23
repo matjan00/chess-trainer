@@ -108,6 +108,7 @@ Models actually used (user wants to save tokens): R1/R2/R4/R5/R6 Sonnet, R3 Opus
 - R2 DONE for all 3 courses (commit f636a4f). R3 Opus reviewers x3 in progress (brief R3_BRIEF.md, reports/<course>.r3.md when done). R4 UI agent still running.
 - 2026-11-23 after 01:30: limit hit at ~00:50 and reset; the SAME session resumed the 4 agents, the 02:00 scheduled run was disabled (this is the second budget window).
 - R3 DONE (commit 1d47827). R4+R5 DONE (commit dcebbbe, app v91 built in worktree docs/, o3_check 79/79). R6 e2e (Sonnet) in progress → tools/tests/o3_e2e.md. Then R7 summary.
+- R6 DONE (9/9 PASS, o3_e2e.md). R7 summary written: openings2/RESTRUCTURE_SUMMARY.md. FINISHED, waiting for user OK to merge+push (and Q3 answer).
 - Nothing is committed on main or pushed. Do NOT publish: the user approves the summary first.
 
 ## User answers (2026-11-22)
