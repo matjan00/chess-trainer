@@ -295,9 +295,9 @@
     const lv = Array.from({ length: 8 }, () => 0);
     for (const k of c.cards) lv[O2.srs.get(c, k.id)?.lv || 0]++;
     const mxl = Math.max(1, ...lv), o2d = H().progress.o2d || {}, days = [], t0 = new Date(O2.now());
-    for (let i = 13; i >= 0; i--) { const d = new Date(t0); d.setDate(d.getDate() - i); const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; days.push({ k, d, v: o2d[k] || null }); }
+    for (let i = 13; i >= 0; i--) { const d = new Date(t0); d.setDate(d.getDate() - i); const k = O2.dayPointKey(d.getTime()); days.push({ k, d, v: o2d[k] || null }); }
     const rev = days.reduce((a, x) => a + (x.v?.rev || 0), 0), wr = days.reduce((a, x) => a + (x.v?.wrong || 0), 0), mxd = Math.max(1, ...days.map(x => x.v?.rev || 0));
-    let streak = 0; { const d = new Date(t0), key = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; if (!o2d[key(d)]) d.setDate(d.getDate() - 1); while (o2d[key(d)]) { streak++; d.setDate(d.getDate() - 1); } }
+    let streak = 0; { const d = new Date(t0), key = x => O2.dayPointKey(x.getTime()); if (!o2d[key(d)]) d.setDate(d.getDate() - 1); while (o2d[key(d)]) { streak++; d.setDate(d.getDate() - 1); } }
     const training = `<div class="o2s-g2"><div class="card"><span class="eyebrow">Moves by level</span><div class="o2-lv">${lv.map((n, j) => `<div><span>${j ? 'L' + j : 'New'}</span><i style="width:${n / mxl * 100}%"></i><b>${n}</b></div>`).join('')}</div></div>
       <div class="card"><span class="eyebrow">Reviews per day (last 14 days, all courses)</span>
         <div class="o2s-days">${days.map(x => `<div title="${esc(x.k)}: ${x.v?.rev || 0}"><i style="height:${(x.v?.rev || 0) / mxd * 100}%"></i><span>${x.d.getDate()}</span></div>`).join('')}</div>

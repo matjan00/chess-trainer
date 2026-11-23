@@ -969,11 +969,11 @@ const RESUME_LABEL = { puzzles: 'Puzzles', drills: 'My mistakes', punish: 'Think
 function todayTasks() {
   const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
   const o2 = O2.dueSummary(), due = o2.n;
-  const reviewedToday = today('o2c').length;
+  const reviewedToday = O2.reviewedSince(sod);
   const train = T2.todayTasks().map(x => ({ ...x, go: () => { show('train'); x.go(); } }));
   if (train.length) train[train.length - 1].opt = true;
   return [
-    { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due · about ${o2.mins} min` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && (reviewedToday > 0 || Object.keys(progress.o2c).length > 0),
+    { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due · about ${o2.mins} min` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && (reviewedToday > 0 || O2.hasProgress()),
       go: () => { show('openings'); if (due) O2.startDaily(); else O2.show('home'); } },
     ...train,
   ];
@@ -1019,7 +1019,7 @@ function renderToday() {
   // what you did today: Train's daily totals (t2d) and the opening reviews
   const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
   const td = progress.t2d[dayKey(new Date(T2.now()))] || {};
-  const o2 = today('o2c').length;
+  const o2 = O2.reviewedSince(sod);
   const hist = Object.entries(progress.trh).sort(([a], [b]) => a.localeCompare(b)), ti = hist.findIndex(([k]) => k === dayKey());
   const rDiff = ti > 0 ? hist[ti][1].r - hist[ti - 1][1].r : null;
   const items = [

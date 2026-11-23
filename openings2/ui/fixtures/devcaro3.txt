@@ -1,0 +1,55 @@
+# COURSE devcaro3 | Dev Caro-Kann v3 | black
+sub: Small v3 Black course used only by the UI dev harness (trunks, branches, rules, triggers; not engine-checked)
+why: Lets the R4/R5 UI be tested: course tree, branch learn, unlocking, clue questions, rule cards, rule book.
+start: adv-main, cl-main
+idea: The light bishop comes out first | Before ...e6 shuts it in, the bishop on c8 goes to f5 or g4. [g:c8-f5] | fen=rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 1 4
+
+## CHAPTER adv | The Advance: 3.e5
+> White grabs space. You get the bishop out before ...e6, then hit the centre with ...c5.
+
+### LINE adv-main | Advance: 3...Bf5 and ...c5 | main | trunk
+> White pushes past you. Remember: bishop out first, then ...e6 and ...c5.
+1. e4 c6 {Prepares ...d5 with a pawn behind it. [g:c7-c6]} 2. d4 d5 {Hits the e4 pawn. [g:d5-e4]} 3. e5 Bf5! {The bishop comes out before ...e6 locks it in. [g:c8-f5]} 4. Nf3 e6 {Opens the road for the other bishop. [g:f8-b4]} 5. Be2 c5 {X: Nc6 | The knight blocks the c-pawn. You want ...c5 first ((5...Nc6 6.O-O)).} {Hit the base of the pawn chain. This is the pawn break of the Advance. [g:c5-d4] [r:d4]} 6. Be3 Nd7 {A: cxd4 | also fine} {Defends c5 and keeps an eye on e5. [g:d7-e5]} 7. O-O Ne7 {Heads for g6 or c6. [g:e7-g6]} 8. c3 Ng6 {P: Your plan: 1. ...Be7 and castle. 2. ...Qb6 to pressure b2 and d4. 3. Trade on d4 when it helps your pieces. [g:d8-b6]}
+
+### LINE adv-h4 | Advance: 4.h4 | side
+> White goes after your bishop at once. Remember: the bishop is on f5, so stop the pawn with ...h5.
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. h4 h5 {T: h-pawn | f5 h4 | Your bishop is on f5 and has no way back, so stop the pawn with ...h5.} {Stops the pawn: the bishop keeps f5. [g:h7-h5]} 5. c4 e6 {Solid: the bishop on f5 is safe now. [g:e7-e6]} 6. Nc3 Ne7 {Heads for g6 or c6. [g:g8-e7]}
+
+### LINE adv-bd3 | Advance: 4.Bd3 | side
+> White trades your bishop. Remember: take it, then play ...e6.
+1. e4 c6 2. d4 d5 3. e5 Bf5 4. Bd3 Bxd3 {T: trade-it | f5 d3 | The bishop on d3 hits your bishop, so take it and stay solid.} {Trade the good bishop only when it is hit like this. [g:f5-d3]} 5. Qxd3 e6 {Opens the road for the other bishop. [g:f8-b4]} 6. Nf3 c5 {Hit the base of the pawn chain. [g:c5-d4]}
+
+## CHAPTER cl | The Classical: 3.Nc3
+> White develops. Take on e4 and bring the bishop to f5, then keep it safe from the h-pawn.
+
+### LINE cl-main | Classical: 4...Bf5 5.Ng3 Bg6 | main | trunk
+> The oldest main line. Remember: when the h-pawn comes, answer with ...h6 (the bishop on g6 needs h7).
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 {Take: there is no good way to hold the pawn. [g:d5-e4]} 4. Nxe4 Bf5 {Develops and hits the knight. [g:f5-e4]} 5. Ng3 Bg6 {Back to safety; the bishop stays active. [g:f5-g6]} {? Why does the bishop go to g6 and not e6? | *It stays on the long diagonal | It protects the king | It attacks a3 || On g6 the bishop still looks at the queenside and cannot be hit by Nf4 easily.} 6. h4 h6 {T: h-pawn | g6 h4 | Your bishop is on g6 and needs h7 to escape, so play ...h6 (not ...h5).} {Gives the bishop a home on h7. [g:g6-h7]} 7. Nf3 Nd7 {Stops Ne5. [g:d7-e5]} 8. h5 Bh7 {T: h-pawn | h7 h5 | The pawn on h5 hits g6, so the bishop goes home to h7.} {P: Your plan: 1. ...Ngf6 and ...e6. 2. Castle short or long. 3. Break with ...c5 later. [g:h7-c2]}
+
+### LINE cl-bc4 | Classical: 6.Bc4 | side
+> White aims the bishop at f7. Remember: shut the diagonal with ...e6.
+1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. Bc4 e6 {T: f7-watch | c4 f7 | The bishop on c4 looks at f7, so shut the diagonal with ...e6.} {Solid: the diagonal is closed. [g:e7-e6]} 7. Nf3 Nf6 {Develops and hits e4 later. [g:g8-f6]} 8. O-O Bd6 {Bishop out, castle next. [g:f8-d6]}
+
+## CHAPTER exch | The Exchange: 3.exd5
+> A quiet line. Develop the pieces and use the open c-file.
+
+### LINE exch-main | Exchange: 3.exd5 cxd5 4.Bd3 | main | trunk
+> A quiet line. Remember: develop the knight to c6 and the bishop to g4.
+1. e4 c6 2. d4 d5 3. exd5 cxd5 {Take back with the pawn: now the c-file is open. [g:c6-d5]} 4. Bd3 Nc6 {Develops and hits d4. [g:c6-d4]} 5. c3 Nf6 {Another piece out. [g:f6-e4]} 6. Bf4 Bg4 {P: Your plan: 1. ...e6 and ...Bd6. 2. ...Qb6 against b2. 3. Minority attack with ...b5-b4. [g:g4-d1]}
+
+### LINE exch-c4 | Exchange: 4.c4 | side
+> White attacks d5 at once. Remember: develop, and keep d5 guarded.
+1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4 Nf6 {T: develop-first | f6 d5 | White hits d5, so develop a piece that guards it.} {Guards d5 and develops. [g:g8-f6]} 5. Nc3 e6 {Solid: d5 is guarded twice. [g:e7-e6]} 6. Nf3 Be7 {Bishop out, then castle. [g:f8-e7]}
+
+## CHAPTER odd | Other second moves | mixed
+> A few odds and ends that do not belong to one family.
+
+### LINE odd-nf3 | 2.Nf3: ...d5 and ...Bg4 | side
+> No central pawn: take the centre yourself, pin the knight.
+1. e4 c6 2. Nf3 d5 {Takes the centre. [g:d7-d5]} 3. Nc3 Bg4 {Pins the knight to the queen. [g:g4-f3]} 4. h3 Bxf3 {Take it before it goes away. [g:g4-f3]} 5. Qxf3 e6 {Solid. [g:e7-e6]}
+
+## RULES
+rule: h-pawn | h4 against your bishop | On f5 answer ...h5 so the pawn stops; on g6 answer ...h6, because the bishop needs h7 to escape.
+rule: f7-watch | A bishop looks at f7 | When White's bishop sits on c4, shut the diagonal with ...e6.
+rule: trade-it | Trade a bishop that is hit | When your bishop is attacked on f5 by a bishop, take it and stay solid.
+rule: develop-first | Develop to guard d5 | When White hits d5, bring a piece out that guards it before anything else.

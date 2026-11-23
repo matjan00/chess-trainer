@@ -104,6 +104,9 @@ Models actually used (user wants to save tokens): R1/R2/R4/R5/R6 Sonnet, R3 Opus
 
 ## STATUS (keep updated after every step; a fresh session resumes from here)
 - 2026-11-22 night: worktree C:\Users\mateu\chess-trainer-work\o3 (branch agent/o3, engine junction, cache copied). Spec §6 written. Next: R1.
+- 2026-11-22 ~01:00: R1 DONE (commit 2e5a73d on agent/o3, 34 tests OK). R2 writers (Sonnet x3, brief openings2/R2_BRIEF.md) in progress; R4 UI (Sonnet) in progress in parallel on fixture data. If resuming: check reports/<course>.o3.md exist and verify_course.py <course> --no-engine has 0 FAIL before R3.
+- R2 DONE for all 3 courses (commit f636a4f). R3 Opus reviewers x3 in progress (brief R3_BRIEF.md, reports/<course>.r3.md when done). R4 UI agent still running.
+- 2026-11-23 after 01:30: limit hit at ~00:50 and reset; the SAME session resumed the 4 agents, the 02:00 scheduled run was disabled (this is the second budget window).
 - Nothing is committed on main or pushed. Do NOT publish: the user approves the summary first.
 
 ## User answers (2026-11-22)

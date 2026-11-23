@@ -156,6 +156,9 @@ const O2 = (() => {
     c.order = c.chapters.flatMap(ch => ch.lines).filter(id => c.lineById.has(id));
     c.orderIdx = new Map(c.order.map((id, i) => [id, i]));
     c.chOf = new Map(); c.chapters.forEach(ch => ch.lines.forEach(id => c.chOf.set(id, ch)));
+    c.rulesById = new Map((c.rules || []).map(r => [r.id, r]));
+    // learning order of a v3 course (trunks first, branches after their parent); old courses: the order of the chapters
+    c.learnOrder = [...(c.learn || []), ...c.order].filter((id, i, a) => c.lineById.has(id) && a.indexOf(id) === i);
     c.seq = {}; c.children = new Map(); c.linesOf = new Map();
     for (const l of c.lines) {
       const chess = new Chess(), seq = [];
@@ -180,7 +183,14 @@ const O2 = (() => {
   }
 
   /* ---------------------------------------------------------------- SRS (BLUEPRINT section 4) */
-  const ckey = (c, id) => `${c.id}/${id}`;
+  /* v3 courses keep opening progress under their own keys (`caro@3/<id>`), so the old entries on every device are simply ignored (fresh start,
+     no rows deleted); old ver-2 courses keep the old keys. Day points / streak (o2d) restart the same way with a '3:' key prefix. */
+  const ckey = (c, id) => c.ver === 3 ? `${c.id}@3/${id}` : `${c.id}/${id}`;
+  const o2dKey = (t = now()) => (COURSES.some(c => c.ver === 3) ? '3:' : '') + dayKey(t);
+  const liveKey = k => COURSES.some(c => k.startsWith(c.ver === 3 ? `${c.id}@3/` : `${c.id}/`));
+  /** opening answers recorded since `t` (ms), current progress namespace only (the Today tab reads this, not progress.o2c) */
+  const reviewedSince = t => Object.entries(H.progress.o2c || {}).filter(([k, v]) => (v.t || 0) >= t && liveKey(k)).length;
+  const hasProgress = () => Object.keys(H.progress.o2c || {}).some(liveKey);
   const srsGet = (c, id) => H.progress.o2c[ckey(c, id)] || null;
   const isDue = s => !!s && s.due <= endOfDay();
   const isDifficult = s => !!s && ((s.w || 0) >= 2 || ((s.n || 0) >= 3 && (s.w || 0) / s.n >= 0.34));
@@ -236,7 +246,7 @@ const O2 = (() => {
     } finally { spreading = false; }
   }
   function dayAdd(d) {
-    const k = dayKey(), cur = H.progress.o2d[k] || {};
+    const k = o2dKey(), cur = H.progress.o2d[k] || {};
     const v = { rev: cur.rev || 0, new: cur.new || 0, wrong: cur.wrong || 0, ms: cur.ms || 0 };
     for (const [x, n] of Object.entries(d)) v[x] = (v[x] || 0) + n;
     put('o2d', k, v);
@@ -323,7 +333,23 @@ const O2 = (() => {
     for (const id of c.order) { const t = H.progress.o2l[ckey(c, id)]?.t || 0; if (t > last) last = t; }
     return { total: c.cards.length, fresh, learning, mature, due, last, learnedLines, lines: c.order.length };
   }
-  const nextLine = c => c.order.map(id => c.lineById.get(id)).find(l => !lineLearned(c, l)) || null;
+  /* Unlocking (v3 courses; BLUEPRINT/RESTRUCTURE section 6). A trunk is always open. A branch opens when every card of its parent line is in
+     box 2 or higher (the parent has had its first review). A branch that has a look-alike twin which is already learned opens only when that
+     twin is in box 3 or higher, so look-alikes are never learned in the same week (the parent is judged by the box-2 rule only). Box = card level.
+     Returns null (open, or already learned) or {kind, line, text}. A locked line can still be learned with "Learn anyway". */
+  const minBox = (c, l) => l.mine.length ? Math.min(...l.mine.map(s => srsGet(c, s.id)?.lv || 0)) : 0;
+  function lockInfo(c, l) {
+    if (c.ver !== 3 || l.trunk || lineLearned(c, l)) return null;
+    const par = l.parent && c.lineById.get(l.parent);
+    if (par && (!lineLearned(c, par) || minBox(c, par) < 2)) return { kind: 'parent', line: par, text: `Opens when ${par.title} has had its first review` };
+    for (const tid of l.twins || []) {
+      const t = tid !== l.parent && c.lineById.get(tid);
+      if (t && lineLearned(c, t) && minBox(c, t) < 3) return { kind: 'twin', line: t, text: `Opens when ${t.title} is solid — it looks a lot like it` };
+    }
+    return null;
+  }
+  /** "Next up": the first open, unlearned line of course.learn (old courses: of the chapter order) */
+  const nextLine = c => c.learnOrder.map(id => c.lineById.get(id)).find(l => !lineLearned(c, l) && !lockInfo(c, l)) || null;
   function dueCards(cs = COURSES) {
     spreadLapses();
     const out = [];
@@ -364,8 +390,8 @@ const O2 = (() => {
   }
   function streak() {
     const days = H.progress.o2d; let n = 0; const d = new Date(now());
-    if (!days[dayKey(d.getTime())]) d.setDate(d.getDate() - 1);
-    while (days[dayKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
+    if (!days[o2dKey(d.getTime())]) d.setDate(d.getDate() - 1);
+    while (days[o2dKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
     return n;
   }
 
@@ -575,23 +601,43 @@ const O2 = (() => {
     const n = Math.max(2, Math.round(1 / r));
     return n > 500 ? 'Rare at your level' : `You'll meet this in about 1 game in ${n}`;
   }
+  /** the line's tree for a chapter: trunk first, then branches under their parent (a branch whose parent is in another chapter stands at the top) */
+  function chapterTree(c, ch) {
+    const ls = ch.lines.map(id => c.lineById.get(id)).filter(Boolean), inCh = new Set(ls.map(l => l.id));
+    const rank = l => c.learnOrder.indexOf(l.id);
+    const kids = new Map(), roots = [];
+    for (const l of ls) { if (l.parent && inCh.has(l.parent) && l.parent !== l.id) { if (!kids.has(l.parent)) kids.set(l.parent, []); kids.get(l.parent).push(l); } else roots.push(l); }
+    roots.sort((a, b) => (b.trunk ? 1 : 0) - (a.trunk ? 1 : 0) || rank(a) - rank(b));
+    const out = [], seen = new Set();
+    const walk = (l, depth) => { if (seen.has(l.id)) return; seen.add(l.id); out.push({ l, depth }); (kids.get(l.id) || []).sort((a, b) => rank(a) - rank(b)).forEach(k => walk(k, depth + 1)); };
+    roots.forEach(l => walk(l, 0));
+    ls.forEach(l => walk(l, 0));
+    return out;
+  }
+  /** "leaves <parent> at <move>" for a branch */
+  function leavesText(c, l) {
+    const par = l.parent && c.lineById.get(l.parent), s = l.split != null ? c.seq[l.id][l.split] : null;
+    return par && s ? `leaves ${par.title} at ${moveLabel(s.ply, s.san)}` : '';
+  }
   function tabLearn(c) {
     const desk = matchMedia('(min-width: 900px)').matches;
     const nl = nextLine(c);
     return c.chapters.map(ch => {
-      const ls = ch.lines.map(id => c.lineById.get(id)).filter(Boolean);
+      const tree = chapterTree(c, ch), ls = tree.map(x => x.l);
       const done = ls.filter(l => lineLearned(c, l)).length;
       const open = H.store.get(`o2ch.${c.id}.${ch.id}`, true);
       return `<details class="o2-chap" data-ch="${esc(ch.id)}"${open ? ' open' : ''}><summary><span class="t">${esc(ch.title)}</span><span class="small muted">${done}/${ls.length} learned</span>
         <span class="o2-chbar"><i style="width:${ls.length ? done / ls.length * 100 : 0}%"></i></span></summary>
         ${ch.intro ? `<p class="small muted o2-chintro">${rich(ch.intro)}</p>` : ''}
-        <div class="o2-lines">${ls.map(l => {
-          const i = lineInfo(c, l), r = reachText(l.reach);
-          return `<div class="o2-line lv${i.badge}${nl === l ? ' next' : ''}">
+        <div class="o2-lines">${tree.map(({ l, depth }) => {
+          const i = lineInfo(c, l), r = reachText(l.reach), lock = lockInfo(c, l), lv = leavesText(c, l);
+          return `<div class="o2-line lv${i.badge}${nl === l ? ' next' : ''}${lock ? ' locked' : ''}${depth ? ' o2-sub' : ''}" style="--d:${Math.min(depth, 3)}" data-line="${esc(l.id)}">
             ${desk ? `<div class="o2-mini" data-mini="${esc(l.endFen)}" data-orient="${c.side}"></div>` : ''}
-            <div class="o2-lmain"><div class="o2-lt"><span class="medal-dot" title="${LEVEL_NAME[i.badge]}">${i.badge ? (i.badge >= 2 ? '★' : '·') : ''}</span><span class="t">${esc(l.title)}</span></div>
+            <div class="o2-lmain"><div class="o2-lt"><span class="medal-dot" title="${LEVEL_NAME[i.badge]}">${i.badge ? (i.badge >= 2 ? '★' : '·') : ''}</span><span class="t">${esc(l.title)}</span>${l.trunk ? '<span class="o2-trunk">Main line</span>' : ''}${nl === l ? '<span class="o2-nextup">Next up</span>' : ''}</div>
+              ${lv ? `<div class="small muted o2-leaves">${esc(lv)}</div>` : ''}
+              ${lock ? `<div class="small o2-lock">🔒 ${esc(lock.text)}</div>` : ''}
               <div class="o2-lmeta"><span class="o2-kind ${l.kind}">${KIND[l.kind] || esc(l.kind)}</span><span class="status ${i.state}">${STATE[i.state]}${i.state === 'due' ? ` · ${i.due}` : ''}</span>${i.learned && i.next != null ? `<span class="o2-next${i.due ? ' due' : ''}">${nextText(i.next)}</span><span class="o2-dots" title="Box ${i.minLv} of ${MAXLV}" aria-label="Lowest box ${i.minLv} of ${MAXLV}">${Array.from({ length: MAXLV }, (_, j) => `<i${j < i.minLv ? ' class="on"' : ''}></i>`).join('')}</span>` : ''}<span class="small muted">${plural(i.cards, 'move')}</span>${r ? `<span class="small muted">${r}</span>` : ''}</div></div>
-            <div class="o2-lbtn">${!i.learned ? `<button class="btn primary" data-act="learn" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Learn</button>`
+            <div class="o2-lbtn">${!i.learned ? (lock ? `<button class="btn" data-act="learn" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Learn anyway</button>` : `<button class="btn primary" data-act="learn" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Learn</button>`)
               : i.due ? `<button class="btn primary" data-act="review-line" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Review</button>`
               : `<button class="btn" data-act="practise-line" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Practise</button>`}
               <button class="btn" data-act="study" data-c="${esc(c.id)}" data-l="${esc(l.id)}">Study</button></div></div>`;
@@ -621,12 +667,24 @@ const O2 = (() => {
         <p class="small muted">A move climbs one level for every right answer: back after 1, 3, 7, 14, 30, 90 and 180 days. Level 4 and up is "mature". A miss sends it two levels down; it comes back with its whole line from move 1, at most ${LAPSE_CAP} missed moves a day.</p></div>
     </div>`;
   }
+  /** Rule book (v3 courses): every rule with the positions it decides, each as a mini board with the move played */
+  function ruleBook(c) {
+    const rules = (c.rules || []).filter(r => r && r.id);
+    if (!rules.length) return '';
+    return `<h3 class="o2-rbh">Rule book</h3><p class="small muted">The few rules that decide your move when the position changes. Each case shows the position, the move you play and where to look.</p>
+      <div class="o2-rules">${rules.map(r => {
+        const cases = (r.cases || []).map(k => { const l = c.lineById.get(k.line), s = l && c.seq[l.id].find(x => x.id === k.node); return s ? { l, s } : null; }).filter(Boolean);
+        return `<div class="card o2-rule" data-rule="${esc(r.id)}"><span class="eyebrow">Rule</span><h3>${esc(r.name)}</h3><p>${rich(r.text)}</p>
+          ${cases.length ? `<div class="o2-cases">${cases.map(({ l, s }) => `<div class="o2-case"><div class="o2-mini2" data-mini="${esc(s.fen)}" data-orient="${c.side}" data-shapes="${esc([`b:${s.from}-${s.to}`, ...(s.n.trig?.clue || []).filter(q => SQRE.test(q)).map(q => `g:${q}`)].join(' '))}"></div>
+            <div class="small"><b>${esc(moveLabel(s.ply, s.san))}</b><br><span class="muted">${esc(l.title)}</span>${s.n.trig?.text ? `<br>${rich(s.n.trig.text)}` : ''}</div></div>`).join('')}</div>` : '<p class="small muted">No position uses this rule yet.</p>'}</div>`;
+      }).join('')}</div>`;
+  }
   function tabIdeas(c) {
-    const ideas = c.ideas || [], st = c.structures || [];
-    if (!ideas.length && !st.length) return '<p class="muted">No ideas for this course yet.</p>';
+    const ideas = c.ideas || [], st = c.structures || [], rb = ruleBook(c);
+    if (!ideas.length && !st.length && !rb) return '<p class="muted">No ideas for this course yet.</p>';
     const card = (t, text, fen, sh, eyebrow) => `<div class="card o2-idea">${fen ? `<div class="o2-ideab" data-mini="${esc(fen)}" data-orient="${c.side}" data-shapes="${esc((sh || []).join(' '))}"></div>` : ''}
       <div><span class="eyebrow">${eyebrow}</span><h3>${esc(t)}</h3><p>${rich(text)}</p></div></div>`;
-    return `<div class="o2-ideas">${ideas.map(x => card(x.t, x.text, x.fen, x.shapes, 'Idea')).join('')}${st.map(x => card(x.t, x.text, x.fen, x.shapes, 'Pawn structure')).join('')}</div>`;
+    return `<div class="o2-ideas">${ideas.map(x => card(x.t, x.text, x.fen, x.shapes, 'Idea')).join('')}${st.map(x => card(x.t, x.text, x.fen, x.shapes, 'Pawn structure')).join('')}</div>${rb}`;
   }
 
   /* ================================================================ C. trainer */
@@ -638,7 +696,7 @@ const O2 = (() => {
     if (!H.store.get('o2fromstart.v2', false)) { H.store.set('o2fromstart.v2', true); if (H.store.get('o2fromstart', null) === false) H.store.set('o2fromstart', true); }
     return H.store.get('o2fromstart', true);
   }
-  function stopPlayer() { P.gen++; P.expect = null; P.cont = null; closeMenu(); }
+  function stopPlayer() { P.gen++; P.expect = null; P.cont = null; P.q1 = null; P.q2 = null; closeMenu(); }
   function begin(c, mode, back) {
     stopPlayer();
     const g = P.gen;
@@ -779,6 +837,80 @@ const O2 = (() => {
     setTimeout(draw, 260);
     e.onWrong?.(mv.san, e);
   }
+  /* ---- trigger questions (v3): Q1 "What changed? Tap where to look" and Q2 "Which rule?". Neither is scored, a wrong answer only shows the answer. */
+  const SQRE = /^[a-h][1-8]$/;
+  const circles = sqs => (sqs || []).filter(q => SQRE.test(q)).map(q => ({ orig: q, brush: 'green' }));
+  const shuffled = a => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+  /** the board square under a pointer position (the board element's box + the current orientation) */
+  function squareAt(rect, x, y) {
+    if (!rect || !rect.width || !rect.height) return null;
+    const fx = Math.floor((x - rect.left) / rect.width * 8), fy = Math.floor((y - rect.top) / rect.height * 8);
+    if (fx < 0 || fx > 7 || fy < 0 || fy > 7) return null;
+    const black = orientation() === 'black', f = black ? 7 - fx : fx, rk = black ? fy : 7 - fy;
+    return 'abcdefgh'[f] + (rk + 1);
+  }
+  /** a square was tapped while Q1 is open: any clue square is right; anything else shows the clue (no penalty) */
+  function tapSquare(sq) {
+    const q = P.q1; if (!q || !sq) return;
+    P.q1 = null;
+    q.res({ ok: q.clue.includes(sq), tapped: sq });
+  }
+  /** Q1. Returns {ok, shown}. withRule: go on with Q2 (learn); review asks only Q1. */
+  async function clueQuestion(c, s, { withRule = true } = {}) {
+    const tg = s.n.trig; if (!tg) return null;
+    const clue = (tg.clue || []).filter(q => SQRE.test(q)), rule = c.rulesById.get(tg.rule);
+    P.shapes = []; P.view = null; draw();
+    fb(`<span class="eyebrow">Question 1 · What changed?</span><p><b>Tap the square where you should look.</b></p><p class="small muted">Tap it on the board. A wrong tap costs nothing: the right squares are shown.</p>`, 'plan');
+    cap(`<span class="eyebrow">What changed?</span><p class="o2-capn"><b>Tap the square where you should look.</b></p>`);
+    actions('q1');
+    const r = await new Promise(res => { P.q1 = { clue, res }; });
+    P.q1 = null;
+    P.shapes = circles(clue); draw();
+    if (r.ok) {
+      play('right');
+      fb(`<span class="eyebrow">✓ Yes, look at ${esc(clue.join(' / '))}</span><p>${rich(tg.text)}</p>`, 'right');
+      cap(); actions('none'); await wait(withRule ? 700 : 1400);
+    } else {
+      play('wrong');
+      fb(`<span class="eyebrow" style="color:var(--blunder)">${r.shown ? 'Look here' : `Not ${esc(r.tapped || 'that square')}: look here`}</span><p>The circled ${clue.length > 1 ? 'squares are' : 'square is'} the clue. ${rich(tg.text)}</p>`, 'wrong');
+      cap(); fbIntoView();
+      await cont();
+    }
+    if (withRule && rule) await ruleQuestion(c, tg, rule);
+    cap(); P.shapes = []; draw();
+    return r;
+  }
+  /** Q2: the rule name and the names of trig.not, shuffled */
+  async function ruleQuestion(c, tg, rule) {
+    const ids = shuffled([rule.id, ...(tg.not || []).filter(id => id !== rule.id && c.rulesById.has(id))].filter((id, i, a) => a.indexOf(id) === i));
+    if (ids.length < 2) { fb(`<span class="eyebrow">The rule</span><div class="o2-mv"><b>${esc(rule.name)}</b></div><p>${rich(rule.text)}</p><p>${rich(tg.text)}</p>`, 'plan'); await cont(); return; }
+    const box = $('#o2-panel');
+    fb(`<span class="eyebrow">Question 2 · Which rule?</span><p><b>Which rule decides your move here?</b></p>`, 'plan');
+    box.innerHTML = `<div class="card o2-quiz"><div class="quiz-opts">${ids.map((id, i) => `<button data-q2="${i}">${esc(c.rulesById.get(id).name)}</button>`).join('')}</div></div>`;
+    actions('none');
+    const pick = await new Promise(res => { P.q2 = { ids, res }; });
+    P.q2 = null;
+    const ok = ids[pick] === rule.id;
+    box.querySelectorAll('[data-q2]').forEach(x => { x.disabled = true; if (ids[+x.dataset.q2] === rule.id) x.classList.add('right'); });
+    if (!ok) box.querySelectorAll('[data-q2]')[pick]?.classList.add('wrong');
+    play(ok ? 'right' : 'wrong');
+    fb(`<span class="eyebrow"${ok ? '' : ' style="color:var(--blunder)"'}>${ok ? '✓ Right, the rule is' : 'Not quite. The rule is'}</span><div class="o2-mv"><b>${esc(rule.name)}</b></div><p>${rich(rule.text)}</p><p>${rich(tg.text)}</p>`, ok ? 'right' : 'wrong');
+    fbIntoView();
+    await cont();
+    box.innerHTML = '';
+  }
+  /** review: ask "what changed?" before this move? (it has a trigger and it is the card's first review or it was missed last time) */
+  const reviewAsksClue = (s, sr) => !!(s.n.trig && sr && ((sr.n || 0) === 0 || isLapse(sr)));
+  /** the rule card for a wrong move that is the move of a look-alike (twin) line: rule + text + both positions as mini boards "here -> X / there -> Y" */
+  function ruleCardHtml(c, s, mix, wrongSan) {
+    const tg = s.n.trig, rule = tg && c.rulesById.get(tg.rule); if (!rule) return '';
+    const clue = (tg.clue || []).filter(q => SQRE.test(q)).map(q => `g:${q}`);
+    const here = [`b:${s.from}-${s.to}`, ...clue].join(' '), there = [`r:${mix.s2.from}-${mix.s2.to}`, ...(mix.s2.n.trig?.clue || []).filter(q => SQRE.test(q)).map(q => `g:${q}`)].join(' ');
+    return `<div class="o2-vs o2-rulecard"><span class="eyebrow"><span class="o2-san">${esc(wrongSan)}</span> is the move from another line</span>
+      <p><b>${esc(rule.name)}</b>: ${rich(rule.text)}</p><p>${rich(tg.text)}</p>
+      <div class="o2-vsb"><div><div class="o2-mini2" data-mini="${esc(s.fen)}" data-orient="${c.side}" data-shapes="${esc(here)}"></div><div class="small">here → <b>${esc(moveLabel(s.ply, s.san))}</b></div></div>
+      <div><div class="o2-mini2" data-mini="${esc(mix.s2.fen)}" data-orient="${c.side}" data-shapes="${esc(there)}"></div><div class="small">there → <b>${esc(moveLabel(mix.s2.ply, mix.s2.san))}</b><br><span class="muted">${esc(mix.l2.title)}</span></div></div></div></div>`;
+  }
   function cont(label = 'Continue') {
     return new Promise(resolve => { P.cont = resolve; actions('cont', label); });
   }
@@ -810,6 +942,7 @@ const O2 = (() => {
   function actions(kind, label) {
     const b = [];
     if (kind === 'ask') b.push(['hint', 'Hint', 'H'], ['showmv', 'Show', 'S']);
+    if (kind === 'q1') b.push(['q1show', 'Show me', '']);
     if (kind === 'cont') b.push(['cont', label || 'Continue', 'Space', true]);
     if (kind === 'study') b.push(['prev', '◀ Back', '←'], ['next', 'Next ▶', '→', true]);
     if (kind === 'tree') b.push(['tback', '◀ Back', '←']);
@@ -887,6 +1020,21 @@ const O2 = (() => {
   }
 
   /* ---- learn mode (per line): walk through, then from memory */
+  /** Branch learn: the pause after the shared start. Plays the opponent's split move (if it is theirs) with its squares circled, shows
+      "Same as <parent> until here..." and the parent's position as a mini board. Returns true when the split move was played here. */
+  async function branchPause(c, l, par, si, seq) {
+    const s = seq[si], ps = c.seq[par.id][si], opp = c.side === 'white' ? 'Black' : 'White';
+    let played = false;
+    if (!s.n.mine) { await wait(300); playStep(s); played = true; if (s.n.c) addNote(s); P.shapes = circles([s.from, s.to]); draw(); }
+    const pm = ps ? moveLabel(ps.ply, ps.san) : '', what = `${s.n.mine ? 'you play' : opp + ' plays'} <b>${esc(moveLabel(s.ply, s.san))}</b>${pm ? ` instead of <b>${esc(pm)}</b>` : ''}`;
+    const mini = ps ? `<p class="small muted">${esc(par.title)}, after ${esc(pm)}:</p><div class="o2-mini2" data-mini="${esc(ps.after)}" data-orient="${c.side}" data-shapes="${esc(circles([ps.from, ps.to]).map(x => 'g:' + x.orig).join(' '))}"></div>` : '';
+    fb(`<span class="eyebrow">Same as ${esc(par.title)} until here</span><p>Now ${what}.</p>${mini}`, 'plan');
+    cap(`<span class="eyebrow">Same as ${esc(par.title)} until here</span><p class="o2-capn">Now ${what}.</p>`);
+    clearMinis(); drawMinis($('#o2-fb'));
+    await cont();
+    cap(); P.shapes = []; draw();
+    return played;
+  }
   function startLearn(c, l) {
     run(async () => {
       const chk = begin(c, 'learn', () => show('course', c.id));
@@ -901,7 +1049,13 @@ const O2 = (() => {
       fb(`<span class="eyebrow">Step 1 of 2 · walk through</span><p>${rich(l.intro || '')}</p><p class="small muted">${relearn ? 'You know these moves already: this is a refresher and does not change your reviews.' : `${plural(fresh.size, 'new move')} to learn. Follow the blue arrow and read why each move is played.`}</p>`);
       await cont('Start'); chk();
       let k = 0;
-      for (const s of seq) {
+      // a branch: the start it shares with its parent plays by itself (fast, no pauses), then a pause card at the split
+      const par = l.parent && c.lineById.get(l.parent), split = l.split || 0;
+      const branch = !!par && split > 0 && seq.slice(0, split).every(s => !s.n.mine || !fresh.has(s.id));
+      for (let si = 0; si < seq.length; si++) {
+        const s = seq[si];
+        if (branch && si < split) { await wait(140); chk(); playStep(s); continue; }
+        if (par && split > 0 && si === split) { const played = await branchPause(c, l, par, si, seq); chk(); if (played) continue; }
         if (!s.n.mine) {
           await wait(550); chk();
           playStep(s, { shapes: shapes(s.n.shapes) });
@@ -914,6 +1068,7 @@ const O2 = (() => {
           fb(`<span class="eyebrow">You know this one</span><div class="o2-mv"><b>${esc(moveLabel(s.ply, s.san))}</b></div><p class="small muted">Played for you: it is in a line you already learned. Tap it in the notes to read why.</p>`);
           continue;
         }
+        if (s.n.trig) { await clueQuestion(c, s, { withRule: true }); chk(); }
         k++; head(`${label} · move ${k} of ${fresh.size}`, l.title, k - 1, fresh.size * 2);
         fb(commentHtml(s, { eyebrow: 'Your move · play the blue arrow' }) + xNotes(s));
         P.shapes = dedupe([...moveShapes(s), ...shapes(s.n.shapes), ...xShapes(s)]);
@@ -927,7 +1082,7 @@ const O2 = (() => {
         play('right');
         P.shapes = shapes(s.n.shapes); P.hist[P.hist.length - 1].shapes = P.shapes; draw();
         addNote(s);
-        { const i0 = seq.indexOf(s), sis = sisters(c, l, i0).filter(x => lineLearned(c, x.l2)); fb(commentHtml(s, { eyebrow: '✓ Right', prefix: '' }) + (sis[0] ? sisterHtml(sis[0]) : ''), 'right'); if (sis[0]) { await wait(1200); chk(); } }
+        { const i0 = si, sis = sisters(c, l, i0).filter(x => lineLearned(c, x.l2)); fb(commentHtml(s, { eyebrow: '✓ Right', prefix: '' }) + (sis[0] ? sisterHtml(sis[0]) : ''), 'right'); if (sis[0]) { await wait(1200); chk(); } }
         if (s.n.plan) {
           await wait(500); chk();
           fb(planHtml(s), 'plan'); P.shapes = shapes(s.n.plan.shapes); draw();
@@ -1049,7 +1204,7 @@ const O2 = (() => {
       const groups = buildGroups(batch);
       const total = groups.reduce((s, g) => s + g.ids.size, 0);
       const S = { asked: 0, ok: 0, wrong: [], answered: new Set(), up: 0, stay: 0, back: 0 };
-      const notes = new Map();
+      const notes = new Map(), q1Lines = new Set();   // q1Lines: lines that already had their "what changed?" question in this run (at most one each)
       let qn = 0;
       if (!total) { if (onDone) return onDone(); fb('<p>Nothing to review right now.</p>'); actions('none'); return; }
       for (let gi = 0; gi < groups.length; gi++) {
@@ -1125,6 +1280,9 @@ const O2 = (() => {
           }
           P.cont = null; wake = null; cap();     // no Skip/Continue left over once the question is on the board
           head(`${label} · move ${Math.min(qn + 1, total)} of ${total}`, $('#o2-title').textContent, qn, total);
+          // a trigger: on the card's first review, or after a miss, "what changed?" comes before the move (at most once per line and run)
+          { const sr0 = srsGet(c, s.id), qk = c.id + '/' + g.line.id;
+            if (reviewAsksClue(s, sr0) && !practice && !g.again && !q1Lines.has(qk)) { q1Lines.add(qk); await clueQuestion(c, s, { withRule: false }); chk(); } }
           const sis = sisters(c, g.line, i);
           fb(`<span class="eyebrow">Your move</span><p>Play the course move${g.again ? ' (you missed it before)' : ''}.</p>${signHtml(signpost(c, g.line, i))}`);
           P.shapes = []; draw();
@@ -1134,7 +1292,8 @@ const O2 = (() => {
               const x = xs.find(x => norm(x.san) === norm(san));
               const mix = sis.find(y => norm(y.s2.san) === norm(san));
               P.shapes = dedupe([...moveShapes(s), ...shapes(s.n.shapes)]); draw();
-              fb(`<span class="eyebrow" style="color:var(--blunder)">${x ? `Don't play <span class="o2-san">${esc(san)}</span>` : `<span class="o2-san">${esc(san)}</span> is not the course move`}</span>${x ? `<p>${rich(x.why)}</p>` : ''}` + (mix ? sisterHtml(mix, san) : '') + commentHtml(s, { eyebrow: 'The course move' }) + '<p class="small muted">Play the arrow move to go on.</p>', 'wrong');
+              fb(`<span class="eyebrow" style="color:var(--blunder)">${x ? `Don't play <span class="o2-san">${esc(san)}</span>` : `<span class="o2-san">${esc(san)}</span> is not the course move`}</span>${x ? `<p>${rich(x.why)}</p>` : ''}` + (mix ? (ruleCardHtml(c, s, mix, san) || sisterHtml(mix, san)) : '') + commentHtml(s, { eyebrow: 'The course move' }) + '<p class="small muted">Play the arrow move to go on.</p>', 'wrong');
+              if (mix) { clearMinis(); drawMinis($('#o2-fb')); }
               fbIntoView();
             },
           }); chk();
@@ -1290,6 +1449,7 @@ const O2 = (() => {
       if (a === 'hint') hint(false);
       if (a === 'showmv') hint(true);
       if (a === 'cont') doCont();
+      if (a === 'q1show' && P.q1) { const q = P.q1; P.q1 = null; q.res({ ok: false, shown: true }); }
       if (a === 'prev') studyStep(-1);
       if (a === 'next') studyStep(1);
       if (a === 'tback') { if (P.tpath.length) { P.tpath.pop(); treeRender(); } }
@@ -1297,6 +1457,8 @@ const O2 = (() => {
       if (a === 'more') openMenu();
       return;
     }
+    const q2 = t.closest('[data-q2]'); if (q2) { if (P.q2) { const r = P.q2.res; P.q2 = null; r(+q2.dataset.q2); } return; }
+    if (P.q1 && boardTap(e)) return;
     const mi = t.closest('[data-menu]'); if (mi) return menuAction(mi.dataset.menu);
     if (!t.closest('#o2-menu')) closeMenu();
     const chip = t.closest('.o2-chip');
@@ -1339,6 +1501,13 @@ const O2 = (() => {
       case 'tree': if (c) { curCourse = c; openTree(c, []); } return;
     }
   }
+  /** Q1: a tap on the board. Handled on pointerdown (phones: chessground cancels touchstart on a board that cannot move, so no click follows) and on click. */
+  function boardTap(e) {
+    const bd = e.target?.closest?.('cg-board'); if (!bd) return false;
+    tapSquare(squareAt(bd.getBoundingClientRect?.(), e.clientX, e.clientY));
+    return true;
+  }
+  function onPointer(e) { if (P.q1) boardTap(e); }
   function onKey(e) {
     if (!ROOT || ROOT.offsetParent === null || $('#o2-player').hidden) return;
     if (e.target.closest?.('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -1383,6 +1552,7 @@ const O2 = (() => {
     if (!ROOT.dataset.o2) {
       ROOT.dataset.o2 = '1';
       ROOT.addEventListener('click', onClick);
+      ROOT.addEventListener('pointerdown', onPointer);
       ROOT.addEventListener('toggle', onToggle, true);
       ROOT.addEventListener('change', onChange);
       document.addEventListener('keydown', onKey);
@@ -1395,9 +1565,9 @@ const O2 = (() => {
     courses: () => COURSES,
     addSection(s) { sections.push(s); if (screen === 'course') renderCourse(curCourse, true); },
     addHomeBlock(fn) { homeBlocks.push(fn); if (screen === 'home' && ROOT) renderHome(); },
-    playScript, openTree, startLearn, startStudy, reviewCourse,
-    forecast, intervalText,
-    srs: { isLapse, LAPSE_CAP, DAY_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
+    squareAt, tapSquare, playScript, openTree, startLearn, startStudy, reviewCourse,
+    forecast, intervalText, dayPointKey: o2dKey, reviewedSince, hasProgress,
+    srs: { reviewAsksClue, lockInfo, minBox, ruleCardHtml, isLapse, LAPSE_CAP, DAY_CAP, spread: spreadLapses, lapsesByDay, sisters, signpost, get: srsGet, answer: srsAnswer, learn: srsLearn, isDue, isDifficult, dueCards, lineInfo, courseInfo, nextLine, IV, MATURE, BACKLOG, note: srsNote, pickDays, resetLoad: loadReset },
     rich, toast,
     get hooks() { return H; },
   };
