@@ -964,18 +964,44 @@ function resumeLast(last) {
   else { show('train'); T2.show('home'); }
 }
 const RESUME_LABEL = { puzzles: 'Puzzles', drills: 'My mistakes', punish: 'Think first', check: 'Think first', convert: 'Win the won game', tech: 'Win the won game', ess: 'Essential endgames', egown: 'Essential endgames' };
-// Today's list: the Openings review plus the Train tab's daily blocks (T2.todayTasks). The lesson or play-out of the day is
-// optional ("one more thing"), so the day counts as complete after the other 4 (the phone reminders read that count).
+// Today's list, in the order the user asked for (2026-11-26): 1 Opening reviews · 2 Your games (key moments of your newest
+// unreviewed game, then your own-game Train cards) · 3 Puzzles (missed ones back + new) · 4 Lesson reviews. The lesson or
+// play-out of the day is optional ("one more thing"), so the day counts as complete after the other 4 (the phone reminders read that count).
+// Think first (Safe or blunder? / Punish it or not?) is no longer part of the day.
+function gameTask() {
+  const g = G2.nextToReview(), did = G2.reviewedToday();
+  const n = g ? G2.facts(g).moments.length : 0;
+  return { g, did, todo: !did && !!g, n, mins: !did && g ? Math.max(2, n + 1) : 0 };
+}
+const goHome = () => { O2.show('home'); T2.show('home'); show('today'); };
+// step 2 on its own or inside the session: the game review (when one is waiting), then Your mistakes, then onDone
+function startGames(onDone = goHome, { pre = [], short = false } = {}) {
+  const tp = T2.dailyPlan(), gt = gameTask();
+  const after = () => { show('train'); T2.runDaily(short ? ['mine'] : null, { session: true, pre: [...pre, 'Game review'], onDone }); };
+  const rest = () => { const p = T2.dailyPlan(); if (short ? p.mineDone : p.allDone) onDone(); else after(); };
+  if (gt.todo) {
+    const nx = !tp.mineDone ? 'Next: Your mistakes' : short ? 'Done' : 'Next: Puzzles';
+    show('games'); G2.open(gt.g, { mode: 'review', session: { next: nx, onDone: rest, onBack: goHome } });
+  } else rest();
+}
 function todayTasks() {
-  const sod = startOfDay(), today = kind => Object.values(progress[kind]).filter(v => (v.t || 0) >= sod);
+  const sod = startOfDay();
   const o2 = O2.dueSummary(), due = o2.n;
   const reviewedToday = O2.reviewedSince(sod);
-  const train = T2.todayTasks().map(x => ({ ...x, go: () => { show('train'); x.go(); } }));
-  if (train.length) train[train.length - 1].opt = true;
+  const tt = T2.todayTasks(), by = id => tt.find(x => x.id === id);
+  const wrap = x => ({ ...x, go: () => { show('train'); x.go(); } });
+  const gt = gameTask(), mine = by('mine'), tp = T2.dailyPlan();
+  const gameCt = gt.todo ? `Your game vs ${gt.g.opp}: ${gt.n} key moment${gt.n === 1 ? '' : 's'}` : gt.did ? `${gt.did} game${gt.did === 1 ? '' : 's'} reviewed today` : 'No new game to review';
+  const minesCt = tp.mineN ? `${tp.mineN} position${tp.mineN === 1 ? '' : 's'} from your games` : '';
+  const gMins = gt.mins + (tp.mineDone ? 0 : tp.mineMins);
   return [
     { nm: 'Opening reviews', ct: due ? `Daily review: ${due} due · about ${o2.mins} min` : reviewedToday ? `${reviewedToday} reviewed today` : 'Nothing due. Learn a new line?', done: !due && (reviewedToday > 0 || O2.hasProgress()),
       go: () => { show('openings'); if (due) O2.startDaily(); else O2.show('home'); } },
-    ...train,
+    { nm: 'Your games', ct: [gameCt, minesCt].filter(Boolean).join(' · ') + (gMins ? ` · about ${gMins} min` : ''), done: !gt.todo && mine.done, mins: gMins,
+      go: () => { if (!gt.todo && mine.done) { show('games'); G2.show('list'); } else startGames(goHome, { short: true }); } },
+    wrap(by('puz')),
+    wrap(by('rev')),
+    { ...wrap(by('lesson')), opt: true },
   ];
 }
 function renderToday() {
@@ -994,12 +1020,11 @@ function renderToday() {
   $('#today-streak').textContent = `${doneCount}/${need.length} done`;
   $('#today-lead').textContent = `${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}${streak ? ` · ${streak}-day training streak` : ''}`;
   // one Start button for the whole session, and a short day for busy days
-  const o2s = O2.dueSummary(), tp = T2.dailyPlan();
-  const revMins = tp.revDone ? 0 : Math.max(1, Math.round(tp.revN * 25 / 60));
-  const fullMins = (o2s.n ? o2s.mins : 0) + (tp.allDone ? 0 : tp.mins), shortMins = (o2s.n ? o2s.mins : 0) + revMins;
+  const o2s = O2.dueSummary(), tp = T2.dailyPlan(), gt = gameTask();
+  const fullMins = (o2s.n ? o2s.mins : 0) + gt.mins + (tp.allDone ? 0 : tp.mins), shortMins = (o2s.n ? o2s.mins : 0) + gt.mins + (tp.mineDone ? 0 : tp.mineMins);
   const shortUseful = !all && shortMins > 0 && shortMins < fullMins;
   $('#today-go').innerHTML = all ? '' : `<button class="btn primary" id="today-start">${doneCount ? 'Continue the session' : 'Start the session'}</button>
-    <span class="small">about ${Math.max(1, fullMins)} min${shortUseful ? ` · <button class="linkbtn" id="today-short">Short day: reviews only (about ${shortMins} min)</button>` : ''}</span>`;
+    <span class="small">about ${Math.max(1, fullMins)} min${shortUseful ? ` · <button class="linkbtn" id="today-short">Short day: openings + your games (about ${shortMins} min)</button>` : ''}</span>`;
   if (!all) { $('#today-start').onclick = () => startSession(false); if (shortUseful) $('#today-short').onclick = () => startSession(true); }
   // all done: a small celebration, animated only the first time you see it each day
   const todayKey = new Date().toDateString(), seen = store.get('cheered') === todayKey;
@@ -1026,7 +1051,8 @@ function renderToday() {
     o2 && `${plural(o2, 'opening move')} reviewed`,
     td.rev && `${plural(td.rev, 'Train review')}`,
     td.new && `${plural(td.new, 'new puzzle')}${rDiff ? ` (puzzle rating ${rDiff > 0 ? '+' : ''}${rDiff})` : ''}`,
-    td.think && `${plural(td.think, 'Think-first position')}, ${td.thinkOk || 0} right`,
+    G2.reviewedToday() && `${plural(G2.reviewedToday(), 'game')} reviewed (key moments)`,
+    td.nm && `${plural(td.nm, 'new position')} from your games practised`,
     td.less && `${plural(td.less, 'lesson')} finished`,
     td.play && `${plural(td.play, 'position')} played out against Stockfish`,
   ].filter(Boolean);
@@ -1034,13 +1060,12 @@ function renderToday() {
   $('#today-sum').innerHTML = items.length ? `<h3>Today you did</h3><ul>${items.map(t => `<li>${t}</li>`).join('')}</ul>` : '';
 }
 
-/* Today's session: Openings review, then Train (reviews, puzzles, Think-first) in one go, back to Today at the end.
-   Short day = the opening reviews and Train's reviews only. */
+/* Today's session: Openings review, then Your games (key moments of the newest unreviewed game + your own-game cards),
+   then Puzzles and Lesson reviews, back to Today at the end. Short day = openings + your games. */
 function startSession(short) {
-  const home = () => { O2.show('home'); T2.show('home'); show('today'); };
-  const train = () => { O2.show('home'); show('train'); T2.runDaily(short ? ['rev'] : null, { session: true, pre: ['Openings'], onDone: home }); };
-  if (O2.dueSummary().n) { show('openings'); O2.startDaily({ label: 'Today · Openings', back: home, onDone: train, nextLabel: short ? 'Next: Train reviews' : 'Next: Train' }); }
-  else train();
+  const games = () => { O2.show('home'); startGames(goHome, { pre: ['Openings'], short }); };
+  if (O2.dueSummary().n) { show('openings'); O2.startDaily({ label: 'Today · Openings', back: goHome, onDone: games, nextLabel: 'Next: Your games' }); }
+  else games();
 }
 // Since your last game: the newest analysed game of the last 3 days, where it left your opening course, and your
 // mistakes in it as Train cards ("Practise this mistake" opens that card, then comes back here)

@@ -17,7 +17,10 @@
      onChange()         after G2 records progress (Today refresh)
    Games: the app's GAMES (analysis.json + the app's derived fields acc, nb, nm, family, myWin, cpl, acpl, acplOpp, acplPh).
    Progress kind written: gr (game reviewed: id = chess.com game id, value {d: 1|0}). Declared in G2.KINDS.
-   API: show('list'|'play'), open(gameOrUrl, {mode:'review'|'game', ply, explore}), refresh(), filter({color,result,opening}),
+   API: show('list'|'play'), open(gameOrUrl, {mode:'review'|'game', ply, explore, session}),
+        session (Today's session): { next: 'Next: Your mistakes', onDone(), onBack() } -> the review's last screen continues the session,
+        the back button says '← Today'. reviewedToday() -> number of games marked reviewed today.
+         refresh(), filter({color,result,opening}),
         facts(g), headline(g), nextToReview(), gameOfWeek(), isReviewed(g), KINDS, GLOSSARY, cg (the board, for redraws).
    ============================================================================================ */
 const G2 = (() => {
@@ -45,6 +48,7 @@ const G2 = (() => {
     rv: null,                  // review: { list:[moment], idx, phase:'ask'|'shown', guess, gen }
     ex: null, gen: 0,          // explore (Try your own move): { chess, line, base, gen }
     more: false, nums: false,
+    sess: null,                // Today's session: { next, onDone, onBack } while a review runs inside it
     f: { color: 'all', result: 'all', opening: 'all', sort: 'new', threw: false, todo: false, quick: false },
   };
 
@@ -193,6 +197,10 @@ const G2 = (() => {
   function passes(g, f, x) {
     return (x.color === 'all' || g.color === x.color) && (x.result === 'all' || g.result === x.result) && (x.opening === 'all' || fam(g) === x.opening)
       && (!x.threw || f.threwWin) && (!x.todo || !isReviewed(g)) && (!x.quick || f.fast.length > 0);
+  }
+  function reviewedToday() {
+    const d = new Date(), sod = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    return Object.values(H.progress?.gr || {}).filter(v => v && v.d && (v.t || 0) >= sod).length;
   }
   function nextToReview() {
     for (let k = GAMES.length - 1; k >= 0; k--) { const g = GAMES[k], f = facts(g); if (!isReviewed(g) && f.swing >= 20 && keyCount(f)) return g; }
@@ -432,6 +440,12 @@ const G2 = (() => {
       ${rows ? `<ol class="g2-mlist">${rows}</ol>` : ''}
       ${fx.length && H.practise ? `<p class="small muted">${plural(fx.length, 'Train card')} from this game, ${fx.filter(x => cardDone(x.c)).length} practised.</p>` : ''}</div>`;
     const todo = fx.filter(x => !cardDone(x.c));
+    if (S.sess) {
+      $('#g2-panel').insertAdjacentHTML('beforeend', `<p class="small muted g2-sessnote">The mistakes from this game join your daily practice from tomorrow.</p>`);
+      $('#g2-actions').innerHTML = `<button class="btn primary" data-act="sessnext" data-key="n">${esc(S.sess.next || 'Continue')}<kbd>N</kbd></button>`;
+      $('#g2-tools').innerHTML = `<button class="btn" data-act="mode" data-mode="game">Whole game</button>`;
+      return moveCursor();
+    }
     $('#g2-actions').innerHTML = `${todo.length && H.practise ? `<button class="btn" data-act="practiseall">${todo.length === 1 ? 'Practise it now' : `Practise all ${todo.length} now`}</button>` : ''}${nx && nx !== g ? `<button class="btn primary" data-act="nextgame" data-url="${esc(nx.url)}">Next game to review</button>` : `<button class="btn primary" data-act="mode" data-mode="game">Whole game</button>`}`;
     $('#g2-tools').innerHTML = nx && nx !== g ? `<button class="btn" data-act="mode" data-mode="game">Whole game</button>` : '';
     moveCursor();
@@ -594,6 +608,7 @@ const G2 = (() => {
 
   /* ---------------------------------------------------------------- screens */
   function renderPlay() {
+    const bk = $('.g2-backrow [data-act="back"]'); if (bk) bk.textContent = S.sess ? '← Today' : '← All games';
     $$('#g2-modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === S.mode));
     $('#g2-play').classList.toggle('g2-is-game', S.mode === 'game');
     renderHead(); renderGraph();
@@ -605,9 +620,10 @@ const G2 = (() => {
     $('#g2-list').hidden = S.screen !== 'list'; $('#g2-play').hidden = S.screen !== 'play';
     if (S.screen === 'list') renderList();
   }
-  function open(x, { mode, ply, explore } = {}) {
+  function open(x, { mode, ply, explore, session } = {}) {
     const g = typeof x === 'string' ? GAMES.find(q => q.url === x) : x;
     if (!g) return false;
+    S.sess = session || null;
     if (S.g !== g) { S.rv = null; S.flipped = false; S.ply = 0; }
     S.g = g; S.ex = null; S.gen++;
     prep(g);
@@ -654,7 +670,8 @@ const G2 = (() => {
     const g = S.g, rv = S.rv;
     switch (b.dataset.act) {
       case 'more': S.more = true; return renderList();
-      case 'back': return show('list');
+      case 'back': if (S.sess) { const ss = S.sess; S.sess = null; show('list'); return ss.onBack?.(); } return show('list');
+      case 'sessnext': if (S.sess) { const ss = S.sess; S.sess = null; show('list'); return ss.onDone?.(); } return;
       case 'mode': S.mode = b.dataset.mode; S.ex = null; if (S.mode === 'review') return startReview(); return renderPlay();
       case 'showme': if (rv) { rv.phase = 'shown'; rv.guess = null; renderReview(); } return;
       case 'nextm': if (rv) { rv.idx++; rv.phase = 'ask'; rv.guess = null; renderReview(); window.scrollTo?.({ top: 0, behavior: 'smooth' }); } return;
@@ -709,7 +726,7 @@ const G2 = (() => {
     ['keymoment', 'Key moment', 'One of the 2–3 moves that decided a game: your biggest drops in winning chance (15% or more, at least 6 moves apart), always including the move where a winning position slipped away. A review asks you to find the better move first, then shows it.'],
   ];
   const api = {
-    init, show, open, refresh, filter, facts, headline: g => headline(g, facts(g)), nextToReview, gameOfWeek, isReviewed, KINDS, GLOSSARY,
+    init, show, open, refresh, filter, facts, headline: g => headline(g, facts(g)), nextToReview, reviewedToday, gameOfWeek, isReviewed, KINDS, GLOSSARY,
     get cg() { return cg; }, get screen() { return S.screen; }, get game() { return S.g; },
     test: { state: () => ({ screen: S.screen, mode: S.mode, ply: S.ply, rv: S.rv && { idx: S.rv.idx, phase: S.rv.phase, n: S.rv.list.length }, ex: !!S.ex }), headline, whatWrong },
     get hooks() { return H; },

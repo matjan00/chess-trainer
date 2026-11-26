@@ -51,7 +51,10 @@ const T2 = (() => {
   const IV = (typeof O2 !== 'undefined' && O2?.srs?.IV) || [0, 1, 3, 7, 14, 30, 90, 180];   // the Openings ladder (shared)
   const MAXLV = 7, MATURE = 4, RETIRED = 9, CAP = 20, BACKLOG = 40;
   const REV_DAY = 10;                                   // at most this many review cards a day (user 2026-11-22); extras move to the next days
-  const DAILY = { puz: 10, think: 5, newMine: 3 };
+  const DAILY = { puz: 10, pzRev: 5, newMine: 4 };      // per day: new puzzles, missed puzzles back, new own-game cards (user 2026-11-26)
+  // Think first (Safe or blunder? / Punish it or not? / What is the threat?) is no longer part of any daily list or review
+  // (user 2026-11-26): its lesson cards and the threat cards are paused, the course stays openable in Train
+  const dailyOk = id => !id.startsWith('ls/think.') && !id.startsWith('mine/thr/');
   const COURSE_ORDER = ['tactics', 'think', 'convert', 'endgames'];
   const COURSE_INFO = {
     tactics: { title: 'Tactics ABC', sub: '15 motifs: learn, practise, review', w: 3 },
@@ -474,7 +477,7 @@ const T2 = (() => {
     }
     if (src === 'mine') {
       const m = MINE?.cardById.get(id.slice(5)); if (!m) return null;
-      return { key: id, kind: m.type === 'thr' ? 'thr' : 'card', src, type: m.type, fen: m.fen, side: m.side || sideOf(m.fen), last: m.last, sol: m.sol || [], ok: uniq([m.sol?.[0], ...(m.ok || [])]),
+      return { key: id, kind: m.type === 'thr' ? 'thr' : 'card', src, type: m.type, prompt: m.type === 'pun' ? 'Your opponent just made a mistake. Punish it.' : null, fen: m.fen, side: m.side || sideOf(m.fen), last: m.last, sol: m.sol || [], ok: uniq([m.sol?.[0], ...(m.ok || [])]),
                slow: [], also: {}, wrong: {}, wrongLine: {}, why: m.why, played: m.played, refute: sanList(m.refute), threat: m.threat, url: m.url, opp: m.opp, end: m.end, moveNo: m.moveNo,
                chip: gameChip(m), groups: m.group != null ? [groupIndex(m.group)].filter(g => g >= 0) : [] };
     }
@@ -508,8 +511,8 @@ const T2 = (() => {
     spreading = true; spreadMemo = dk;
     try {
       const e = endOfDay(), t = now(), due = [], load = new Map();
-      const all = Object.entries(PG('t2c')).filter(([id]) => itemFor(id)).map(([id, s]) => ({ id, s }));
-      if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s) all.push({ id, s }); }
+      const all = Object.entries(PG('t2c')).filter(([id]) => dailyOk(id) && itemFor(id)).map(([id, s]) => ({ id, s }));
+      if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id] || !dailyOk(id)) continue; const s = legacyState(id); if (s) all.push({ id, s }); }
       for (const x of all) { if (!x.s || x.s.due == null) continue; if (isDue(x.s)) due.push(x); else if (x.s.due > e) { const k = dayKey(x.s.due); load.set(k, (load.get(k) || 0) + 1); } }
       if (due.length <= REV_DAY) return;
       due.sort((a, b) => a.s.due - b.s.due);
@@ -526,17 +529,25 @@ const T2 = (() => {
   function dueCards() {
     spreadDay();
     const out = [], e = endOfDay();
-    for (const [id, s] of Object.entries(PG('t2c'))) if (isDue(s) && itemFor(id)) out.push({ id, due: s.due });
-    if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s && s.due <= e) out.push({ id, due: s.due }); }
+    for (const [id, s] of Object.entries(PG('t2c'))) if (isDue(s) && dailyOk(id) && itemFor(id)) out.push({ id, due: s.due });
+    if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id] || !dailyOk(id)) continue; const s = legacyState(id); if (s && s.due <= e) out.push({ id, due: s.due }); }
     const sod = startOfDay();                               // most overdue first, then shuffled across sources
     const over = out.filter(x => x.due < sod).sort((a, b) => a.due - b.due);
     const rest = shuffle(out.filter(x => x.due >= sod));
     return [...over, ...rest];
   }
   function dueJudges() { return Object.keys(PG('t2k')).filter(id => judgeDue(id) && judgeItem(id)); }
-  function newMineCards(types = ['fix', 'tq'], n = DAILY.newMine) {
+  /** new own-game cards: your mistakes (fix, tq) and the chances you missed to punish a blunder (pun). Games you reviewed
+      in the Games tab before today come first (so yesterday's review comes back as practice), then the newest games;
+      a game reviewed today waits until tomorrow. */
+  const gameIdOf = url => String(url || '').split('?')[0].split('/').filter(Boolean).pop() || '';
+  function newMineCards(types = ['fix', 'pun', 'tq'], n = DAILY.newMine) {
     if (!MINE) return [];
-    return MINE.cards.filter(m => types.includes(m.type) && !cardGet('mine/' + m.id)).slice(0, n).map(m => 'mine/' + m.id);
+    const gr = H.progress.gr || {}, sod = startOfDay();
+    // reviewed before today: first; not reviewed: next; reviewed today: not yet (it was just seen, it starts tomorrow)
+    const rank = m => { const r = gr[gameIdOf(m.url)]; return !(r && r.d) ? 1 : (r.t || 0) < sod ? 0 : 2; };
+    const fresh = MINE.cards.filter(m => types.includes(m.type) && !cardGet('mine/' + m.id) && rank(m) < 2);
+    return fresh.map((m, i) => ({ m, i, r: rank(m) })).sort((a, b) => a.r - b.r || a.i - b.i).slice(0, n).map(x => 'mine/' + x.m.id);
   }
   /** own-game cards that entered the reviews today (first answer today) */
   const newMineToday = () => today().nm || 0;
@@ -544,8 +555,8 @@ const T2 = (() => {
   /** every card the trainer can serve with its due time: [id, due] (t2c not retired + old own-game cards still on their legacy date) */
   function liveCards() {
     const out = [];
-    for (const [id, s] of Object.entries(PG('t2c'))) if ((s.lv || 0) < RETIRED && itemFor(id)) out.push([id, s.due]);
-    if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id]) continue; const s = legacyState(id); if (s) out.push([id, s.due]); }
+    for (const [id, s] of Object.entries(PG('t2c'))) if ((s.lv || 0) < RETIRED && dailyOk(id) && itemFor(id)) out.push([id, s.due]);
+    if (MINE) for (const m of MINE.cards) { const id = 'mine/' + m.id; if (PG('t2c')[id] || !dailyOk(id)) continue; const s = legacyState(id); if (s) out.push([id, s.due]); }
     return out;
   }
   const srcLabel = id => { const src = srcOf(id); return src === 'pz' ? 'Missed puzzles' : src === 'mine' ? 'Your mistakes' : (itemFor(id)?.course?.title || 'Lessons'); };
@@ -611,43 +622,56 @@ const T2 = (() => {
     const days = Math.floor((startOfDay() - anchor()) / DAY);
     const unconverted = (MINE?.plays || []).filter(p => p.id.startsWith('cv/') && !PG('t2x')[p.id]?.ok).sort((a, b) => (b.end || 0) - (a.end || 0));
     if (days % 3 === 2 && unconverted.length) return { kind: 'playout', play: unconverted[0] };
-    const cs = COURSES.filter(c => nextLesson(c));
+    const cs = COURSES.filter(c => c.id !== 'think' && nextLesson(c));
     if (!cs.length) return unconverted.length ? { kind: 'playout', play: unconverted[0] } : null;
-    if (days < 7) for (const id of ['think', 'convert', 'tactics', 'endgames']) { const c = cs.find(x => x.id === id); if (c && (lstate(c, c.lessons[c.order[0]])?.st || 0) < 2) return { kind: 'lesson', c, l: c.lessons[c.order[0]] }; }
+    if (days < 7) for (const id of ['convert', 'tactics', 'endgames']) { const c = cs.find(x => x.id === id); if (c && (lstate(c, c.lessons[c.order[0]])?.st || 0) < 2) return { kind: 'lesson', c, l: c.lessons[c.order[0]] }; }
     const score = c => { const i = courseInfo(c); return (i.lessons ? i.finished / i.lessons : 1) / c.w; };
     const c = cs.slice().sort((a, b) => score(a) - score(b))[0];
     return { kind: 'lesson', c, l: nextLesson(c) };
   }
-  /* daily blocks (BLUEPRINT 5): done-state from today's totals */
+  /* daily blocks (user 2026-11-26): Your mistakes (own-game cards) · Puzzles (missed ones back + new) · Lesson reviews; done-state from today's totals.
+     All three share the REV_DAY cap on due reviews (spreadDay). */
+  function dueSplit() {
+    const o = { mine: [], pz: [], ls: [] };
+    for (const x of dueCards().slice(0, REV_DAY)) { const k = srcOf(x.id); if (o[k]) o[k].push(x.id); }
+    return o;
+  }
   function dailyPlan() {
-    const d = today(), due = dueCards().length, nm = newMineCards().length;
-    const newLeft = Math.max(0, Math.min(nm, DAILY.newMine - newMineToday()));
-    // revN = exactly what reviewItems() will serve this session (at most CAP); due = the real number of cards due
-    const newN = Math.max(0, Math.min(REV_DAY - Math.min(due, REV_DAY), newLeft));   // new cards only fill up to REV_DAY
-    const revN = Math.min(REV_DAY, due) + newN;
-    const revDone = revN === 0;
-    const puzDone = !PUZ || (d.new || 0) >= DAILY.puz;
-    const thinkDone = !MINE || (d.think || 0) >= DAILY.think;
+    const d = today(), ds = dueSplit();
+    const mineNew = Math.max(0, Math.min(newMineCards().length, DAILY.newMine - newMineToday()));
+    const mineN = ds.mine.length + mineNew;
+    const pzRev = Math.min(DAILY.pzRev, ds.pz.length);
+    const puzNew = PUZ ? Math.max(0, DAILY.puz - (d.new || 0)) : 0;
+    const lsN = ds.ls.length;
+    const mineDone = mineN === 0, puzDone = pzRev === 0 && puzNew === 0, revDone = lsN === 0;
     const lessDone = (d.less || 0) > 0 || (d.play || 0) > 0;
-    const puzN = Math.max(0, DAILY.puz - (d.new || 0)), thinkN = Math.max(0, DAILY.think - (d.think || 0));
-    const mins = Math.round(((revDone ? 0 : revN * 25) + (puzDone ? 0 : puzN * 50) + (thinkDone ? 0 : thinkN * 40)) / 60);
-    return { revN, due, newN, puzN, thinkN, revDone, puzDone, thinkDone, lessDone, mins: Math.max(1, mins), allDone: revDone && puzDone && thinkDone };
+    const mineMins = Math.round(mineN * 30 / 60), puzMins = Math.round((pzRev * 40 + puzNew * 50) / 60), revMins = Math.round(lsN * 25 / 60);
+    const mins = (mineDone ? 0 : Math.max(1, mineMins)) + (puzDone ? 0 : Math.max(1, puzMins)) + (revDone ? 0 : Math.max(1, revMins));
+    return { mineN, mineDue: ds.mine.length, mineNew, mineMins: mineDone ? 0 : Math.max(1, mineMins), pzRev, puzNew, puzN: puzNew, lsN, revN: lsN,
+             due: ds.mine.length + ds.pz.length + ds.ls.length, mineDone, puzDone, revDone, lessDone, mins: Math.max(1, mins), allDone: mineDone && puzDone && revDone };
   }
-  /** "29 cards due · 20 this session", "12 cards due + 3 new", "3 new cards" */
-  function revText(p) {
+  function revText(p) { return p.lsN ? plural(p.lsN, 'lesson card') + ' due' : ''; }
+  function mineText(p) {
     const parts = [];
-    if (p.due) parts.push(plural(p.due, 'card') + ' due' + (p.due > REV_DAY ? ` · ${REV_DAY} this session` : ''));
-    if (p.newN) parts.push(p.due ? `+ ${p.newN} new` : plural(p.newN, 'new card'));
-    return parts.join(' ');
+    if (p.mineDue) parts.push(`${p.mineDue} back for review`);
+    if (p.mineNew) parts.push(`${p.mineNew} new`);
+    return parts.join(' + ');
   }
+  function puzText(p) {
+    const parts = [];
+    if (p.pzRev) parts.push(`${p.pzRev} you missed before`);
+    if (p.puzNew) parts.push(`${p.puzNew} new`);
+    return parts.join(' + ');
+  }
+  /** id: mine | puz | rev | lesson (the app builds Today's list from these) */
   function todayTasks() {
     const p = dailyPlan(), d = today(), lod = lessonOfDay();
     return [
-      { nm: 'Reviews', ct: p.revN ? `${revText(p)} · about ${Math.max(1, Math.round(p.revN * 25 / 60))} min` : (d.rev ? `${d.rev} reviewed today` : 'Nothing due'), done: p.revDone,
-        go: () => runDaily(['rev']) },
-      { nm: '10 new puzzles', ct: PUZ ? `${Math.min(d.new || 0, DAILY.puz)}/${DAILY.puz} · picked for your weak spots` : 'Puzzles arrive with the next update', done: p.puzDone, go: () => runDaily(['puz']) },
-      { nm: '5 Think-first', ct: MINE ? `${Math.min(d.think || 0, DAILY.think)}/${DAILY.think} · stop and check before you move` : 'Arrives with the next update', done: p.thinkDone, go: () => runDaily(['think']) },
-      { nm: lod?.kind === 'playout' ? 'Play-out of the day' : 'Lesson of the day', ct: lod ? (lod.kind === 'playout' ? `Win it again: your game vs ${lod.play.opp || '?'}` : `${lod.c.title}: ${lod.l.title} · about 5 min`) : 'All lessons finished',
+      { id: 'mine', nm: 'Your mistakes', ct: MINE ? (p.mineN ? `${mineText(p)} · positions from your games · about ${p.mineMins} min` : 'Nothing due') : 'Arrives with the next update', done: p.mineDone, mins: p.mineMins,
+        go: () => runDaily(['mine']) },
+      { id: 'puz', nm: 'Puzzles', ct: PUZ ? (p.puzDone ? `${d.new || 0} new today` : `${puzText(p)} · picked for your weak spots`) : 'Puzzles arrive with the next update', done: p.puzDone, go: () => runDaily(['puz']) },
+      { id: 'rev', nm: 'Lesson reviews', ct: p.lsN ? `${revText(p)} · about ${Math.max(1, Math.round(p.lsN * 25 / 60))} min` : 'Nothing due', done: p.revDone, go: () => runDaily(['rev']) },
+      { id: 'lesson', nm: lod?.kind === 'playout' ? 'Play-out of the day' : 'Lesson of the day', ct: lod ? (lod.kind === 'playout' ? `Win it again: your game vs ${lod.play.opp || '?'}` : `${lod.c.title}: ${lod.l.title} · about 5 min`) : 'All lessons finished',
         done: p.lessDone, go: () => lod?.kind === 'playout' ? startPlayout(lod.play, { mine: true }) : lod ? startLessonGated(lod.c, lod.l, false) : show('home') },
     ];
   }
@@ -716,14 +740,14 @@ const T2 = (() => {
     const tick = (done, lab) => `<span class="t2-blk${done ? ' on' : ''}"><i aria-hidden="true">${done ? '✓' : ''}</i>${lab}<span class="sr">${done ? ' (done)' : ''}</span></span>`;
     let banner;
     if (!p.allDone) {
-      const parts = [p.revDone ? null : revText(p), p.puzDone ? null : plural(p.puzN, 'puzzle'), p.thinkDone ? null : `${p.thinkN} Think-first`].filter(Boolean);
+      const parts = [p.mineDone ? null : plural(p.mineN, 'own-game position'), p.puzDone ? null : plural(p.pzRev + p.puzNew, 'puzzle'), p.revDone ? null : revText(p)].filter(Boolean);
       banner = `<div class="card t2-banner"><div><span class="eyebrow">Train today</span><h3>${parts.join(' · ')} · about ${p.mins} min</h3>
-        <div class="t2-blocks">${tick(p.revDone, 'Reviews')}${tick(p.puzDone, 'Puzzles')}${tick(p.thinkDone, 'Think first')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
-        <button class="btn primary" data-act="daily">${(d.rev || d.new || d.think) ? 'Continue' : 'Start'}</button></div>`;
+        <div class="t2-blocks">${tick(p.mineDone, 'Your mistakes')}${tick(p.puzDone, 'Puzzles')}${tick(p.revDone, 'Lesson reviews')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
+        <button class="btn primary" data-act="daily">${(d.rev || d.new) ? 'Continue' : 'Start'}</button></div>`;
     } else {
       const nd = nextDueAfterToday(), lod = lessonOfDay();
       banner = `<div class="card t2-banner done"><div><span class="eyebrow">Train today · done ✓</span><h3>${nd ? `Next review ${whenText(nd)}` : 'Nothing more today'}</h3>
-        <div class="t2-blocks">${tick(true, 'Reviews')}${tick(true, 'Puzzles')}${tick(true, 'Think first')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
+        <div class="t2-blocks">${tick(true, 'Your mistakes')}${tick(true, 'Puzzles')}${tick(true, 'Lesson reviews')}${tick(p.lessDone, 'Lesson (optional)')}</div></div>
         ${lod && !p.lessDone ? `<button class="btn primary" data-act="lod">Learn something new</button>` : PUZ ? `<button class="btn" data-act="puzzles">More puzzles</button>` : ''}</div>`;
     }
     const cards = COURSE_ORDER.map(id => {
@@ -1142,7 +1166,7 @@ const T2 = (() => {
     if (it.kind === 'judge') return solveJudge(it, chk);
     if (it.kind === 'punq') return solvePunq(it, chk);
     if (it.kind === 'thr') return solveThreat(it, chk);
-    return solveCard(it, chk);
+    return solveCard(it, chk, it.prompt ? { prompt: it.prompt } : {});
   }
   /** the answer: the full solution as a list of moves (for "Play through the solution" and study) */
   function solutionLine(it) {
@@ -1312,14 +1336,16 @@ const T2 = (() => {
       return it;
     };
   }
-  function reviewItems() {
-    const due = dueCards().slice(0, REV_DAY).map(x => itemFor(x.id) || null).filter(Boolean);
-    const room = Math.max(0, Math.min(REV_DAY - due.length, DAILY.newMine - newMineToday()));
-    const fresh = newMineCards().slice(0, room).map(itemFor).filter(Boolean);
-    return [...due, ...fresh].map(it => it.type === 'pun' ? { ...it, kind: 'punq', decoy: false } : it);
+  /** Your mistakes: own-game cards due today, then new ones (games you reviewed first) */
+  function mineItems() {
+    const ds = dueSplit(), room = Math.max(0, DAILY.newMine - newMineToday());
+    return [...ds.mine, ...newMineCards().slice(0, room)].map(itemFor).filter(Boolean);
   }
+  const pzRevItems = () => dueSplit().pz.slice(0, DAILY.pzRev).map(itemFor).filter(Boolean);
+  const lessonRevItems = () => dueSplit().ls.map(itemFor).filter(Boolean);
+  function reviewItems() { return [...mineItems(), ...pzRevItems(), ...lessonRevItems()]; }
   /** Think first: due judgements first, then 60% real (blunder judgements, punish cards, threat cards) / 40% decoys (safe moves, quiet opponent moves) */
-  function thinkItems(n = DAILY.think) {
+  function thinkItems(n = 5) {
     if (!MINE) return [];
     const out = dueJudges().slice(0, n).map(judgeItem).filter(Boolean);
     const used = new Set(out.map(x => x.key));
@@ -1396,11 +1422,21 @@ const T2 = (() => {
     });
   }
 
-  /* ---- the daily session (BLUEPRINT 5): Reviews · 10 new puzzles · 5 Think first · lesson of the day */
+  /* ---- the daily session (user 2026-11-26): Your mistakes · Puzzles (missed ones first) · Lesson reviews; lesson of the day optional */
   const BLOCKS = {
-    rev: { name: 'Reviews', run: chk => { const items = reviewItems(); return items.length ? runSession({ label: 'Reviews', items, summary: false }, chk) : null; } },
-    puz: { name: '10 new puzzles', run: (chk, forced) => { if (!PUZ) return null; const n = Math.max(0, DAILY.puz - (today().new || 0)) || (forced ? DAILY.puz : 0); return n ? runSession({ label: 'New puzzles', next: streamNext(), total: n, how: 'newpz', summary: false }, chk) : null; } },
-    think: { name: '5 Think-first', run: (chk, forced) => { const n = Math.max(0, DAILY.think - (today().think || 0)) || (forced ? DAILY.think : 0); const items = n ? thinkItems(n) : []; return items.length ? runSession({ label: 'Think first', items, summary: false }, chk) : null; } },
+    mine: { name: 'Your mistakes', done: 'mineDone', intro: 'Positions from your own games: the better move you missed, and the chances to punish your opponent.',
+      run: chk => { const items = mineItems(); return items.length ? runSession({ label: 'Your mistakes', items, summary: false }, chk) : null; } },
+    puz: { name: 'Puzzles', done: 'puzDone', intro: 'Puzzles you missed before come first, then new ones near your rating, weighted to your weak spots. Take your time.',
+      run: async (chk, forced) => {
+        if (!PUZ) return null;
+        const old = pzRevItems(), n = Math.max(0, DAILY.puz - (today().new || 0)) || (forced && !old.length ? DAILY.puz : 0);
+        let S = null;
+        if (old.length) S = await runSession({ label: 'Puzzles · missed before', items: old, summary: false }, chk);
+        if (n) { const S2 = await runSession({ label: 'New puzzles', next: streamNext(), total: n, how: 'newpz', summary: false }, chk); S = S ? { ...S2, asked: S.asked + S2.asked, ok: S.ok + S2.ok, rd: S.rd + S2.rd, wrong: [...S.wrong, ...S2.wrong], mv: addMv({ ...S.mv }, S2.mv) } : S2; }
+        return S;
+      } },
+    rev: { name: 'Lesson reviews', done: 'revDone', intro: 'Cards from the Train lessons you have learned.',
+      run: chk => { const items = lessonRevItems(); return items.length ? runSession({ label: 'Lesson reviews', items, summary: false }, chk) : null; } },
   };
   /** opts (Today's session): {session: skip finished blocks even with only, pre: labels of parts already done (step bar), onDone: leave to} */
   function runDaily(only, opts = {}) {
@@ -1409,7 +1445,7 @@ const T2 = (() => {
       const chk = begin('daily', leave);
       const p = dailyPlan();
       const forced = !!only && !opts.session;
-      const list = (only || ['rev', 'puz', 'think']).filter(b => forced || !p[{ rev: 'revDone', puz: 'puzDone', think: 'thinkDone' }[b]]);
+      const list = (only || ['mine', 'puz', 'rev']).filter(b => BLOCKS[b] && (forced || !p[BLOCKS[b].done]));
       const tot = { asked: 0, ok: 0, rd: 0, wrong: [], mv: { up: 0, back: 0, gone: 0 } };
       for (let i = 0; i < list.length; i++) {
         const b = BLOCKS[list[i]];
@@ -1417,7 +1453,7 @@ const T2 = (() => {
         if (i > 0) {
           head('Train today', `Next: ${b.name}`, i, list.length);
           board(new Chess().fen(), 'white'); P.shapes = []; draw();
-          fb(`<span class="eyebrow">Part ${i + 1} of ${list.length}</span><h3>${esc(b.name)}</h3><p class="small muted">${list[i] === 'think' ? 'Before you answer, look at every check and capture your opponent gets.' : list[i] === 'puz' ? 'Picked near your puzzle rating, weighted to your weak spots. Take your time: nothing here rewards speed.' : ''}</p>`);
+          fb(`<span class="eyebrow">Part ${i + 1} of ${list.length}</span><h3>${esc(b.name)}</h3><p class="small muted">${esc(b.intro || '')}</p>`);
           const v = await cont('Start', [['cont:stop', 'Stop for today']]); chk();
           if (v === 'stop') break;
         }
