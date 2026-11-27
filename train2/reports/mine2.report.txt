@@ -1,7 +1,7 @@
-mine2: 367 cards {'pun': 54, 'thr': 21, 'tq': 103, 'fix': 189}; judges Counter({('opp', 'safe'): 264, ('me', 'safe'): 229, ('me', 'blunder'): 174}); plays Counter({'cv': 115, 'eo': 54}); left 0; 12s
-  dropped chk: something special to find 247
+mine2: 371 cards {'fix': 190, 'pun': 56, 'thr': 22, 'tq': 103}; judges Counter({('opp', 'safe'): 268, ('me', 'safe'): 232, ('me', 'blunder'): 175}); plays Counter({'cv': 117, 'eo': 55}); left 0; 15s
+  dropped chk: something special to find 248
   dropped cv: search below 85 6
-  dropped fix: gap too small 232, many ok moves 103, best too low 70, same position as a richer card 66, duplicate position 2, everything wins 1, his move is ok now 1
-  dropped pun: best too low 56, same position as a richer card 37, gap too small 9, many ok moves 2, one legal move 1
-  dropped thr: fix rule fails or not searched 79, threat not unique 66
-  dropped tq: many ok moves 218, gap too small 100, best too low 97, no kind 20, same position as a richer card 5, no contrast 1, duplicate position 1
+  dropped fix: gap too small 233, many ok moves 106, best too low 70, same position as a richer card 67, duplicate position 2, everything wins 1, his move is ok now 1
+  dropped pun: best too low 56, same position as a richer card 37, gap too small 10, many ok moves 2, one legal move 1
+  dropped thr: fix rule fails or not searched 80, threat not unique 66
+  dropped tq: many ok moves 227, gap too small 101, best too low 97, no kind 20, same position as a richer card 5, no contrast 1, duplicate position 1
